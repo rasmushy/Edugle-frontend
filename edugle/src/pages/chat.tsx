@@ -1,11 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import Header from "./components/Header";
-import SideBar from "./components/SideBar";
-import ChatBox from "./components/ChatBox";
-import ChatMessages from "./components/ChatMessages";
-import { User, Message } from "./api/types";
+import Header from "../components/Header";
+import ChatMessages from "../components/ChatMessages";
+import ChatBox from "../components/ChatBox";
+import SideBar from "../components/SideBar";
+import { User, Message } from "../lib/types";
+import { useQuery, gql } from "@apollo/client";
 
+const GET_MESSAGES = gql`
+  query GetMessages {
+    messages {
+      id
+      sender
+      content
+    }
+  }
+`;
+
+/* const Messages = ({ user }) => {
+  const { data } = useQuery(GET_MESSAGES);
+  if (!data) {
+    return null;
+  }
+  return JSON.stringify(data);
+};
+ */
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -94,13 +113,13 @@ const Chat = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <Header
-        onLogout={() => console.log("Logged out")}
-        onProfile={() => console.log("View profile")}
-        onSettings={() => console.log("View settings")}
-        toggleSidebar={toggleSidebar}
-      />
-        <div className="flex-row pr-4 pl-4">
+        <Header
+          onLogout={() => console.log("Logged out")}
+          onProfile={() => console.log("View profile")}
+          onSettings={() => console.log("View settings")}
+          toggleSidebar={toggleSidebar}
+        />
+        <div className="flex-row pl-4 pr-4">
           <div className="flex-col">
             {/* Chat messages */}
             <ChatMessages messages={messages} />
