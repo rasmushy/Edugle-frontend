@@ -4,8 +4,8 @@ import Header from "../components/Header";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
 import SideBar from "../components/SideBar";
-import { User, Message } from "../lib/types";
 import { useQuery, gql } from "@apollo/client";
+import { User, Message } from "../__generated__/graphql";
 
 const GET_MESSAGES = gql`
   query GetMessages {
@@ -32,15 +32,21 @@ const Chat = () => {
   const chatRef = useRef<HTMLDivElement | null>(null);
 
   const user1: User = {
-    avatar: "", // URL to avatar
-    username: "John",
-    description: "Loves programming",
+    id: "",
+    email: "",
+    username: "",
+    password: "",
+    description: "",
+    avatar: "",
   };
 
   const user2: User = {
-    avatar: "", // URL to avatar
-    username: "Jane",
-    description: "Loves hiking",
+    id: "",
+    email: "",
+    username: "",
+    password: "",
+    description: "",
+    avatar: "",
   };
 
   const toggleSidebar = () => {
@@ -75,7 +81,15 @@ const Chat = () => {
 
   const handleSendMessage = () => {
     if (message !== "") {
-      setMessages([...messages, { sender: user1.username, content: message }]);
+      setMessages([
+        ...messages,
+        {
+          sender: user1,
+          content: message,
+          id: user1.id,
+          created_date: new Date().toISOString(),
+        },
+      ]);
       console.log("Sent message:", message);
       setMessage("");
     }
@@ -114,9 +128,6 @@ const Chat = () => {
       </Head>
       <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
         <Header
-          onLogout={() => console.log("Logged out")}
-          onProfile={() => console.log("View profile")}
-          onSettings={() => console.log("View settings")}
           toggleSidebar={toggleSidebar}
         />
         <div className="flex-row pl-4 pr-4">
