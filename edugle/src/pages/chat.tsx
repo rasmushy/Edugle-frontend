@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import Header from "../components/Header";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
 import SideBar from "../components/SideBar";
@@ -47,10 +46,6 @@ const Chat = () => {
     password: "",
     description: "",
     avatar: "",
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
   };
 
   const handleNextUser = () => {
@@ -127,9 +122,6 @@ const Chat = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <Header
-          toggleSidebar={toggleSidebar}
-        />
         <div className="flex-row pl-4 pr-4">
           <div className="flex-col">
             {/* Chat messages */}
@@ -148,15 +140,13 @@ const Chat = () => {
                 isSidebarVisible ? "h-full" : "h-0"
               }`}
             >
-              {isSidebarVisible && (
-                <SideBar
-                  users={
-                    [user2] /* Replace with users={[user1,user2]} from API */
-                  }
-                  handleNextUser={handleNextUser}
-                  handleLikeUser={handleLikeUser}
-                />
-              )}
+              <SideBar
+                users={
+                  [user2] /* Replace with users={[user1,user2]} from API */
+                }
+                handleNextUser={handleNextUser}
+                handleLikeUser={handleLikeUser}
+              />
             </div>
           </div>
         </div>
