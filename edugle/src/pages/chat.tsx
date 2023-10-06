@@ -1,11 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import Header from "./components/Header";
-import SideBar from "./components/SideBar";
-import ChatBox from "./components/ChatBox";
-import ChatMessages from "./components/ChatMessages";
-import { User, Message } from "./api/types";
+import ChatMessages from "../components/ChatMessages";
+import ChatBox from "../components/ChatBox";
+import SideBar from "../components/SideBar";
+import { useQuery, gql } from "@apollo/client";
+import { User, Message } from "../__generated__/graphql";
 
+const GET_MESSAGES = gql`
+  query GetMessages {
+    messages {
+      id
+      sender
+      content
+    }
+  }
+`;
+
+/* const Messages = ({ user }) => {
+  const { data } = useQuery(GET_MESSAGES);
+  if (!data) {
+    return null;
+  }
+  return JSON.stringify(data);
+};
+ */
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -13,19 +31,21 @@ const Chat = () => {
   const chatRef = useRef<HTMLDivElement | null>(null);
 
   const user1: User = {
-    avatar: "", // URL to avatar
-    username: "John",
-    description: "Loves programming",
+    id: "",
+    email: "",
+    username: "",
+    password: "",
+    description: "",
+    avatar: "",
   };
 
   const user2: User = {
-    avatar: "", // URL to avatar
-    username: "Jane",
-    description: "Loves hiking",
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
+    id: "",
+    email: "",
+    username: "",
+    password: "",
+    description: "",
+    avatar: "",
   };
 
   const handleNextUser = () => {
@@ -56,7 +76,15 @@ const Chat = () => {
 
   const handleSendMessage = () => {
     if (message !== "") {
-      setMessages([...messages, { sender: user1.username, content: message }]);
+      setMessages([
+        ...messages,
+        {
+          sender: user1,
+          content: message,
+          id: user1.id,
+          created_date: new Date().toISOString(),
+        },
+      ]);
       console.log("Sent message:", message);
       setMessage("");
     }
@@ -94,13 +122,7 @@ const Chat = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <Header
-        onLogout={() => console.log("Logged out")}
-        onProfile={() => console.log("View profile")}
-        onSettings={() => console.log("View settings")}
-        toggleSidebar={toggleSidebar}
-      />
-        <div className="flex-row pr-4 pl-4">
+        <div className="flex-row pl-4 pr-4">
           <div className="flex-col">
             {/* Chat messages */}
             <ChatMessages messages={messages} />
@@ -118,15 +140,13 @@ const Chat = () => {
                 isSidebarVisible ? "h-full" : "h-0"
               }`}
             >
-              {isSidebarVisible && (
-                <SideBar
-                  users={
-                    [user2] /* Replace with users={[user1,user2]} from API */
-                  }
-                  handleNextUser={handleNextUser}
-                  handleLikeUser={handleLikeUser}
-                />
-              )}
+              <SideBar
+                users={
+                  [user2] /* Replace with users={[user1,user2]} from API */
+                }
+                handleNextUser={handleNextUser}
+                handleLikeUser={handleLikeUser}
+              />
             </div>
           </div>
         </div>

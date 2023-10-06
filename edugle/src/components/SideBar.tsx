@@ -1,5 +1,5 @@
 import React from "react";
-import { User } from "../api/types";
+import { User } from "../__generated__/graphql";
 
 type SidebarProps = {
   users: User[];

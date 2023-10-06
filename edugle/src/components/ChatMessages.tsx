@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Message } from "../api/types";
+import { Message } from "../__generated__/graphql";
 
 type ChatMessagesProps = {
   messages: Message[];
@@ -39,7 +39,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
           key={idx}
           className="order-2 flex max-w-xs flex-col items-start space-y-2 text-xs"
         >
-          <strong>{msg.sender}:</strong>
+          <strong>{msg.sender.username}:</strong>
           <span className="inline-block rounded-lg rounded-bl-none bg-gray-300 px-4 py-2 text-gray-600">
             {addBreaks(msg.content).map((line, lineIndex) => (
               <span key={lineIndex}>

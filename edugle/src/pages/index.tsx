@@ -1,10 +1,12 @@
 import Head from "next/head";
 import Link from "next/link";
-import Login from "./components/Login";
-import SignUp from "./components/SignUp";
+import Login from "../components/Login";
+import SignUp from "../components/SignUp";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
+  const {data: session} = useSession();
   const [activePopup, setActivePopup] = useState(null);
 
   function togglePopup(popupName: any) {
