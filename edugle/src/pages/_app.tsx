@@ -1,8 +1,8 @@
 import { SessionProvider } from "next-auth/react";
 import { AppType } from "next/dist/shared/lib/utils";
 import { Session } from "next-auth";
-import { ApolloProviderWrapper } from "~/components/ApolloProviderWrapper";
-import  Header  from "~/components/Header";
+import { ApolloProviderWrapper } from "../components/ApolloProviderWrapper";
+import  Header  from "../components/Header";
 
 import "~/styles/globals.css";
 

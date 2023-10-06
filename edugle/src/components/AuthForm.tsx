@@ -8,9 +8,9 @@ export default function AuthForm({ title, apiEndpoint, toggle }: any) {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
- // const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const REGISTER_USER = gql(`mutation regUser($user: RegisterInput!) {
+  const REGISTER_USER = gql(`mutation RegUser($user: RegisterInput!) {
           registerUser(user: $user) {
             user {
             username
@@ -20,7 +20,7 @@ export default function AuthForm({ title, apiEndpoint, toggle }: any) {
         }
       }`);
 
-const LOGIN_USER = gql(`mutation LoginUser($credentials: LoginInput!) {
+  const LOGIN_USER = gql(`mutation LoginUser($credentials: LoginInput!) {
         loginUser(credentials: $credentials) {
         user {
           username
@@ -43,49 +43,48 @@ const LOGIN_USER = gql(`mutation LoginUser($credentials: LoginInput!) {
     },
     onCompleted: ({ registerUser }) => {
       localStorage.setItem("token", registerUser.token);
-  //    navigate("/chat");
+      console.log("registerUser", registerUser.token);
     },
   });
 
-const [loginUser] = useMutation(LOGIN_USER, {
-  variables: {
-    credentials: {
-      email: email,
-      password: password,
+  const [loginUser] = useMutation(LOGIN_USER, {
+    variables: {
+      credentials: {
+        email: email,
+        password: password,
+      },
     },
-  },
-  onCompleted: ({ loginUser }) => {
-    localStorage.setItem("token", loginUser.token);
-//    navigate("/chat");
-  },
-});
+    onCompleted: ({ loginUser }) => {
+      localStorage.setItem("token", loginUser.token);
+      console.log("loginUser", loginUser.token);
+    },
+  });
 
-
-async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
 
-if(title === "Sign Up") {
-    try {
-      registerUser();
-      console.log("registerUser", registerUser);
-      toggle;
-    } catch (error: any) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    if (title === "Sign Up") {
+      try {
+        registerUser();
+        console.log("registered Successfully");
+        toggle;
+      } catch (error: any) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      try {
+        loginUser();
+        console.log("logged in Successfully");
+        toggle;
+      } catch (error: any) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
-}else {
-  try {
-    loginUser();
-    console.log("loginUser", loginUser);
-    toggle;
-  } catch (error: any) {
-    console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-}
   }
 
   return (

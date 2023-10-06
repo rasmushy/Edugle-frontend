@@ -1,0 +1,35 @@
+mutation CreateMessage($chat: ID!, $message: MessageInput!, $user: UserWithTokenInput!) {
+  createMessage(chat: $chat, message: $message, user: $user) {
+    content
+    date
+    id
+    sender {
+      id
+      username
+      role
+      password
+      lastLogin
+      email
+      avatar
+      description
+    }
+  }
+}
+
+mutation DeleteMessage($deleteMessageId: ID!, $user: UserWithTokenInput) {
+  deleteMessage(id: $deleteMessageId, user: $user) {
+    id
+    date
+    content
+    sender {
+      id
+      username
+      email
+      password
+      description
+      avatar
+      lastLogin
+      role
+    }
+  }
+}
