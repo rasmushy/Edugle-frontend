@@ -82,7 +82,7 @@ const Chat = () => {
           sender: user1,
           content: message,
           id: user1.id,
-          created_date: new Date().toISOString(),
+          date: new Date().toISOString(),
         },
       ]);
       console.log("Sent message:", message);

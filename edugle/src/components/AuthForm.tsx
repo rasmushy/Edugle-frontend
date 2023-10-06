@@ -10,7 +10,7 @@ export default function AuthForm({ title, apiEndpoint, toggle }: any) {
   const [password, setPassword] = useState<string>("");
  // const navigate = useNavigate();
 
-  const REGISTER_USER = gql(`mutation regUser($user: RegisterInput!) {
+  const REGISTER_USER = gql(`mutation RegUser($user: RegisterInput!) {
           registerUser(user: $user) {
             user {
             username
