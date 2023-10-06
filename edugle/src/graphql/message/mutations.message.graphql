@@ -1,17 +1,17 @@
-mutation CreateMessage($message: MessageInput!, $user: UserWithTokenInput!) {
-  createMessage(message: $message, user: $user) {
-    id
-    date
+mutation CreateMessage($chat: ID!, $message: MessageInput!, $user: UserWithTokenInput!) {
+  createMessage(chat: $chat, message: $message, user: $user) {
     content
+    date
+    id
     sender {
       id
       username
-      email
-      password
-      description
-      avatar
-      lastLogin
       role
+      password
+      lastLogin
+      email
+      avatar
+      description
     }
   }
 }

@@ -31,7 +31,6 @@ export type Chat = {
 };
 
 export type CreateChatInput = {
-  created_date: Scalars['Date']['input'];
   users: Array<Scalars['ID']['input']>;
 };
 
@@ -50,7 +49,6 @@ export type Message = {
 
 export type MessageInput = {
   content: Scalars['String']['input'];
-  date: Scalars['Date']['input'];
   sender: Scalars['ID']['input'];
 };
 
@@ -70,11 +68,11 @@ export type Mutation = {
 
 export type MutationCreateChatArgs = {
   chat?: InputMaybe<CreateChatInput>;
-  user?: InputMaybe<UserWithTokenInput>;
 };
 
 
 export type MutationCreateMessageArgs = {
+  chat: Scalars['ID']['input'];
   message: MessageInput;
   user: UserWithTokenInput;
 };
@@ -93,6 +91,7 @@ export type MutationDeleteMessageArgs = {
 
 
 export type MutationDeleteMessageAsAdminArgs = {
+  admin?: InputMaybe<AdminWithTokenInput>;
   id: Scalars['ID']['input'];
 };
 
@@ -165,8 +164,13 @@ export type RegisterInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  chatCreated?: Maybe<Chat>;
+  messageCreated?: Maybe<Chat>;
   userSub?: Maybe<User>;
+};
+
+
+export type SubscriptionMessageCreatedArgs = {
+  chatId: Scalars['ID']['input'];
 };
 
 export type TokenMessage = {

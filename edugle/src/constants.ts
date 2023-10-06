@@ -6,4 +6,4 @@ export const WS_URI = IS_PROD
 export const HTTP_URI = IS_PROD
   ? "http://localhost:3000/graphql"
   : "http://localhost:3000/graphql";
-export const AUTH_TOKEN = "auth-token";
+export const AUTH_TOKEN = "token";
