@@ -1,4 +1,20 @@
 import React, { FormEvent, useState } from "react";
+import { gql } from "@apollo/client";
+import { useRouter } from "next/router";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { AccountCircle } from "@mui/icons-material";
+import { Button } from "@mui/material";
+//import { useNavigate } from "react-router-dom";
+
+export default function AuthForm({
+  title,
+  apiEndpoint,
+  toggle,
+  setIsAuthenticated,
+}: any) {
 
 export default function AuthForm({
   title,
@@ -19,10 +35,92 @@ export default function AuthForm({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  // const navigate = useNavigate();
+
+  const REGISTER_USER = gql(`mutation RegUser($user: RegisterInput!) {
+          registerUser(user: $user) {
+            user {
+            username
+            email
+            password
+          }
+        }
+      }`);
+
+  const LOGIN_USER = gql(`mutation LoginUser($credentials: LoginInput!) {
+        loginUser(credentials: $credentials) {
+        user {
+          username
+          email
+          password
+          id
+        }
+        token
+        message
+      }
+    }`);
+
+  const [registerUser, { error, data }] = useMutation(REGISTER_USER, {
+    variables: {
+      user: {
+        email: email,
+        username: username,
+        password: password,
+      },
+    },
+    onCompleted: ({ registerUser }) => {
+      localStorage.setItem("token", registerUser.token);
+      localStorage.setItem("username", registerUser.user.username);
+      console.log("registerUser", registerUser.token);
+    },
+  });
+
+  const [loginUser] = useMutation(LOGIN_USER, {
+    variables: {
+      credentials: {
+        email: email,
+        password: password,
+      },
+    },
+    onCompleted: ({ loginUser }) => {
+      localStorage.setItem("token", loginUser.token);
+      console.log("loginUser", loginUser.token);
+      setIsAuthenticated(loginUser);
+    },
+  });
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (title === "Sign Up") {
+      try {
+        registerUser();
+        console.log("registered Successfully");
+        toggle;
+      } catch (error: any) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      try {
+        const loggedUser = await loginUser();
+        console.log("logged in Successfully ", loggedUser);
+        toggle;
+        //window.location.replace("/chat");
+      } catch (error: any) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }
 
   return (
-    <div className="flex h-[400px] w-[325px] flex-col items-center justify-center rounded-lg bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+    <div className="flex h-[800px] w-[400px] flex-col items-center justify-center rounded-lg bg-gradient-to-b from-[#2e026d] to-[#15162c]">
       <button
         className="color-white absolute right-2 top-2 text-2xl"
         onClick={toggle}
@@ -30,33 +128,50 @@ export default function AuthForm({
       >
         &times;
       </button>
-      <div className="flex flex-col items-center justify-center bg-white/10">
+      <div className="flex flex-col items-center justify-center">
         <h1 className="mb-4 text-2xl font-semibold">{title}</h1>
         <form
-          onSubmit={onFormSubmit}
+          onSubmit={handleSubmit}
           className="bg-white/15 mb-4 rounded px-8 pb-8 pt-6"
         >
           <div className="mb-4">
             <label className="mb-2 block text-sm font-bold text-white">
               Username
             </label>
-            <input
-              className="w-full rounded border border-gray-500 px-3 py-2 text-black focus:border-blue-500 focus:outline-none focus:ring"
-              type="username"
-              name="username"
+            <TextField
+              error={!checkUserName}
               autoComplete="username"
-              onChange={(e) => setUsername(e.target.value)}
+              variant="outlined"
+              focused
+              required
+              placeholder="Username"
+              sx={{ width: "100%", backgroundColor: "white", borderRadius: 2 }}
+              type="text"
+              margin="dense"
+              value={username}
+              onChange={({ target }) => setUsername(target.value)}
+              InputProps={{
+                sx: { color: "black" },
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountCircle />
+                  </InputAdornment>
+                ),
+              }}
             />
           </div>
           <div className="mb-4">
             <label className="mb-2 block text-sm font-bold text-white">
               Email
             </label>
-            <input
-              className="w-full rounded border border-gray-500 px-3 py-2 text-black focus:border-blue-500 focus:outline-none focus:ring"
-              type="email"
-              name="email"
-              autoComplete="email"
+            <TextField
+              error={!checkEmail}
+              required
+              sx={{ width: "100%", backgroundColor: "white", borderRadius: 2 }}
+              id="Email"
+              placeholder="Email"
+              label="Required"
+              variant="filled"
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
@@ -64,14 +179,49 @@ export default function AuthForm({
             <label className="mb-2 block text-sm font-bold text-white">
               Password
             </label>
-            <input
-              className="w-full rounded border border-gray-500 px-3 py-2 text-black focus:border-blue-500 focus:outline-none focus:ring"
-              type="password"
-              name="password"
-              autoComplete="current-password"
+            <TextField
+              error={!checkPassword}
+              required
+              sx={{ width: "100%", backgroundColor: "white", borderRadius: 2 }}
+              id="PassWord"
+              label="Required"
+              variant="filled"
+              autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
+              type={showPassword ? "text" : "password"}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment
+                    position="end"
+                    onClick={handleClickShowPassword}
+                    sx={{
+                      cursor: "pointer",
+                      position: "absolute",
+                      right: 20,
+                    }}
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </InputAdornment>
+                ),
+              }}
             />
           </div>
+          {title === "Sign Up" && ( // Conditional rendering for description field
+            <div className="mb-4">
+              <label className="mb-2 block text-sm font-bold text-white">
+                Description
+              </label>
+              <TextField
+                id="outlined-multiline-static"
+                sx={{ width: "100%", backgroundColor: "white" }}
+                multiline
+                autoComplete="off"
+                rows={4}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Tell us about yourself"
+              />
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <button
               type="submit"
@@ -85,13 +235,15 @@ export default function AuthForm({
         <div className="mb-2 h-5">
           {error ? (
             <div className="mb-2 block text-sm font-bold text-red-700">
-              {error.message}
+              {" "}
+              {error.message}{" "}
             </div>
-          ) : null}
+          )}
 
           {successMessage ? (
             <div className="text-green mb-2 block text-sm font-bold">
-              {successMessage}
+              {" "}
+              "Succesful"{" "}
             </div>
           ) : null}
         </div>

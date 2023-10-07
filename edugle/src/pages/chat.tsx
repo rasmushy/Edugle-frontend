@@ -143,8 +143,7 @@ const ChatApp = () => {
   const [user2, setUser2] = useState<IUser | null>(null);
   const [chat, setChat] = useState<Chat | null>(null);
 
-
-/*   const chatByUser = useQuery(CHAT_BY_USER, {
+  /*   const chatByUser = useQuery(CHAT_BY_USER, {
     variables: {
       token: localStorage.getItem("token"),
     },
@@ -262,10 +261,10 @@ const ChatApp = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="flex-row pl-4 pr-4">
+        <div className="h-screen flex-row pl-4 pr-4">
           <div className="flex-col">
             {/* Chat messages */}
-            {chat != null && (<ChatMessages chat={chat as unknown as Chat} />)}
+            {chat != null && <ChatMessages chat={chat as unknown as Chat} />}
 
             {/* Chat box */}
             <ChatBox

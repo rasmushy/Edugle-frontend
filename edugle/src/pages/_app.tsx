@@ -12,6 +12,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <style>
+        {`
+          body {
+            background: #15162c;
+          }
+        `}
+      </style>
       <ApolloProviderWrapper>
         <Header />
         <Component {...pageProps} />

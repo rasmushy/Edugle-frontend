@@ -23,6 +23,7 @@ export default function Home() {
 
   return (
     <>
+    
       <Head>
         <title>Edugle</title>
         <meta name="description" content="Random chatting" />
