@@ -31,18 +31,21 @@ export function useRegister(email: string, username: string, password: string) {
 }
 
 export default function SignUp(props: any) {
-  console.log("props SignUp=", props);
-  const [registerUser, { error, data }] = useRegister(props.onFormSubmit.email, props.onFormSubmit.username, props.onFormSubmit.password);
+  const [registerUser, { error, data }] = useRegister("", "", ""); // Initialize with empty strings.
 
-  const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSignUp = async (e: FormEvent<HTMLFormElement>, formData: { email: string, username: string, password: string }) => {
     e.preventDefault();
-      try {
-        registerUser();
-        console.log("registered Successfully");
-        props.toggle;
-      } catch (error: any) {
-        console.error(error);
-      }   };
+    const { email, username, password } = formData;
+    const [registerUser, { error, data }] = useRegister(email, username, password); // Update the useRegister call here.
+
+    try {
+      await registerUser();
+      console.log("registered Successfully=", data);
+      if (props.toggle) props.toggle(); // Ensure you call toggle if it's a function.
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
 
   return (
     <AuthForm

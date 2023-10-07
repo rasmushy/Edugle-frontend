@@ -32,19 +32,20 @@ export function useLogin(email: string, password: string) {
 }
 
 export default function Login(props: any) {
+  const [loginUser, { error, data }] = useLogin("", ""); // initialize with empty strings
 
-  console.log("props Login=", props);
-  const [loginUser, { error, data }] = useLogin(props.onFormSubmit.email, props.onFormSubmit.password);
-
-  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>, formData: {email: string, password: string}) => {
     e.preventDefault();
-      try {
-        const loggedUser = await loginUser();
-        console.log("logged in Successfully ", data);
-        props.toggle;
-      } catch (error: any) {
-        console.error(error);
-      } 
+    const { email, password } = formData;
+    const [loginUser, { error, data }] = useLogin(email, password); // update the useLogin call here
+
+    try {
+      await loginUser();
+      console.log("logged in Successfully ", data);
+      if (props.toggle) props.toggle(); 
+    } catch (error: any) {
+      console.error(error);
+    } 
   };
 
   return (
