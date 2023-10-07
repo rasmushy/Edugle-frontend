@@ -23,13 +23,12 @@ export default function Home() {
 
   return (
     <>
-    
       <Head>
         <title>Edugle</title>
         <meta name="description" content="Random chatting" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#E3E3E3] to-[#E3E3E3]">
         {activePopup ? (
           <div className="backdrop" onClick={() => togglePopup(null)}></div>
         ) : null}
