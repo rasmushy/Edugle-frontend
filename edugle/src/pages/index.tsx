@@ -1,27 +1,24 @@
 import Head from "next/head";
-import Link from "next/link";
 import Login from "../components/Login";
 import SignUp from "../components/SignUp";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Main } from "next/document";
 import MainPageBtn from "~/components/MainPageBtn";
 
 export default function Home() {
-  const { status: session } = useSession();
+  const { data: session, status } = useSession();
   const [activePopup, setActivePopup] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));
   }
 
   function handleGoChat(): void {
-    console.log(isAuthenticated, " isAuthhthth");
   }
 
   useEffect(() => {
-    console.log(session, " isAuth");
+    console.log(session, " session isAuth");
+    console.log(status, " status");
   }, [session]);
 
   return (
@@ -39,7 +36,6 @@ export default function Home() {
         {activePopup === "Login" ? (
           <div className="modal">
             <Login
-              setIsAuthenticated={setIsAuthenticated}
               toggle={() => togglePopup("Login")}
             />
           </div>

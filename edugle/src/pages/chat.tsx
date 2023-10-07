@@ -292,41 +292,4 @@ const ChatApp = () => {
     </>
   );
 };
-export default withAuth(ChatApp);
-
-/*   const user1ID = "651fd7a3668c9c643c724841";
-
-  const getUser = useQuery(GET_USER_BY_ID, {
-    variables: {
-      getUserByIdId: user1ID,
-    },
-  });
-
-  const user1: User = {
-    id: getUser?.data?.getUserById?.id,
-    username: getUser?.data?.getUserById?.username,
-    email: getUser?.data?.getUserById?.email,
-    password: getUser?.data?.getUserById?.password,
-    description: getUser?.data?.getUserById?.description,
-    avatar: getUser?.data?.getUserById?.avatar,
-    lastLogin: getUser?.data?.getUserById?.lastLogin,
-    role: getUser?.data?.getUserById?.role,
-  };
-
-  const user2ID = "651eaf720a898e92d1c963ca";
-
-  const getUser2 = useQuery(GET_USER_BY_ID, {
-    variables: {
-      getUserByIdId: user2ID,
-    },
-  });
-  const user2: User = {
-    id: getUser2.data?.getUserById?.id,
-    username: getUser2.data?.getUserById?.username,
-    email: getUser2.data?.getUserById?.email,
-    password: getUser2.data?.getUserById?.password,
-    description: getUser2.data?.getUserById?.description,
-    avatar: getUser2.data?.getUserById?.avatar,
-    lastLogin: getUser2.data?.getUserById?.lastLogin,
-    role: getUser2.data?.getUserById?.role,
-  }; */
+export default ChatApp;

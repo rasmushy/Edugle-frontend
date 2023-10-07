@@ -4,7 +4,8 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-// import { CredentialsProvider } from "next-auth/providers";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { verifyUserCredentials } from "~/pages/api/auth/verifyUserCredentials";
 
 import { env } from "~/env.mjs";
 
@@ -18,15 +19,9 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
-      // ...other properties
       role: string;
     };
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
 /**
@@ -35,65 +30,46 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  callbacks: {
-    session: ({ session, token }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: token.sub,
+  providers: [
+    CredentialsProvider({
+      id: "credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      authorize: async (credentials) => {
+        if (!credentials) {
+          return null;
+        }
+        const user: any = await verifyUserCredentials(
+          credentials.email as string,
+          credentials.password as string,
+        );
+        if (user) {
+          // If user credentials are valid, return the user object
+          return user;
+        } else {
+          // Else return null, which will throw an error and redirect to the error page (change behavior as needed)
+          return null;
+        }
       },
     }),
-  },
-  providers: [
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-/* CredentialsProvider({
-    // The name to display on the sign in form (e.g. 'Sign in with...')
-    name: 'Credentials',
-    // The credentials is used to generate a suitable form on the sign in page.
-    // You can specify whatever fields you are expecting to be submitted.
-    // e.g. domain, username, password, 2FA token, etc.
-    // You can pass any HTML attribute to the <input> tag through the object.
-    credentials: {
-      username: { label: "Username", type: "text", placeholder: "jsmith" },
-      password: { label: "Password", type: "password" }
-    },
-    async authorize(credentials, req) {
-      // You need to provide your own logic here that takes the credentials
-      // submitted and returns either a object representing a user or value
-      // that is false/null if the credentials are invalid.
-      // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-      // You can also use the `req` object to obtain additional parameters
-      // (i.e., the request IP address)
-      const res = await fetch(env.NEXTAUTH_URL, {
-        method: 'POST',
-        body: JSON.stringify(credentials),
-        headers: { "Content-Type": "application/json" }
-      })
-      const user = await res.json()
-
-      // If no error and we have user data, return it
-      if (res.ok && user) {
-        return user
-      }
-      // Return null if user data could not be retrieved
-      return null
-    }
-  }) */
   ],
-  pages: {
-    /*   signIn: '/auth/signin',
-  signOut: '/auth/signout',
-  error: '/auth/error', // Error code passed in query string as ?error=
-  verifyRequest: '/auth/verify-request', // (used for check email message)
-  newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest) */
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      user && (token.user = user);
+      return token;
+    },
+    session: async ({ session, token }) => {
+      session.user = token.user as DefaultSession["user"] & {
+        id: string;
+        role: string;
+      };
+      return session;
+    },
   },
 };
 
