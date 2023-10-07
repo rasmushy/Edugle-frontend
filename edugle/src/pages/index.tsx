@@ -31,7 +31,7 @@ export default function Home() {
         <meta name="description" content="Random chatting" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#E3E3E3] to-[#E3E3E3]">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2C7DA0] to-[#2C7DA0]">
         {activePopup ? (
           <div className="backdrop" onClick={() => togglePopup(null)}></div>
         ) : null}
