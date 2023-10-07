@@ -32,7 +32,7 @@ export function useRegister(email: string, username: string, password: string) {
 
 export default function SignUp(props: any) {
   console.log("props SignUp=", props);
-  const [registerUser, { error, data }] = useRegister(props.email, props.username, props.password);
+  const [registerUser, { error, data }] = useRegister(props.onFormSubmit.email, props.onFormSubmit.username, props.onFormSubmit.password);
 
   const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,9 +50,6 @@ export default function SignUp(props: any) {
       onFormSubmit={handleSignUp}
       toggle={props.toggle}
       error={error}
-      email={props.email}
-      password={props.password}
-      username={props.username}
       successMessage={data?.registerUser && "Successful"}
     />
   );

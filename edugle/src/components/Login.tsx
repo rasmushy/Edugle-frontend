@@ -34,13 +34,13 @@ export function useLogin(email: string, password: string) {
 export default function Login(props: any) {
 
   console.log("props Login=", props);
-  const [loginUser, { error, data }] = useLogin(props.email, props.password);
+  const [loginUser, { error, data }] = useLogin(props.onFormSubmit.email, props.onFormSubmit.password);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
       try {
         const loggedUser = await loginUser();
-        console.log("logged in Successfully ", loggedUser);
+        console.log("logged in Successfully ", data);
         props.toggle;
       } catch (error: any) {
         console.error(error);
@@ -52,11 +52,8 @@ export default function Login(props: any) {
       title="Login"
       onFormSubmit={handleLogin}
       toggle={props.toggle}
-      email={props.email}
-      password={props.password}
-      username={props.username}
       error={error}
-      successMessage={data?.loginUser && "Logged in Successfully"}
+      successMessage="Logged in successfully"
     />
   );
 }

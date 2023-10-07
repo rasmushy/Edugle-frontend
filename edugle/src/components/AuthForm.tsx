@@ -24,6 +24,43 @@ export default function AuthForm({
   const [email, setEmail] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [checkEmail, setCheckEmail] = useState(true);
+  const [checkUserName, setCheckUserName] = useState(true);
+  const [checkPassword, setCheckPassword] = useState(true);
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const validateInput = (e: FormEvent<HTMLFormElement>) => {
+    if (title === "Sign Up") {
+      const re = /\S+@\S+\.\S+/;
+      const valid = re.test(email);
+
+      const newCheckEmail =
+        email.includes("@") && valid && !email.includes(" ");
+      setCheckEmail(newCheckEmail);
+
+      const newCheckUserName = username !== "";
+      setCheckUserName(newCheckUserName);
+
+      const newCheckPassword =
+        password !== "" && password.length >= 2 && !password.includes(" ");
+      setCheckPassword(newCheckPassword);
+
+      if (newCheckUserName && newCheckEmail && newCheckPassword) {
+        e.preventDefault();
+        handleSubmit(e);
+      } else {
+        setErrorMessage(
+          "Email or Password is incorrect! Password must be at least 10 characters long and not contain spaces.",
+        );
+        e.preventDefault();
+      }
+    } else {
+      handleSubmit(e);
+    }
+  };
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

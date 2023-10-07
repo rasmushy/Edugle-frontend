@@ -1,25 +1,21 @@
 import Head from "next/head";
+import Link from "next/link";
+import {ApolloClient, InMemoryCache, gql, ApolloProvider} from "@apollo/client";
 import Login from "../components/Login";
 import SignUp from "../components/SignUp";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import MainPageBtn from "~/components/MainPageBtn";
+import { useState } from "react";
 
 export default function Home() {
-  const { data: session, status } = useSession();
   const [activePopup, setActivePopup] = useState(null);
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));
   }
 
-  function handleGoChat(): void {
-  }
-
-  useEffect(() => {
-    console.log(session, " session isAuth");
-    console.log(status, " status");
-  }, [session]);
+const client = new ApolloClient({
+  uri: 'http://localhost:3000/api/graphql',
+  cache: new InMemoryCache()
+});
 
   return (
     <>
@@ -28,16 +24,14 @@ export default function Home() {
         <meta name="description" content="Random chatting" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#E3E3E3] to-[#E3E3E3]">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {activePopup ? (
           <div className="backdrop" onClick={() => togglePopup(null)}></div>
         ) : null}
 
         {activePopup === "Login" ? (
           <div className="modal">
-            <Login
-              toggle={() => togglePopup("Login")}
-            />
+            <Login toggle={() => togglePopup("Login")} />
           </div>
         ) : null}
 
@@ -47,7 +41,34 @@ export default function Home() {
           </div>
         ) : null}
 
-        <MainPageBtn handleGoChat={handleGoChat} togglePopup={togglePopup} />
+        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+          <Link href="/chat">
+            <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+              Edu<span className="text-[hsl(280,100%,70%)]">gle</span>
+            </h1>
+          </Link>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+            <button
+              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+              onClick={() => togglePopup("Login")}
+            >
+              <h3 className="text-2xl font-bold">Be ready to chat→</h3>
+              <div className="text-lg">
+                With Edugle, you can chat with random people from university.
+              </div>
+            </button>
+            <button
+              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+              onClick={() => togglePopup("SignUp")}
+            >
+              <h3 className="text-2xl font-bold">Sign up→</h3>
+              <div className="text-lg">
+                Sign up now for absolutely free and start chatting with random
+                people from university.
+              </div>
+            </button>
+          </div>
+        </div>
       </main>
       <style jsx>{`
         .modal {
