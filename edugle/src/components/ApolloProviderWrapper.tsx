@@ -22,9 +22,9 @@ const httpLink = new HttpLink({
 const wsLink = new GraphQLWsLink(
   createClient({
     url: WS_URI,
-/*     connectionParams: {
+    connectionParams: {
       authToken: AUTH_TOKEN,
-    }, */
+    }, 
   }),
 );
 
@@ -57,7 +57,6 @@ export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
     });
 
     return new ApolloClient({
-      uri: "http://localhost:3000/graphql",
       link: from([authMiddleware, link]),
       credentials: "same-origin",
       cache: new InMemoryCache(),

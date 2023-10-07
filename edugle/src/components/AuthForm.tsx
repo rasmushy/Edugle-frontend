@@ -43,6 +43,7 @@ export default function AuthForm({ title, apiEndpoint, toggle }: any) {
     },
     onCompleted: ({ registerUser }) => {
       localStorage.setItem("token", registerUser.token);
+      localStorage.setItem("username", registerUser.user.username);
       console.log("registerUser", registerUser.token);
     },
   });

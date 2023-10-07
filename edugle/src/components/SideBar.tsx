@@ -1,17 +1,28 @@
 import React from "react";
-import { User } from "../__generated__/graphql";
+import { IUser } from "../lib/types";
 
 type SidebarProps = {
-  users: User[];
+  users: IUser[] | null;
   handleNextUser: () => void;
   handleLikeUser: () => void;
 };
 
 const Sidebar: React.FC<SidebarProps> = ({
-  users,
+  users = [],
   handleNextUser,
   handleLikeUser,
 }) => {
+
+if(!users) {
+  return null;
+}
+
+if(users[0] === null) {
+  return null;
+}
+
+// console.log('users=', users);
+
   return (
       <div className="relative">
     <div className="flex flex-row bg-white/10 pl-4 pr-4 pb-4">

@@ -5,8 +5,7 @@ type ChatBoxProps = {
   setMessage: (message: string) => void;
   handleSendMessage: () => void;
   handleKeyPress: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-  handleUploadImage: () => void;
-  handleInsertEmoji: () => void;
+  handleJoinChat: () => void;
 };
 
 const ChatBox: React.FC<ChatBoxProps> = ({
@@ -14,8 +13,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
   setMessage,
   handleSendMessage,
   handleKeyPress,
-  handleUploadImage,
-  handleInsertEmoji,
+  handleJoinChat: handleJoinChat,
 }) => {
   return (
       <div className="min-w-fit max-w-screen">
@@ -30,13 +28,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         />
         <div className="absolute bottom-0 right-0 flex h-full items-center pr-2">
           <button
-            onClick={handleUploadImage}
-            className="mx-1 rounded bg-[hsl(280,100%,70%)] p-2 text-white"
-          >
-            📷
-          </button>
-          <button
-            onClick={handleInsertEmoji}
+            onClick={handleJoinChat}
             className="mx-1 rounded bg-[hsl(280,100%,70%)] p-2 text-white"
           >
             😃
