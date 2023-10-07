@@ -19,26 +19,32 @@ const httpLink = new HttpLink({
   credentials: "same-origin",
 });
 
-const wsLink = new GraphQLWsLink(
-  createClient({
-    url: WS_URI,
-    connectionParams: {
-      authToken: AUTH_TOKEN,
-    }, 
-  }),
-);
+const wsLink =
+  typeof window !== "undefined"
+    ? new GraphQLWsLink(
+        createClient({
+          url: WS_URI,
+          connectionParams: {
+            authToken: AUTH_TOKEN,
+          },
+        }),
+      )
+    : null;
 
-const link = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return (
-      definition.kind === "OperationDefinition" &&
-      definition.operation === "subscription"
-    );
-  },
-  wsLink,
-  httpLink,
-);
+const link =
+  typeof window !== "undefined" && wsLink != null
+    ? split(
+        ({ query }) => {
+          const definition = getMainDefinition(query);
+          return (
+            definition.kind === "OperationDefinition" &&
+            definition.operation === "subscription"
+          );
+        },
+        wsLink,
+        httpLink,
+      )
+    : httpLink;
 
 export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
   const client = useMemo(() => {
@@ -51,7 +57,7 @@ export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
       return {
         headers: {
           ...headers,
-          authorization: token ? `Bearer ${token}`: "",
+          authorization: token ? `Bearer ${token}` : "",
         },
       };
     });

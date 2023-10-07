@@ -4,7 +4,7 @@ mutation CreateMessage($chat: ID!, $message: MessageInput!) {
     date
     id
     sender {
-      id
+      email
       username
     }
   }

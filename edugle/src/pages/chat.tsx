@@ -16,7 +16,7 @@ mutation CreateMessage($chat: ID!, $message: MessageInput!) {
     date
     id
     sender {
-      id
+      email
       username
     }
   }
@@ -182,7 +182,7 @@ const ChatApp = () => {
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
     variables: {
-      chat: localStorage.getItem("chatID"),
+      chat: chatID,
       message: {
         content: message,
         senderToken: localStorage.getItem("token"),

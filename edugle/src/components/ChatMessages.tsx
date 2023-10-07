@@ -63,8 +63,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chat }) => {
     }
   });
 
-  console.log("messageCreated=", messageCreated);
-
   if (!chat.messages) {
     console.log("chat.messages=", chat.messages);
     return;
@@ -72,7 +70,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chat }) => {
 
   return (
     <div className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch max-h-[390px] min-h-[390px] space-y-4  space-y-4 overflow-x-hidden overflow-y-scroll bg-white/10 p-3 p-3">
-      {chat.messages.map((message) => {
+      {messageCreated.data?.messageCreated.messages.map((message: Message) => {
         if (!message) {
           return null;
         }
