@@ -7,6 +7,7 @@ export default function Login(props: any) {
       title="Login"
       apiEndpoint="/api/login"
       toggle={props.toggle}
+      setIsAuthenticated={props.setIsAuthenticated}
     />
   );
 }

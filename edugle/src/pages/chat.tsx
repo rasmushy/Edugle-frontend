@@ -8,6 +8,7 @@ import { IUser, IMessage } from "../lib/types";
 import SideBar from "../components/SideBar";
 import { any, set } from "zod";
 import { join } from "path";
+import withAuth from "./api/auth/withAuth";
 
 const CREATE_MESSAGE = gql(`
 mutation CreateMessage($chat: ID!, $message: MessageInput!) {
@@ -264,7 +265,8 @@ const ChatApp = () => {
         <div className="flex-row pl-4 pr-4">
           <div className="flex-col">
             {/* Chat messages */}
-            <ChatMessages chat={chat as Chat} />
+            {chat != null && (<ChatMessages chat={chat as unknown as Chat} />)}
+
             {/* Chat box */}
             <ChatBox
               message={message}
@@ -290,7 +292,7 @@ const ChatApp = () => {
     </>
   );
 };
-export default ChatApp;
+export default withAuth(ChatApp);
 
 /*   const user1ID = "651fd7a3668c9c643c724841";
 

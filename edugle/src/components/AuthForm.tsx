@@ -1,9 +1,10 @@
 import { useMutation } from "@apollo/client";
 import React, { FormEvent, useState } from "react";
 import { gql } from "@apollo/client";
+import { useRouter } from "next/router";
 //import { useNavigate } from "react-router-dom";
 
-export default function AuthForm({ title, apiEndpoint, toggle }: any) {
+export default function AuthForm({ title, apiEndpoint, toggle, setIsAuthenticated }: any) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -58,6 +59,7 @@ export default function AuthForm({ title, apiEndpoint, toggle }: any) {
     onCompleted: ({ loginUser }) => {
       localStorage.setItem("token", loginUser.token);
       console.log("loginUser", loginUser.token);
+      setIsAuthenticated(loginUser);
     },
   });
 
@@ -77,9 +79,10 @@ export default function AuthForm({ title, apiEndpoint, toggle }: any) {
       }
     } else {
       try {
-        loginUser();
-        console.log("logged in Successfully");
+        const loggedUser = await loginUser();
+        console.log("logged in Successfully ", loggedUser);
         toggle;
+        //window.location.replace("/chat");
       } catch (error: any) {
         console.error(error);
       } finally {

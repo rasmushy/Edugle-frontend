@@ -50,10 +50,7 @@ const MESSAGE_CREATED = gql(`subscription Subscription($chatId: ID!) {
 }`);
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ chat }) => {
-  if (!chat) {
-  console.log("chat=", chat);
-    return null;
-  }
+
   const messageCreated = useSubscription(MESSAGE_CREATED, {
     variables: { chatId: chat.id },
     onSubscriptionData: ({ client, subscriptionData }) => {
