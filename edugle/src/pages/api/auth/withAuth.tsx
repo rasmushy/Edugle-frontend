@@ -19,6 +19,7 @@ const withAuth = (WrappedComponent: any) => {
       },
       onCompleted: ({ checkToken }) => {
         setAuth(checkToken);
+        console.log("TOKEN ", checkToken);
       },
     });
 
