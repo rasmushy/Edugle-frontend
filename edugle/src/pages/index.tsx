@@ -2,15 +2,18 @@ import Head from "next/head";
 import Link from "next/link";
 import Login from "../components/Login";
 import SignUp from "../components/SignUp";
-import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Main } from "next/document";
 import MainPageBtn from "~/components/MainPageBtn";
+import styles from "../styles/styles.module.css";
+import { useEffect, useState, useRef, MutableRefObject } from "react";
+import { relative } from "path";
 
 export default function Home() {
   const { status: session } = useSession();
   const [activePopup, setActivePopup] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));
@@ -19,6 +22,35 @@ export default function Home() {
   function handleGoChat(): void {
     console.log(isAuthenticated, " isAuthhthth");
   }
+
+  function createBubbles() {
+    const bubbles = bubblesContainerRef.current;
+    if (bubbles) {
+      const bottom = window.innerHeight;
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          const bubble = document.createElement("div");
+          const delay = Math.random() * -100;
+          const duration = Math.random() * 10 + 3;
+          const posX = Math.random() * bubbles.clientWidth;
+          const posY = bottom;
+
+          bubble.style.left = `${posX}px`;
+          bubble.style.bottom = `-${posY}px`; // Negative value to start from the bottom
+
+          bubble.className = `${styles.bubble}`;
+          bubble.style.animationDelay = `${delay}s`;
+          bubble.style.animationDuration = `${duration}s`;
+
+          bubbles.appendChild(bubble);
+        }, i * 1000);
+      }
+    }
+  }
+
+  useEffect(() => {
+    createBubbles();
+  }, []);
 
   useEffect(() => {
     console.log(session, " isAuth");
@@ -31,7 +63,13 @@ export default function Home() {
         <meta name="description" content="Random chatting" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2C7DA0] to-[#2C7DA0]">
+      <main
+        style={{ position: "relative", overflowX: "hidden" }}
+        className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2C7DA0] to-[#2C7DA0]"
+      >
+        <div style={{position: "absolute", overflow: "hidden", width: "100%", height: "100%", pointerEvents: "none"}}>
+          <div ref={bubblesContainerRef}></div>
+        </div>
         {activePopup ? (
           <div className="backdrop" onClick={() => togglePopup(null)}></div>
         ) : null}
@@ -44,7 +82,6 @@ export default function Home() {
             />
           </div>
         ) : null}
-
         {activePopup === "SignUp" ? (
           <div className="modal">
             <SignUp toggle={() => togglePopup("SignUp")} />
