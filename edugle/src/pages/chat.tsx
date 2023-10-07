@@ -9,6 +9,7 @@ import SideBar from "../components/SideBar";
 import { any, set } from "zod";
 import { join } from "path";
 import withAuth from "./api/auth/withAuth";
+import LikeUser from "~/components/LikeUser";
 
 const CREATE_MESSAGE = gql(`
 mutation CreateMessage($chat: ID!, $message: MessageInput!) {
@@ -142,6 +143,7 @@ const ChatApp = () => {
   const [user1, setUser1] = useState<IUser | null>(null);
   const [user2, setUser2] = useState<IUser | null>(null);
   const [chat, setChat] = useState<Chat | null>(null);
+  const [isLikeUser, setIsLikeUser] = useState<Boolean>(false);
 
   /*   const chatByUser = useQuery(CHAT_BY_USER, {
     variables: {
@@ -209,7 +211,7 @@ const ChatApp = () => {
     "__typename": "Chat"
 } */
   const handleLikeUser = () => {
-    console.log("Liked user");
+    setIsLikeUser(true);
   };
 
   const handleJoinChat = () => {
@@ -274,6 +276,10 @@ const ChatApp = () => {
               handleKeyPress={handleKeyPress}
               handleJoinChat={handleJoinChat}
             />
+
+            {isLikeUser && (
+              <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />
+            )}
             <div
               className={`transition-all duration-500  ${
                 isSidebarVisible ? "h-full" : "h-0"
