@@ -22,7 +22,7 @@ function addBreaks(str: string) {
       }
       newStr += line[i];
     }
-    return newStr;
+    return newStr; 
   });
   return processedLines;
 }
