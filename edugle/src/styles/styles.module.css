@@ -1,0 +1,37 @@
+.bubble {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50% 50% 50% 5%;
+  box-shadow: 0 0 10px white;
+  transform: translateY(0);
+  /* Start from the bottom */
+  animation-name: getUp;
+  /* Change animation name */
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes getUp {
+  0% {
+    transform: translateY(0);
+    /* Start from the bottom */
+  }
+
+  100% {
+    transform: translateY(-1400%);
+    /* End at the top */
+  }
+}
+
+.userContent {
+  background-color: white;
+  width: 60%;
+  margin: 40px auto;
+  /* Center horizontally and add top margin */
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Ensure the element takes up the full viewport height */
+}

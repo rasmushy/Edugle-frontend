@@ -1,72 +1,89 @@
 import Head from "next/head";
-import Link from "next/link";
 import Login from "../components/Login";
 import SignUp from "../components/SignUp";
-import { useState } from "react";
 import { useSession } from "next-auth/react";
+import MainPageBtn from "~/components/MainPageBtn";
+import styles from "../styles/styles.module.css";
+import { useEffect, useState, useRef, MutableRefObject } from "react";
 
-export default function Home() {
-  const {data: session} = useSession();
+export default function Home({session: initialSession}: {session: any}) {
+const { data: session = initialSession, status } = useSession();
   const [activePopup, setActivePopup] = useState(null);
+  const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
+
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));
   }
 
+  function createBubbles() {
+    const bubbles = bubblesContainerRef.current;
+    if (bubbles) {
+      const bottom = window.innerHeight;
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          const bubble = document.createElement("div");
+          const delay = Math.random() * -100;
+          const duration = Math.random() * 10 + 3;
+          const posX = Math.random() * bubbles.clientWidth;
+          const posY = bottom;
+
+          bubble.style.left = `${posX}px`;
+          bubble.style.bottom = `-${posY}px`; // Negative value to start from the bottom
+
+          bubble.className = `${styles.bubble}`;
+          bubble.style.animationDelay = `${delay}s`;
+          bubble.style.animationDuration = `${duration}s`;
+
+          bubbles.appendChild(bubble);
+        }, i * 1000);
+      }
+    }
+  }
+
+  useEffect(() => {
+    createBubbles();
+  }, []);
+
+  useEffect(() => {
+    console.log(status, " isAuth");
+  }, [status]);
+
   return (
     <>
+
       <Head>
         <title>Edugle</title>
         <meta name="description" content="Random chatting" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main
+        style={{ position: "relative", overflowX: "hidden" }}
+        className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2C7DA0] to-[#2C7DA0]"
+      >
+        <div style={{position: "absolute", overflow: "hidden", width: "100%", height: "100%", pointerEvents: "none"}}>
+          <div ref={bubblesContainerRef}></div>
+        </div>
         {activePopup ? (
           <div className="backdrop" onClick={() => togglePopup(null)}></div>
         ) : null}
 
         {activePopup === "Login" ? (
           <div className="modal">
-            <Login toggle={() => togglePopup("Login")} />
+            <Login
+              toggle={() => togglePopup("Login")}
+            />
           </div>
         ) : null}
-
         {activePopup === "SignUp" ? (
           <div className="modal">
             <SignUp toggle={() => togglePopup("SignUp")} />
           </div>
         ) : null}
 
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <Link href="/chat">
-            <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-              Edu<span className="text-[hsl(280,100%,70%)]">gle</span>
-            </h1>
-          </Link>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <button
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              onClick={() => togglePopup("Login")}
-            >
-              <h3 className="text-2xl font-bold">Be ready to chat→</h3>
-              <div className="text-lg">
-                With Edugle, you can chat with random people from university.
-              </div>
-            </button>
-            <button
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              onClick={() => togglePopup("SignUp")}
-            >
-              <h3 className="text-2xl font-bold">Sign up→</h3>
-              <div className="text-lg">
-                Sign up now for absolutely free and start chatting with random
-                people from university.
-              </div>
-            </button>
-          </div>
-        </div>
+        <MainPageBtn togglePopup={togglePopup} />
       </main>
-      <style jsx>{`
+      <style>{`
         .modal {
           position: fixed;
           top: 50%;

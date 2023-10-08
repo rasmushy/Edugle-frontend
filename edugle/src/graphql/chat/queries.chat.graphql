@@ -1,0 +1,42 @@
+query ChatByUser($token: String!) {
+  chatByUser(token: $token) {
+    created_date
+    id
+    messages {
+      date
+      content
+      id
+      sender {
+        description
+        avatar
+        email
+        id
+        lastLogin
+        password
+        role
+        username
+      }
+    }
+  }
+
+query ChatById($chatByIdId: ID!) {
+  chatById(id: $chatByIdId) {
+    created_date
+    id
+    messages {
+      content
+      date
+      id
+      sender {
+        avatar
+        description
+        email
+        id
+        lastLogin
+        password
+        role
+        username
+      }
+    }
+  }
+}

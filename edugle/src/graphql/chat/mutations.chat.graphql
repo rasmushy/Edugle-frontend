@@ -1,0 +1,49 @@
+mutation JoinChat($chatId: ID!, $token: String!) {
+  joinChat(chatId: $chatId, token: $token) {
+    messages {
+      content
+      date
+      id
+      sender {
+        avatar
+        description
+        email
+        id
+        lastLogin
+        password
+        role
+        username
+      }
+    }
+    created_date
+    id
+    users {
+      avatar
+      description
+      email
+      lastLogin
+      id
+      username
+    }
+  }
+}
+
+mutation CreateChat($chat: CreateChatInput) {
+  createChat(chat: $chat) {
+    created_date
+    id
+    messages {
+      content
+      date
+      id
+      sender {
+        username
+        id
+      }
+    }
+    users {
+      username
+      lastLogin
+    }
+  }
+}

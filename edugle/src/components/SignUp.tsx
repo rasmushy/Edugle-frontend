@@ -1,12 +1,68 @@
 import AuthForm from "./AuthForm";
+import { FormEvent, useState } from "react";
+import { useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { signIn } from "next-auth/react";
+
+const REGISTER_USER = gql`mutation RegisterUser($user: RegisterInput!) {
+  registerUser(user: $user) {
+    message
+    token
+    user {
+      email
+      id
+      username
+    }
+  }
+}`;
 
 export default function SignUp(props: any) {
+  const [registerUser, { error, data }] = useMutation(REGISTER_USER, {
+    onCompleted: ({ registerUser }) => {
+      console.log("registered Successfully");
+      // Once registration is successful, sign in the user
+      //TODO: Add error handling
+      signIn("credentials", {
+        email: registerUser.user.email,
+        password: registerUser.user.password,
+        redirect: false,
+      });
+    },
+    onError: (error) => {
+      console.log("error", error);
+      console.log('registerUser=', error.graphQLErrors);
+    },
+  });
+
+  const handleSignUp = async (
+    e: FormEvent<HTMLFormElement>,
+    formData: { email: string; username: string; password: string },
+  ) => {
+    e.preventDefault();
+
+    try {
+      await registerUser({
+        variables: {
+          user: {
+            email: formData.email,
+            username: formData.username,
+            password: formData.password,
+          },
+        },
+      });
+      if (props.toggle) props.toggle();
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
+
   return (
     <AuthForm
-      action="Sign Up"
       title="Sign Up"
-      apiEndpoint="/api/signup"
+      onFormSubmit={handleSignUp}
       toggle={props.toggle}
+      error={error}
+      successMessage={data?.registerUser && "Registration Successful"}
     />
   );
 }

@@ -4,7 +4,9 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-// import { CredentialsProvider } from "next-auth/providers";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { gql } from "@apollo/client";
+import { print } from "graphql";
 
 import { env } from "~/env.mjs";
 
@@ -18,15 +20,14 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      role: string;
+      token: string;
     };
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface JWT {
+    token: string;
+  }
 }
 
 /**
@@ -35,65 +36,93 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  callbacks: {
-    session: ({ session, token }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: token.sub,
+  providers: [
+    CredentialsProvider({
+      id: "credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      authorize: async (credentials) => {
+        const CHECK_CREDENTIALS = gql`
+          mutation LoginUser($credentials: LoginInput!) {
+            loginUser(credentials: $credentials) {
+              message
+              token
+              user {
+                username
+                id
+                email
+              }
+            }
+          }
+        `;
+
+        console.log("Credentials: ", credentials);
+
+        //console.log("Credentials: ", credentials?.data);
+        const response = await fetch(`http://localhost:3000/graphql`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: print(CHECK_CREDENTIALS),
+            variables: {
+              credentials: {
+                email: credentials?.email,
+                password: credentials?.password,
+              },
+            },
+          }),
+        });
+
+        const data = await response.json();
+
+        console.log("Data: ", data);
+
+        // Now, check the response
+        if (data?.data?.loginUser?.token) {
+          // Return user details and token to next-auth to manage session
+          return {
+            role: data.data.loginUser.user.role,
+            id: data.data.loginUser.user.id,
+            token: data.data.loginUser.token,
+          };
+        }
+
+        // If something goes wrong
+        return null;
       },
     }),
-  },
-  providers: [
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-/* CredentialsProvider({
-    // The name to display on the sign in form (e.g. 'Sign in with...')
-    name: 'Credentials',
-    // The credentials is used to generate a suitable form on the sign in page.
-    // You can specify whatever fields you are expecting to be submitted.
-    // e.g. domain, username, password, 2FA token, etc.
-    // You can pass any HTML attribute to the <input> tag through the object.
-    credentials: {
-      username: { label: "Username", type: "text", placeholder: "jsmith" },
-      password: { label: "Password", type: "password" }
-    },
-    async authorize(credentials, req) {
-      // You need to provide your own logic here that takes the credentials
-      // submitted and returns either a object representing a user or value
-      // that is false/null if the credentials are invalid.
-      // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-      // You can also use the `req` object to obtain additional parameters
-      // (i.e., the request IP address)
-      const res = await fetch(env.NEXTAUTH_URL, {
-        method: 'POST',
-        body: JSON.stringify(credentials),
-        headers: { "Content-Type": "application/json" }
-      })
-      const user = await res.json()
-
-      // If no error and we have user data, return it
-      if (res.ok && user) {
-        return user
-      }
-      // Return null if user data could not be retrieved
-      return null
-    }
-  }) */
   ],
-  pages: {
-    /*   signIn: '/auth/signin',
-  signOut: '/auth/signout',
-  error: '/auth/error', // Error code passed in query string as ?error=
-  verifyRequest: '/auth/verify-request', // (used for check email message)
-  newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest) */
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      user && (token.user = user);
+      return token;
+    },
+    session: async ({ session, token }) => {
+      session.user = token.user as DefaultSession["user"] & {
+        id: string;
+        role: string;
+        token: string;
+      };
+      return session;
+    },
+  },
+  cookies: {
+    sessionToken: {
+      name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: env.NODE_ENV === "production",
+      },
+    },
   },
 };
 

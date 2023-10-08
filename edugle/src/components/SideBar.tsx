@@ -2,16 +2,27 @@ import React from "react";
 import { User } from "../__generated__/graphql";
 
 type SidebarProps = {
-  users: User[];
+  users: User[] | null;
   handleNextUser: () => void;
   handleLikeUser: () => void;
 };
 
 const Sidebar: React.FC<SidebarProps> = ({
-  users,
+  users = [],
   handleNextUser,
   handleLikeUser,
 }) => {
+
+if(!users) {
+  return null;
+}
+
+if(users[0] === null) {
+  return null;
+}
+
+// console.log('users=', users);
+
   return (
       <div className="relative">
     <div className="flex flex-row bg-white/10 pl-4 pr-4 pb-4">
@@ -20,11 +31,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             key={idx}
             className="space-evenly items-center mt-2 flex flex-row text-center text-white"
           >
-            <h3 className="w-full text-xl font-bold">{user.username}</h3>
-            <p className="w-full">{user.description}</p>
+            <h3 className="w-full text-xl font-bold">{user?.username}</h3>
+            <p className="w-full">{user?.description}</p>
             <img
-              alt={`${user.username}'s avatar`}
-              src={user.avatar || "/default-avatar.png"}
+              alt={`${user?.username}'s avatar`}
+              src={user?.avatar || "/default-avatar.png"}
               className="ml-8 h-16 w-16 rounded-full"
             />
           </div>

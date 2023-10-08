@@ -49,7 +49,7 @@ export type Message = {
 
 export type MessageInput = {
   content: Scalars['String']['input'];
-  sender: Scalars['ID']['input'];
+  senderToken: Scalars['String']['input'];
 };
 
 export type Mutation = {
@@ -61,6 +61,7 @@ export type Mutation = {
   deleteMessageAsAdmin?: Maybe<Message>;
   deleteUser?: Maybe<TokenMessage>;
   deleteUserAsAdmin?: Maybe<TokenMessage>;
+  joinChat?: Maybe<Chat>;
   loginUser?: Maybe<TokenMessage>;
   registerUser?: Maybe<TokenMessage>;
 };
@@ -74,7 +75,6 @@ export type MutationCreateChatArgs = {
 export type MutationCreateMessageArgs = {
   chat: Scalars['ID']['input'];
   message: MessageInput;
-  user: UserWithTokenInput;
 };
 
 
@@ -107,6 +107,12 @@ export type MutationDeleteUserAsAdminArgs = {
 };
 
 
+export type MutationJoinChatArgs = {
+  chatId: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
+};
+
+
 export type MutationLoginUserArgs = {
   credentials: LoginInput;
 };
@@ -118,6 +124,7 @@ export type MutationRegisterUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  chatById?: Maybe<Chat>;
   chatByUser?: Maybe<Chat>;
   chats?: Maybe<Array<Maybe<Chat>>>;
   getUserById?: Maybe<User>;
@@ -129,8 +136,13 @@ export type Query = {
 };
 
 
+export type QueryChatByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryChatByUserArgs = {
-  user_id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
 };
 
 
