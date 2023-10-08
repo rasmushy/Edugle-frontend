@@ -19,18 +19,12 @@ const REGISTER_USER = gql`mutation RegisterUser($user: RegisterInput!) {
 export default function SignUp(props: any) {
   const [registerUser, { error, data }] = useMutation(REGISTER_USER, {
     onCompleted: ({ registerUser }) => {
-      console.log("registered Successfully");
       // Once registration is successful, sign in the user
-      //TODO: Add error handling
-      signIn("credentials", {
-        email: registerUser.user.email,
-        password: registerUser.user.password,
-        redirect: false,
-      });
+      console.log("registered Successfully");
     },
     onError: (error) => {
       console.log("error", error);
-      console.log('registerUser=', error.graphQLErrors);
+      console.log('error registerUser=', error.graphQLErrors);
     },
   });
 
@@ -51,6 +45,11 @@ export default function SignUp(props: any) {
         },
       });
       if (props.toggle) props.toggle();
+      await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
     } catch (error: any) {
       console.error(error);
     }

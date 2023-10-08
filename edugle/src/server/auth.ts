@@ -50,9 +50,8 @@ export const authOptions: NextAuthOptions = {
               message
               token
               user {
-                username
                 id
-                email
+                role
               }
             }
           }
@@ -137,6 +136,11 @@ export const authOptions: NextAuthOptions = {
         secure: env.NODE_ENV === "production",
       },
     },
+  },
+  pages: {
+    signIn: "/auth/login",
+    signOut: "/",
+    error: "/",
   },
 };
 

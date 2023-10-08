@@ -13,7 +13,7 @@ import { getMainDefinition } from "@apollo/client/utilities";
 
 
 const httpLink = new HttpLink({
-  uri: `${process.env.NEXT_PUBLIC_API_URL}graphql`,
+  uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
   credentials: "same-origin",
 });
 

@@ -15,6 +15,7 @@ export default function Login(props: any) {
       // Pass in the credentials
       email: formData.email,
       password: formData.password,
+      redirect: false,
     });
 
     console.log(result, "result");
