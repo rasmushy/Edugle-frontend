@@ -11,4 +11,4 @@ const NabarBtn = () => {
   );
 };
 
-export default withAdmin(NabarBtn);
+export default NabarBtn;

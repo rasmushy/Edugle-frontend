@@ -13,7 +13,6 @@ const NavBarBtn = () => {
 
   return (
     <>
-      {session.data?.user.role === "admin" && <AdminNavBarBtn />}
       <Link href="/profile">
         <button
           onClick={() => {}}
@@ -30,6 +29,9 @@ const NavBarBtn = () => {
           Settings
         </button>
       </Link>
+      {session.data?.user.role.toLocaleLowerCase() === "admin" ? (
+        <AdminNavBarBtn />
+      ) : null}
       <Link href="/">
         <button
           className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"

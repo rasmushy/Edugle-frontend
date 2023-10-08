@@ -9,6 +9,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import React, { PropsWithRef, useEffect, useRef, useState } from "react";
 import { gql } from "@apollo/client";
 import styles from "../styles/styles.module.css";
+import { useSession } from "next-auth/react";
 
 const GET_USER = gql(`query GetUserByToken($token: String!) {
     getUserByToken(token: $token) {
@@ -23,7 +24,8 @@ const profile = () => {
   const [userName, setUserName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
-   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
+  const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
+  const session = useSession();
   const likeCount = 42;
 
   const getUser = useQuery(GET_USER, {
@@ -42,45 +44,44 @@ const profile = () => {
   });
 
   const getUserQuery = async () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setToken(token);
+    if (session.data?.user?.token) {
+      setToken(session.data?.user?.token);
       await getUser.refetch();
     }
   };
 
-    function createBubbles() {
-      const bubbles = bubblesContainerRef.current;
-      if (bubbles) {
-        const bottom = window.innerHeight;
-        for (let i = 0; i < 5; i++) {
-          setTimeout(() => {
-            const bubble = document.createElement("div");
-            const delay = Math.random() * -100;
-            const duration = Math.random() * 10 + 3;
-            const posX = Math.random() * bubbles.clientWidth;
-            const posY = bottom;
+  function createBubbles() {
+    const bubbles = bubblesContainerRef.current;
+    if (bubbles) {
+      const bottom = window.innerHeight;
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          const bubble = document.createElement("div");
+          const delay = Math.random() * -100;
+          const duration = Math.random() * 10 + 3;
+          const posX = Math.random() * bubbles.clientWidth;
+          const posY = bottom;
 
-            bubble.style.left = `${posX}px`;
-            bubble.style.bottom = `-${posY}px`; // Negative value to start from the bottom
+          bubble.style.left = `${posX}px`;
+          bubble.style.bottom = `-${posY}px`; // Negative value to start from the bottom
 
-            bubble.className = `${styles.bubble}`;
-            bubble.style.animationDelay = `${delay}s`;
-            bubble.style.animationDuration = `${duration}s`;
+          bubble.className = `${styles.bubble}`;
+          bubble.style.animationDelay = `${delay}s`;
+          bubble.style.animationDuration = `${duration}s`;
 
-            bubbles.appendChild(bubble);
-          }, i * 1000);
-        }
+          bubbles.appendChild(bubble);
+        }, i * 1000);
       }
     }
+  }
 
   useEffect(() => {
     getUserQuery();
   });
 
-    useEffect(() => {
-      createBubbles();
-    }, []);
+  useEffect(() => {
+    createBubbles();
+  }, []);
 
   return (
     <>

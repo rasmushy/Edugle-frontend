@@ -50,6 +50,7 @@ export const authOptions: NextAuthOptions = {
               message
               token
               user {
+                role
                 username
                 id
                 email

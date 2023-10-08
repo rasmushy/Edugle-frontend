@@ -26,6 +26,7 @@ import CancelIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
+import { useSession } from "next-auth/react";
 
 interface User {
   id: GridRowId;
@@ -40,13 +41,6 @@ const GET_USERS = gql(`query Users($token: String!) {
         }
       }`);
 
-const DELTE_USER =
-  gql(`mutation DeleteUserAsAdmin($deleteUserId: ID!, $user: deleteUserAsAdminInput) {
-  deleteUserAsAdmin(deleteUserID: $deleteUserId, user: $user) {
-    message
-  }
-}`);
-
 const UserGrid = () => {
   const [userGrid, setUsers] = React.useState<any[]>([]);
   const [isAddUser, setAddUser] = React.useState(false);
@@ -55,6 +49,7 @@ const UserGrid = () => {
   const [isMobile, setIsMobile] = React.useState(false);
   const [buttonLocation, setButtonLocation] = React.useState(true);
   const [token, setToken] = React.useState<string>("");
+  const session = useSession();
 
   const users = useQuery(GET_USERS, {
     variables: {
@@ -152,10 +147,10 @@ const UserGrid = () => {
   }, []);
 
   const getUsersData = async () => {
-    const token = localStorage.getItem("token") || "";
+    const token = session.data?.user.token as string;
+    console.log(token, " JKASHDKJASDLAS");
     setToken(token);
     await users.refetch();
-    // Delete the users id and change the id to index.
   };
 
   const handleProcessRowUpdateError = React.useCallback((error: Error) => {
@@ -307,4 +302,4 @@ const UserGrid = () => {
   );
 };
 
-export default withAdmin(UserGrid);
+export default UserGrid;
