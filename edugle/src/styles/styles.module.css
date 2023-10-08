@@ -19,7 +19,19 @@
   }
 
   100% {
-    transform: translateY(-1300%);
+    transform: translateY(-1400%);
     /* End at the top */
   }
+}
+
+.userContent {
+background-color: white;
+  width: 80%;
+  margin: 40px auto;
+  /* Center horizontally and add top margin */
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Ensure the element takes up the full viewport height */
 }

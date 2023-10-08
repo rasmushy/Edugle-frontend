@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
+import AdminNavBarBtn from "./AdminNavBarBtn";
 
 const NavBarBtn = () => {
   const session = useSession();
@@ -26,6 +27,7 @@ const NavBarBtn = () => {
         <button
           onClick={() => {}}
           className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
+          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
         >
           Profile
         </button>
@@ -34,12 +36,15 @@ const NavBarBtn = () => {
         <button
           onClick={() => {}}
           className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
+          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
         >
           Settings
         </button>
       </Link>
+      <AdminNavBarBtn />
       <Link href="/">
         <button
+          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
           className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
           onClick={() => {
             signOut({
