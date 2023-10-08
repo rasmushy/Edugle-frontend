@@ -3,10 +3,11 @@ import Head from "next/head";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
 import { useQuery, gql, useMutation, useSubscription } from "@apollo/client";
-import { Chat, User } from "../__generated__/graphql";
+import { Chat, User, Message } from "../__generated__/graphql";
 import SideBar from "../components/SideBar";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
+import {set} from "zod";
 
 const CREATE_MESSAGE = gql(`
 mutation CreateMessage($chat: ID!, $message: MessageInput!) {
@@ -136,26 +137,23 @@ query GetUserById($getUserByIdId: ID!) {
 const ChatApp = () => {
   const [message, setMessage] = useState("");
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  const [chatID, setChatID] = useState("652122c39edea4edd683aba8");
+  const [chatID, setChatID] = useState("651fe7b7d18679a5933d8da9");
   const [user1, setUser1] = useState<User | null>(null);
   const [user2, setUser2] = useState<User | null>(null);
   const [chat, setChat] = useState<Chat | null>(null);
   const [isLikeUser, setIsLikeUser] = useState<Boolean>(false);
   const session = useSession();
+  const [token, setToken] = useState(session.data?.user?.token as string);
 
-  /*   const chatByUser = useQuery(CHAT_BY_USER, {
-    variables: {
-      token: localStorage.getItem("token"),
-    },
-  onCompleted: ({ chatByUser }) => {
-    console.log("chatByUser=", chatByUser.data.chatByUser);
-  }
-  });
- */
   const [joinChat] = useMutation(JOIN_CHAT, {
     variables: {
       chatId: chatID,
-      token: session.data?.user.token as string,
+      token: token,
+      sender: {
+        username: session.data?.user?.name as string,
+        email: session.data?.user?.email as string,
+        token: session.data?.user?.token as string,
+      },
     },
     onCompleted: ({ joinChat }) => {
       console.log("joinChat=", joinChat);
@@ -164,6 +162,8 @@ const ChatApp = () => {
       setChat(joinChat);
     },
     onError: (error) => {
+      console.log("error token=", token);
+      console.log("error chatID=", chatID);
       console.log("error", error);
     },
   });
@@ -185,7 +185,7 @@ const ChatApp = () => {
       chat: chatID,
       message: {
         content: message,
-        senderToken: session.data?.user.token as string,
+        senderToken: token,
       },
     },
     onCompleted: ({ createMessage }) => {
@@ -213,11 +213,12 @@ const ChatApp = () => {
   };
 
   const handleJoinChat = () => {
-    let prompt = window.prompt("Enter chat ID", "652122c39edea4edd683aba8");
+    let prompt = window.prompt("Enter chat ID", "651fe7b7d18679a5933d8da9");
     if (prompt) {
       setChatID(prompt);
       console.log("Joining chat...");
-      console.log('token=', session.data?.user?.token);
+      console.log("token=", token as string);
+      console.log("chatID=", chatID);
       joinChat();
     }
   };

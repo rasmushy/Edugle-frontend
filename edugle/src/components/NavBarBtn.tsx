@@ -13,20 +13,10 @@ const NavBarBtn = () => {
 
   return (
     <>
-      {session.data?.user.role === "admin" && (
-        <Link href="/admin">
-          <button
-            onClick={() => {}}
-            className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
-          >
-            Admin
-          </button>
-        </Link>
-      )}
+      {session.data?.user.role === "admin" && <AdminNavBarBtn />}
       <Link href="/profile">
         <button
           onClick={() => {}}
-          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
           className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
         >
           Profile
@@ -36,15 +26,12 @@ const NavBarBtn = () => {
         <button
           onClick={() => {}}
           className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
-          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
         >
           Settings
         </button>
       </Link>
-      <AdminNavBarBtn />
       <Link href="/">
         <button
-          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
           className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
           onClick={() => {
             signOut({

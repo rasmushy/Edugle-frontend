@@ -31,11 +31,11 @@ if(users[0] === null) {
             key={idx}
             className="space-evenly items-center mt-2 flex flex-row text-center text-white"
           >
-            <h3 className="w-full text-xl font-bold">{user.username}</h3>
-            <p className="w-full">{user.description}</p>
+            <h3 className="w-full text-xl font-bold">{user?.username}</h3>
+            <p className="w-full">{user?.description}</p>
             <img
-              alt={`${user.username}'s avatar`}
-              src={user.avatar || "/default-avatar.png"}
+              alt={`${user?.username}'s avatar`}
+              src={user?.avatar || "/default-avatar.png"}
               className="ml-8 h-16 w-16 rounded-full"
             />
           </div>
