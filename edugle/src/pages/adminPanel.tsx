@@ -1,14 +1,20 @@
-import UsersGrid from "~/components/UsersGrid";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import UsersGrid from "~/components/UsersGrid";
+
 export default function AdminPanel() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (session?.user.role !== "Admin") router.replace("/");
-  }, [status]);
+    if (session?.user.role.toLowerCase() !== "admin") router.replace("/");
+  }, [status, session, router]);
+
+  if (session?.user?.role.toLowerCase() !== "admin") {
+    return null;
+  }
+
   return (
     <div style={{ position: "relative" }}>
       <UsersGrid />

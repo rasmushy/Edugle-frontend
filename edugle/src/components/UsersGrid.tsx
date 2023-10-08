@@ -41,13 +41,6 @@ const GET_USERS = gql(`query Users($token: String!) {
         }
 }`);
 
-const DELTE_USER =
-  gql(`mutation DeleteUserAsAdmin($deleteUserId: ID!, $user: deleteUserAsAdminInput) {
-  deleteUserAsAdmin(deleteUserID: $deleteUserId, user: $user) {
-    message
-  }
-}`);
-
 const UserGrid = () => {
   const [userGrid, setUsers] = useState<any[]>([]);
   const [isAddUser, setAddUser] = useState(false);
@@ -57,9 +50,7 @@ const UserGrid = () => {
   const [buttonLocation, setButtonLocation] = useState(true);
   const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
   const session = useSession();
-  const [token, setToken] = useState<string>(
-    session.data?.user?.token as string,
-  );
+  const [token, setToken] = useState<string>("");
 
   const users = useQuery(GET_USERS, {
     variables: {

@@ -61,7 +61,7 @@ const NavBar = () => {
     setShowNavbar(!showNavbar);
     setActiveButton("");
     window.location.href = "/login";
-  }
+  };
 
   return (
     <>
@@ -95,7 +95,7 @@ const NavBar = () => {
             <div
               className={`${styles.navElements}  ${
                 !closeNavbar
-                  ? session.data?.user.role === "admin"
+                  ? session.data?.user.role.toLowerCase() !== "admin"
                     ? styles.active
                     : styles.biggerActive
                   : styles.none
@@ -180,9 +180,7 @@ const NavBar = () => {
             </div>
           </>
         ) : (
-          <div>
-           
-          </div>
+          <div></div>
         )}
       </nav>
     </>
