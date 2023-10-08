@@ -15,8 +15,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider
       session={session}
-      refetchInterval={5 * 60} // Re-fetch session every 5 minutes
-      refetchOnWindowFocus={true} // Re-fetches session when window is focused
     >
       <style>
         {`

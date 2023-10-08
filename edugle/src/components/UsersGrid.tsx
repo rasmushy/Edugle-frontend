@@ -41,9 +41,18 @@ const GET_USERS = gql(`query Users($token: String!) {
         }
 }`);
 
+const MODIFY_USER =
+  gql(`mutation ModifyUser($modifyUser: ModifyUserWithTokenAndRoleInput, $user: modifyUserAsAdminInput) {
+  modifyUser(modifyUser: $modifyUser, user: $user) {
+    user {
+      role
+    }
+    message
+  }
+}`);
+
 const UserGrid = () => {
   const [userGrid, setUsers] = useState<any[]>([]);
-  const [isAddUser, setAddUser] = useState(false);
   const [isDeleteUser, setDeleteUser] = useState(false);
   const [userId, setDeleteUserId] = useState("");
   const [isMobile, setIsMobile] = useState(false);
@@ -51,6 +60,9 @@ const UserGrid = () => {
   const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
   const session = useSession();
   const [token, setToken] = useState<string>("");
+  const [modifyUserID, setModifyUserID] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState<string>("");
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const users = useQuery(GET_USERS, {
     variables: {
@@ -68,13 +80,55 @@ const UserGrid = () => {
     },
   });
 
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const [modifyUser] = useMutation(MODIFY_USER, {
+    variables: {
+      user: {
+        token: token,
+      },
+      modifyUser: {
+        role: isAdmin,
+        id: modifyUserID,
+      },
+    },
+    onCompleted: ({ modifyUser }) => {},
+  });
+
+  const editUserState = () => {
+    return useCallback(
+      (user: Partial<User>) =>
+        new Promise<Partial<User>>((resolve, reject) => {
+          setTimeout(() => {
+            try {
+              if (user.role === true) {
+                setIsAdmin("Admin");
+                setModifyUserID(user.id?.toString() || ""); // convert to string before setting state
+              } else {
+                setIsAdmin("User");
+                setModifyUserID(user.id?.toString() || ""); // convert to string before setting state
+              }
+            } catch (err) {
+              reject(new Error("Käyttäjän tallennus epäonnistui!"));
+            }
+
+            resolve({
+              ...user,
+            });
+          }, 200);
+        }),
+      [],
+    );
+  };
+
+  useEffect(() => {
+    if (modifyUserID) {
+      modifyUser();
+    }
+  }, [modifyUserID]);
 
   const handleDeleteClick = (id: GridRowId) => () => {
     userGrid.map((user: any) => {
       if (user.id === id) {
         setDeleteUserId(user.id);
-        console.log("user.id", user.id);
       }
     });
     setDeleteUser(true);
@@ -114,12 +168,27 @@ const UserGrid = () => {
     }
   };
 
+  const mutateRow = editUserState();
+
   const [snackbar, setSnackbar] = useState<Pick<
     AlertProps,
     "children" | "severity"
   > | null>(null);
 
   const handleCloseSnackbar = () => setSnackbar(null);
+
+  const processRowUpdate = useCallback(
+    async (newRow: GridRowModel) => {
+      // Make the HTTP request to save in the backend
+      const response = await mutateRow(newRow);
+      setSnackbar({
+        children: "Käyttäjä tallennettu onnistuneesti!",
+        severity: "success",
+      });
+      return response;
+    },
+    [mutateRow],
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -264,6 +333,7 @@ const UserGrid = () => {
             rowModesModel={rowModesModel}
             onRowModesModelChange={handleRowModesModelChange}
             onRowEditStop={handleRowEditStop}
+            processRowUpdate={processRowUpdate}
             onProcessRowUpdateError={handleProcessRowUpdateError}
             initialState={{
               pagination: {

@@ -104,42 +104,39 @@ const NavBar = () => {
               <>
                 <ul>
                   <li>
-                    <Link href="/chat">
+                    <Link href="/chat" onClick={() => handleChatPage()}>
                       <div
                         className={`${styles.navbar_item} ${
                           activeButton === "chat"
                             ? styles.active
                             : styles.inactive
                         }`}
-                        onClick={() => handleChatPage()}
                       >
                         <p>Chat</p>
                       </div>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/profile">
+                    <Link href="/profile" onClick={() => handleProfilePage()}>
                       <div
                         className={`${styles.navbar_item} ${
                           activeButton === "profile"
                             ? styles.active
                             : styles.inactive
                         }`}
-                        onClick={() => handleProfilePage()}
                       >
                         <p>Profile</p>
                       </div>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/settings">
+                    <Link href="/settings" onClick={() => handleSettingsPage()}>
                       <div
                         className={`${styles.navbar_item} ${
                           activeButton === "settings"
                             ? styles.active
                             : styles.inactive
                         }`}
-                        onClick={() => handleSettingsPage()}
                       >
                         <p>Settings</p>
                       </div>
@@ -153,9 +150,11 @@ const NavBar = () => {
                             ? styles.active
                             : styles.inactive
                         }`}
-                        onClick={() => handleAdminPanelPage()}
+                       
                       >
-                        <AdminNavBarBtn />
+                        <AdminNavBarBtn
+                          handleAdminPanelPage={handleAdminPanelPage}
+                        />
                       </div>
                     </li>
                   ) : null}
