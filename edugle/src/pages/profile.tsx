@@ -1,6 +1,8 @@
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import CardActions from "@mui/material/CardActions";
@@ -11,6 +13,11 @@ import { gql } from "@apollo/client";
 import styles from "../styles/styles.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import TextField from "@mui/material/TextField";
+import DialogActions from "@mui/material/DialogActions";
 
 const GET_USER = gql(`query GetUserByToken($token: String!) {
     getUserByToken(token: $token) {
@@ -20,6 +27,16 @@ const GET_USER = gql(`query GetUserByToken($token: String!) {
         id
   }
 }`);
+
+const UPDATE_USER = gql(`mutation ModifyUser($user: modifyUserInput) {
+  modifyUser(modifyUser: $user) {
+    message
+    user {
+      description
+    }
+  }
+}`);
+
 export default function Profile() {
   const session = useSession();
   const router = useRouter();
@@ -29,6 +46,7 @@ export default function Profile() {
   const [userEmail, setUserEmail] = useState<string>("");
   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
   const likeCount = 42;
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   useEffect(() => {
     if (session.status === "unauthenticated") {
@@ -45,6 +63,21 @@ export default function Profile() {
       setUserName(getUserByToken.username);
       setDescription(getUserByToken.description);
       setUserEmail(getUserByToken.email);
+    },
+    onError: (error) => {
+      console.log("error", error);
+    },
+  });
+
+  const [updateUser] = useMutation(UPDATE_USER, {
+    variables: {
+      user: {
+        token: token,
+        description: description,
+      },
+    },
+    onCompleted: ({ modifyUser }) => {
+      console.log("modifyUser", modifyUser);
     },
     onError: (error) => {
       console.log("error", error);
@@ -100,7 +133,6 @@ export default function Profile() {
             margin: 0, // Add this to remove any margin
             padding: 0, // Add this to remove any padding
             position: "relative",
-            zIndex: -1,
           }}
           className="flex max-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#89C2D9] to-[#012A4A]"
         >
@@ -115,6 +147,27 @@ export default function Profile() {
           >
             <div ref={bubblesContainerRef}></div>
           </div>
+          <Dialog
+            open={isPopupOpen}
+            onClose={() => setIsPopupOpen(false)}
+            sx={{ height: "100%" }}
+          >
+            <DialogTitle>Edit Description</DialogTitle>
+            <DialogContent>
+              <TextField
+                fullWidth
+                value={description}
+                // Add an onChange handler to update the description
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setIsPopupOpen(false)}>Cancel</Button>
+                <Button onClick={() => { setIsPopupOpen(false); updateUser(); }} color="primary">
+                Save
+              </Button>
+            </DialogActions>
+          </Dialog>
           <Paper
             elevation={3}
             style={{
@@ -129,9 +182,22 @@ export default function Profile() {
               backgroundColor: "white",
             }}
           >
+            <IconButton
+              onClick={() => setIsPopupOpen(true)}
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                color: "black",
+                zIndex: 1,
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+
             <Avatar
-              alt="Aser Avatar"
-              src="/path/to/user-avatar.png"
+              alt={`${userName.toUpperCase()}.png`}
+              src={`${userName}.png`}
               sx={{ width: 200, height: 200, marginBottom: 10 }}
             />
             <Typography variant="h3" component="div" sx={{ marginTop: 1 }}>

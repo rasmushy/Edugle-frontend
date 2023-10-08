@@ -42,8 +42,8 @@ const GET_USERS = gql(`query Users($token: String!) {
 }`);
 
 const MODIFY_USER =
-  gql(`mutation ModifyUser($modifyUser: ModifyUserWithTokenAndRoleInput, $user: modifyUserAsAdminInput) {
-  modifyUser(modifyUser: $modifyUser, user: $user) {
+  gql(`mutation Mutation($user: modifyUserAsAdminInput, $modifyUser: ModifyUserWithTokenAndRoleInput) {
+  modifyUserAsAdmin(user: $user, modifyUser: $modifyUser) {
     user {
       role
     }
@@ -80,7 +80,7 @@ const UserGrid = () => {
     },
   });
 
-  const [modifyUser] = useMutation(MODIFY_USER, {
+  const [modifyUserAsAdmin] = useMutation(MODIFY_USER, {
     variables: {
       user: {
         token: token,
@@ -90,7 +90,7 @@ const UserGrid = () => {
         id: modifyUserID,
       },
     },
-    onCompleted: ({ modifyUser }) => {},
+    onCompleted: ({ modifyUserAsAdmin }) => {},
   });
 
   const editUserState = () => {
@@ -123,8 +123,8 @@ const UserGrid = () => {
   };
 
   useEffect(() => {
-    if (modifyUserID) {
-      modifyUser();
+    if (modifyUserID ) {
+      modifyUserAsAdmin();
     }
   }, [modifyUserID]);
 
