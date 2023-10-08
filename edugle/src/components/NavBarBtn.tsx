@@ -11,7 +11,7 @@ const NavBarBtn = () => {
       <Link href="/profile">
         <button
           onClick={() => {}}
-          className="rounded bg-[hsl(280,100%,70%)] p-2 text-white"
+          className="rounded bg-[#FFFFFF p-2 text-[#012A4A]"
         >
           Profile
         </button>
@@ -19,14 +19,14 @@ const NavBarBtn = () => {
       <Link href="/settings">
         <button
           onClick={() => {}}
-          className="rounded bg-[hsl(280,100%,70%)] p-2 text-white"
+          className="rounded bg-[#FFFFFF p-2 text-[#012A4A]"
         >
           Settings
         </button>
       </Link>
       <Link href="/logout">
         <button
-          className="rounded bg-[hsl(280,100%,70%)] p-2 text-white"
+          className="rounded bg-[#FFFFFF p-2 text-[#012A4A]"
           onClick={() => {
             localStorage.removeItem(AUTH_TOKEN);
           }}
