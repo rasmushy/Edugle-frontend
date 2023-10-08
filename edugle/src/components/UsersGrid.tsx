@@ -40,6 +40,13 @@ const GET_USERS = gql(`query Users($token: String!) {
         }
       }`);
 
+const DELTE_USER =
+  gql(`mutation DeleteUserAsAdmin($deleteUserId: ID!, $user: deleteUserAsAdminInput) {
+  deleteUserAsAdmin(deleteUserID: $deleteUserId, user: $user) {
+    message
+  }
+}`);
+
 const UserGrid = () => {
   const [userGrid, setUsers] = React.useState<any[]>([]);
   const [isAddUser, setAddUser] = React.useState(false);
@@ -54,9 +61,20 @@ const UserGrid = () => {
       token: token,
     },
     onCompleted: ({ users }) => {
-      setUsers(users);
+      const usersWithId = users.map((user: any, index: number) => {
+        return {
+          ...user,
+          tunnus: index,
+          role: user.role?.toLowerCase() === "admin" ? true : false,
+        };
+      });
+
+      console.log(userGrid);
+      setUsers(usersWithId);
     },
   });
+
+
 
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {},
@@ -136,11 +154,7 @@ const UserGrid = () => {
     const token = localStorage.getItem("token") || "";
     setToken(token);
     await users.refetch();
-    const usersWithId = userGrid.map((user: any, index: number) => {
-      return { ...user, tunnus: index, password: "*".repeat(10) };
-    });
-    setUsers(usersWithId);
-    console.log(userGrid);
+    // Delete the users id and change the id to index.
   };
 
   const handleProcessRowUpdateError = React.useCallback((error: Error) => {
@@ -148,17 +162,17 @@ const UserGrid = () => {
   }, []);
 
   const columns: GridColDef[] = [
-    { field: "tunnus", headerName: "Tunnus", width: 100 },
+    { field: "tunnus", headerName: "Tunnus", width: 300 },
     {
       field: "username",
       headerName: "Username",
-      width: 150,
+      width: 300,
       editable: false,
     },
     {
       field: "LikeCount",
       headerName: "Like count",
-      width: 100,
+      width: 200,
       editable: false,
     },
     {
@@ -188,6 +202,7 @@ const UserGrid = () => {
               }}
               onClick={handleSaveClick(id)}
             />,
+
             <GridActionsCellItem
               key={id}
               icon={<CancelIcon />}
@@ -199,6 +214,14 @@ const UserGrid = () => {
           ];
         }
         return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            key={id}
+            label="Edit"
+            className="textPrimary"
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
           <GridActionsCellItem
             icon={<DeleteIcon />}
             key={id}
