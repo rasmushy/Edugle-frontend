@@ -35,3 +35,152 @@
   justify-content: center;
   /* Ensure the element takes up the full viewport height */
 }
+
+.navbar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100px;
+    box-shadow: 3px 3px 6px rgb(44, 44, 44);
+    z-index: 10;
+    color: white;
+    background-color: #f1f5f9;
+    position: relative;
+}
+
+.menuIcon {
+  display: none;
+}
+
+.navbar_title {
+  margin-right: auto;
+  font-size: 150%;
+  padding-left: 20px;
+  color: #012A4A;
+}
+
+.navElements {
+  vertical-align: middle;
+  color: #012A4A;
+}
+
+.navElements ul {
+  gap: 10px;
+  display: flex;
+  justify-content: space-between;
+  list-style-type: none;
+}
+
+.navElements ul a {
+  font-size: 16px;
+  font-weight: 400;
+  color: #2f234f;
+  text-decoration: none;
+}
+
+.navElements ul .active {
+  color: #574c4c;
+  font-weight: 500;
+  position: relative;
+  background-color: #89C2D9;
+  white-space: nowrap;
+  border-radius: 5px;
+}
+
+.navElements ul .active::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+
+.navbar_item {
+  width: 100%;
+  padding: 16px 16px;
+  cursor: pointer;
+  vertical-align: middle;
+  color: #012A4A;
+  transition: background-color 0.5s ease;
+}
+
+.navbar_item:hover {
+  background-color: #89C2D9;
+  white-space: nowrap;
+  border-radius: 5px;
+  border-color: black;
+  color: #012A4A;
+  opacity: 1;
+}
+
+.navElements.inactive {
+  background-color: #f1f5f9;
+}
+
+@media (max-width: 790px) {
+  .buttonWrapper {
+    display: none;
+  }
+
+  .menuIcon {
+    display: block;
+    cursor: pointer;
+  }
+
+  .navElements {
+    padding: 0 !important;
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background-color: #f1f5f9;
+    width: 100%;
+    height: 0;
+    transition: all 0.3s ease-in;
+    overflow: hidden;
+    margin-top: 10px;
+    z-index: -10;
+    border-radius: 0 0 0 0;
+  }
+  
+  .navElements.active {
+    border-radius: 0 0 25px 25px;
+    z-index: 10;
+    height: 480px;
+  }
+
+  .navElements.biggerActive {
+    border-radius: 0 0 25px 25px;
+    height: 380px;
+  }
+
+  .navElements ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    background-color: #f1f5f9;
+  }
+
+  .navElements ul li {
+    margin-right: unset;
+    margin-top: 22px;
+    width: 90%;
+    background-color: #89C2D9;
+    white-space: nowrap;
+    border: 1px solid #012A4A;
+    color: black;
+    border-radius: 5px;
+    border-color: black;
+  }
+
+  .navElements ul li p {
+    color: black;
+  }
+
+  .addUserPaper {
+    width: 330px;
+    height: 400px;
+  }
+}

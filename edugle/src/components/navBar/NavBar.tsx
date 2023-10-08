@@ -1,0 +1,192 @@
+"use client";
+import React, { useState, useEffect, use } from "react";
+import Link from "next/link";
+import styles from "../../styles/styles.module.css";
+import Image from "next/image";
+import { signOut } from "next-auth/react";
+import MenuIcon from "@mui/icons-material/Menu";
+import MenuOpenIcon from "@mui/icons-material/MenuOpen";
+import { useSession } from "next-auth/react";
+import AdminNavBarBtn from "../AdminNavBarBtn";
+import { useNavBar } from "~/pages/api/NavBarProvider";
+
+const NavBar = () => {
+  const [showNavbar, setShowNavbar] = useState(false);
+  const [closeNavbar, setCloseNavbar] = useState(true);
+  const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
+  const [activeButton, setActiveButton] = useState("main");
+
+  const session = useSession();
+  const status = session.status;
+
+  if (status === "loading") return <div>Loading...</div>;
+
+  const handleShowNavbar = () => {
+    setShowNavbar(!showNavbar);
+    setCloseNavbar(!closeNavbar);
+  };
+
+  const handleChatPage = () => {
+    setCloseNavbar(!closeNavbar);
+    setShowNavbar(!showNavbar);
+    setActiveButton("chat");
+  };
+
+  const handleProfilePage = () => {
+    setCloseNavbar(!closeNavbar);
+    setShowNavbar(!showNavbar);
+    setActiveButton("profile");
+  };
+
+  const handleSettingsPage = () => {
+    setCloseNavbar(!closeNavbar);
+    setShowNavbar(!showNavbar);
+    setActiveButton("settings");
+  };
+
+  const handleAdminPanelPage = () => {
+    setCloseNavbar(!closeNavbar);
+    setShowNavbar(!showNavbar);
+    setActiveButton("adminpanel");
+  };
+
+  const handleLogOut = () => {
+    setCloseNavbar(!closeNavbar);
+    setShowNavbar(!showNavbar);
+    setActiveButton("");
+  };
+
+  const handleLogIn = () => {
+    setCloseNavbar(!closeNavbar);
+    setShowNavbar(!showNavbar);
+    setActiveButton("");
+    window.location.href = "/login";
+  }
+
+  return (
+    <>
+      <nav className={styles.navbar} rel="preload">
+        <div className={styles.navbar_title}>
+          <Link href="/">
+            <h1 className="text-2xl font-bold text-[#012A4A]">Edugle</h1>
+          </Link>
+        </div>
+        {session.data?.user ? (
+          <>
+            <div className={styles.menuIcon} onClick={handleShowNavbar}>
+              {showNavbar ? (
+                <MenuOpenIcon
+                  style={{ color: "black", marginRight: "20px" }}
+                  fontSize="large"
+                  onClick={() => {
+                    closeNavBar();
+                  }}
+                />
+              ) : (
+                <MenuIcon
+                  style={{ color: "black", marginRight: "20px" }}
+                  fontSize="large"
+                  onClick={() => {
+                    openNavBar();
+                  }}
+                />
+              )}
+            </div>
+            <div
+              className={`${styles.navElements}  ${
+                !closeNavbar
+                  ? session.data?.user.role === "admin"
+                    ? styles.active
+                    : styles.biggerActive
+                  : styles.none
+              }`}
+            >
+              <>
+                <ul>
+                  <li>
+                    <Link href="/chat">
+                      <div
+                        className={`${styles.navbar_item} ${
+                          activeButton === "chat"
+                            ? styles.active
+                            : styles.inactive
+                        }`}
+                        onClick={() => handleChatPage()}
+                      >
+                        <p>Chat</p>
+                      </div>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/profile">
+                      <div
+                        className={`${styles.navbar_item} ${
+                          activeButton === "profile"
+                            ? styles.active
+                            : styles.inactive
+                        }`}
+                        onClick={() => handleProfilePage()}
+                      >
+                        <p>Profile</p>
+                      </div>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/settings">
+                      <div
+                        className={`${styles.navbar_item} ${
+                          activeButton === "settings"
+                            ? styles.active
+                            : styles.inactive
+                        }`}
+                        onClick={() => handleSettingsPage()}
+                      >
+                        <p>Settings</p>
+                      </div>
+                    </Link>
+                  </li>
+                  {session.data?.user.role.toLocaleLowerCase() === "admin" ? (
+                    <li>
+                      <div
+                        className={`${styles.navbar_item} ${
+                          activeButton === "adminpanel"
+                            ? styles.active
+                            : styles.inactive
+                        }`}
+                        onClick={() => handleAdminPanelPage()}
+                      >
+                        <AdminNavBarBtn />
+                      </div>
+                    </li>
+                  ) : null}
+
+                  <li>
+                    <Link href="/">
+                      <div
+                        className={`${styles.navbar_item} `}
+                        onClick={() => {
+                          handleLogOut();
+                          signOut({
+                            callbackUrl: "/",
+                          });
+                        }}
+                      >
+                        <p>Logout</p>
+                      </div>
+                    </Link>
+                  </li>
+                </ul>
+              </>
+            </div>
+          </>
+        ) : (
+          <div>
+           
+          </div>
+        )}
+      </nav>
+    </>
+  );
+};
+
+export default NavBar;

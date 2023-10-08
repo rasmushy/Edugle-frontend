@@ -5,12 +5,13 @@ import { useSession } from "next-auth/react";
 import MainPageBtn from "~/components/MainPageBtn";
 import styles from "../styles/styles.module.css";
 import { useEffect, useState, useRef, MutableRefObject } from "react";
+import { useNavBar } from "./api/NavBarProvider";
 
-export default function Home({session: initialSession}: {session: any}) {
-const { data: session = initialSession, status } = useSession();
+export default function Home({ session: initialSession }: { session: any }) {
+  const { data: session = initialSession, status } = useSession();
   const [activePopup, setActivePopup] = useState(null);
   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
-
+  const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));
@@ -51,17 +52,29 @@ const { data: session = initialSession, status } = useSession();
 
   return (
     <>
-
       <Head>
         <title>Edugle</title>
         <meta name="description" content="Random chatting" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main
-        style={{ position: "relative", overflowX: "hidden" }}
+        style={{
+          position: "relative",
+          overflowX: "hidden",
+          zIndex: isNavBarOpen == true ? -1 : 1,
+        }}
         className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2C7DA0] to-[#2C7DA0]"
       >
-        <div style={{position: "absolute", overflow: "hidden", width: "100%", height: "100%", pointerEvents: "none"}}>
+        <div
+          style={{
+            position: "absolute",
+            overflow: "hidden",
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
+            zIndex: -1,
+          }}
+        >
           <div ref={bubblesContainerRef}></div>
         </div>
         {activePopup ? (
@@ -70,9 +83,7 @@ const { data: session = initialSession, status } = useSession();
 
         {activePopup === "Login" ? (
           <div className="modal">
-            <Login
-              toggle={() => togglePopup("Login")}
-            />
+            <Login toggle={() => togglePopup("Login")} />
           </div>
         ) : null}
         {activePopup === "SignUp" ? (
@@ -80,7 +91,6 @@ const { data: session = initialSession, status } = useSession();
             <SignUp toggle={() => togglePopup("SignUp")} />
           </div>
         ) : null}
-
         <MainPageBtn togglePopup={togglePopup} />
       </main>
       <style>{`

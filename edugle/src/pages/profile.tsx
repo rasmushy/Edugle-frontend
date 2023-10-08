@@ -91,7 +91,6 @@ export default function Profile() {
   useEffect(() => {
     createBubbles();
   }, []);
-
   if (session.status === "authenticated") {
     return (
       <>
@@ -100,6 +99,8 @@ export default function Profile() {
             height: "92.5vh", // Change from "95vh" to "100vh"
             margin: 0, // Add this to remove any margin
             padding: 0, // Add this to remove any padding
+            position: "relative",
+            zIndex: -1,
           }}
           className="flex max-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#89C2D9] to-[#012A4A]"
         >

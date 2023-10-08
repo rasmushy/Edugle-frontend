@@ -26,6 +26,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, useCallback } from "react";
+import { useNavBar } from "~/pages/api/NavBarProvider";
 
 interface User {
   id: GridRowId;
@@ -38,7 +39,7 @@ const GET_USERS = gql(`query Users($token: String!) {
             role
             username
         }
-      }`);
+}`);
 
 const DELTE_USER =
   gql(`mutation DeleteUserAsAdmin($deleteUserId: ID!, $user: deleteUserAsAdminInput) {
@@ -48,13 +49,14 @@ const DELTE_USER =
 }`);
 
 const UserGrid = () => {
-  const session = useSession();
   const [userGrid, setUsers] = useState<any[]>([]);
   const [isAddUser, setAddUser] = useState(false);
   const [isDeleteUser, setDeleteUser] = useState(false);
   const [userId, setDeleteUserId] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [buttonLocation, setButtonLocation] = useState(true);
+  const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
+  const session = useSession();
   const [token, setToken] = useState<string>(
     session.data?.user?.token as string,
   );
@@ -71,8 +73,6 @@ const UserGrid = () => {
           role: user.role?.toLowerCase() === "admin" ? true : false,
         };
       });
-
-      console.log(userGrid);
       setUsers(usersWithId);
     },
   });
@@ -162,11 +162,11 @@ const UserGrid = () => {
   }, []);
 
   const columns: GridColDef[] = [
-    { field: "tunnus", headerName: "Tunnus", width: 300 },
+    { field: "tunnus", headerName: "Tunnus", width: 200 },
     {
       field: "username",
       headerName: "Username",
-      width: 300,
+      width: 200,
       editable: false,
     },
     {
@@ -179,14 +179,14 @@ const UserGrid = () => {
       field: "role",
       headerName: "Admin",
       type: "boolean",
-      width: 110,
+      width: 200,
       editable: true,
     },
     {
       field: "actions",
       type: "actions",
       headerName: "Toiminnot",
-      width: 100,
+      width: 300,
       cellClassName: "actions",
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;

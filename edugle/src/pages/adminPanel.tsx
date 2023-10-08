@@ -9,12 +9,9 @@ export default function AdminPanel() {
   useEffect(() => {
     if (session?.user.role !== "Admin") router.replace("/");
   }, [status]);
-
-  if (session?.user.role === "Admin") {
-    return (
-      <div className="flex min-h-[90vh] flex-col items-center justify-center bg-gradient-to-b from-[#01497C] to-[#2C7DA0]">
-        <UsersGrid />
-      </div>
-    );
-  }
+  return (
+    <div style={{ position: "relative" }}>
+      <UsersGrid />
+    </div>
+  );
 }

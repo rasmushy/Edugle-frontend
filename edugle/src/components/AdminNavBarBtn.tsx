@@ -1,11 +1,10 @@
 import Link from "next/link";
+import styles from "../styles/styles.module.css";
 
 const NabarBtn = () => {
   return (
     <Link href="/adminPanel">
-      <button className="bg-[#FFFFFF rounded p-2 text-[#012A4A]">
-        Admin Panel
-      </button>
+        <p>Admin panel</p>
     </Link>
   );
 };
