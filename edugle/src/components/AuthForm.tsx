@@ -5,20 +5,41 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { AccountCircle } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
+import { gql, useMutation } from "@apollo/client";
 
-export default function AuthForm({
-  title,
-  onFormSubmit,
-  toggle,
-  error,
-  successMessage,
-}: {
+const LOGIN_USER = gql(`
+  mutation LoginUser($credentials: LoginInput!) {
+    loginUser(credentials: $credentials) {
+      user {
+        username
+        email
+        password
+        id
+      }
+      token
+      message
+    }
+  }
+`);
+
+const REGISTER_USER = gql(`
+  mutation RegUser($user: RegisterInput!) {
+    registerUser(user: $user) {
+      user {
+        username
+        email
+        password
+      }
+    }
+  }
+`);
+
+type AuthFormProps = {
   title: string;
-  onFormSubmit: (e: FormEvent<HTMLFormElement>, data: {username: string, email: string, password: string, description?: string}) => void;
   toggle: () => void;
-  error: any;
-  successMessage: string;
-}) {
+};
+
+export default function AuthForm({ title, toggle }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -27,10 +48,32 @@ export default function AuthForm({
   const [checkEmail, setCheckEmail] = useState(true);
   const [checkUserName, setCheckUserName] = useState(true);
   const [checkPassword, setCheckPassword] = useState(true);
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const [loginUserMutation, { error: loginError, data: loginData }] =
+    useMutation(LOGIN_USER, {
+      variables: {
+        credentials: { email, password },
+      },
+      onCompleted: ({ loginUser }) => {
+          localStorage.setItem("token", loginUser.token);
+          console.log("loginUser", loginUser.token);
+      },
+    });
+
+  const [registerUserMutation, { error: registerError, data: registerData }] =
+    useMutation(REGISTER_USER, {
+      variables: {
+        user: { username, email, password, description },
+      },
+      onCompleted: ({ registerUser }) => {
+        localStorage.setItem("token", registerUser.token);
+        console.log("registerUser", registerUser.token);
+      },
+    });
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const validateInput = (e: FormEvent<HTMLFormElement>) => {
     if (title === "Sign Up") {
@@ -62,17 +105,26 @@ const handleClickShowPassword = () => setShowPassword((show) => !show);
     }
   };
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    await onFormSubmit(e, {
-      username,
-      email,
-      password,
-      description,
-    });
+    console.log("handleSubmit");
+    if (title === "Login") {
+      try {
+        loginUserMutation();
+        console.log("loginUserMutation");
+      } catch (err) {
+        console.error(err);
+      }
+    } else if (title === "Sign Up") {
+      try {
+        await registerUserMutation();
+      } catch (err) {
+        console.error(err);
+      }
+    }
     setIsLoading(false);
-  }
+  };
 
   return (
     <div className="flex h-[800px] w-[400px] flex-col items-center justify-center rounded-lg bg-gradient-to-b from-[#2e026d] to-[#15162c]">
@@ -86,7 +138,7 @@ const handleClickShowPassword = () => setShowPassword((show) => !show);
       <div className="flex flex-col items-center justify-center">
         <h1 className="mb-4 text-2xl font-semibold">{title}</h1>
         <form
-          onSubmit={handleSubmit}
+          onSubmit={validateInput}
           className="bg-white/15 mb-4 rounded px-8 pb-8 pt-6"
         >
           <div className="mb-4">
@@ -188,18 +240,13 @@ const handleClickShowPassword = () => setShowPassword((show) => !show);
           </div>
         </form>
         <div className="mb-2 h-5">
-        {error ? (
-          <div className="mb-2 block text-sm font-bold text-red-700">
-            {error.message}
-          </div>
-        ) : null}
-        {successMessage ? (
-          <div className="text-green mb-2 block text-sm font-bold">
-            {successMessage}
-          </div>
-        ) : null}
+          {loginError || registerError ? (
+            <div className="mb-2 block text-sm font-bold text-red-700">
+              {loginError?.message || registerError?.message}
+            </div>
+          ) : null}
+        </div>
       </div>
-    </div>
     </div>
   );
 }

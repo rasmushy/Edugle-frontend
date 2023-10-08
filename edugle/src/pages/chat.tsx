@@ -6,7 +6,6 @@ import { useQuery, gql, useMutation, useSubscription } from "@apollo/client";
 import { Chat } from "../__generated__/graphql";
 import { IUser, IMessage } from "../lib/types";
 import SideBar from "../components/SideBar";
-import { any, set } from "zod";
 import { join } from "path";
 import withAuth from "./api/auth/withAuth";
 import LikeUser from "~/components/LikeUser";
