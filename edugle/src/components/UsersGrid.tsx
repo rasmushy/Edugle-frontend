@@ -84,6 +84,7 @@ const UserGrid = () => {
     userGrid.map((user: any) => {
       if (user.id === id) {
         setDeleteUserId(user.id);
+        console.log("user.id", user.id);
       }
     });
     setDeleteUser(true);
@@ -243,6 +244,7 @@ const UserGrid = () => {
           setUsers={setUsers}
           userGrid={userGrid}
           setDeleteUser={setDeleteUser}
+          token={token}
         />
       )}
       <Paper

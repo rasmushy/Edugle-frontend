@@ -15,7 +15,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <style>
         {`
           body {
-            background: #15162c;
+            background: #2C7DA0;
             overflow-x: hidden;
           }
         `}

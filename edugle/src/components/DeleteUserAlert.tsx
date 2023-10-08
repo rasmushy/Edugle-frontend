@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 
-const DELTE_USER =
+const DELETE_USER =
   gql(`mutation DeleteUserAsAdmin($deleteUserId: ID!, $user: deleteUserAsAdminInput) {
   deleteUserAsAdmin(deleteUserID: $deleteUserId, user: $user) {
     message
@@ -24,27 +24,35 @@ const AlertDialogSlide = ({
   setUsers,
   userGrid,
   setDeleteUser,
+  token,
 }: any) => {
   const [open, setOpen] = React.useState(isOpen);
+  const [deleteId, setDeleteUserId] = React.useState("");
 
-    const deleteUserAsAdmin = useQuery(GET_USERS, {
-      variables: {
-        deleteUserId: "token",
-        users: {
-          token: token,
-        },
+  const [deleteUserAsAdmin] = useMutation(DELETE_USER, {
+    variables: {
+      deleteUserId: userId,
+      user: {
+        token: token,
       },
-      onCompleted: ({ deleteUserAsAdmin }) => {},
-    });
+    },
+    onCompleted: ({ deleteUserAsAdmin }) => {
+      console.log(deleteUserAsAdmin);
+    },
+  });
 
-  const deleteUserDatabase = async (userId: any) => {};
+  const deleteUserDatabase = async () => {
+    console.log(userId);
+    await deleteUserAsAdmin();
+  };
 
   const deleteUser = () => {
     if (userId) {
       setUsers(userGrid.filter((row: any) => row.id !== userId));
       setOpen(false);
       setDeleteUser(false);
-      deleteUserDatabase(userId);
+      setDeleteUserId(userId);
+      deleteUserDatabase();
     }
   };
 

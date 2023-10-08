@@ -6,8 +6,9 @@ import Typography from "@mui/material/Typography";
 import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
 import { useMutation, useQuery } from "@apollo/client";
-import React, { PropsWithRef, useEffect, useState } from "react";
+import React, { PropsWithRef, useEffect, useRef, useState } from "react";
 import { gql } from "@apollo/client";
+import styles from "../styles/styles.module.css";
 
 const GET_USER = gql(`query GetUserByToken($token: String!) {
     getUserByToken(token: $token) {
@@ -22,6 +23,7 @@ const profile = () => {
   const [userName, setUserName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
+   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
   const likeCount = 42;
 
   const getUser = useQuery(GET_USER, {
@@ -47,9 +49,38 @@ const profile = () => {
     }
   };
 
+    function createBubbles() {
+      const bubbles = bubblesContainerRef.current;
+      if (bubbles) {
+        const bottom = window.innerHeight;
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            const bubble = document.createElement("div");
+            const delay = Math.random() * -100;
+            const duration = Math.random() * 10 + 3;
+            const posX = Math.random() * bubbles.clientWidth;
+            const posY = bottom;
+
+            bubble.style.left = `${posX}px`;
+            bubble.style.bottom = `-${posY}px`; // Negative value to start from the bottom
+
+            bubble.className = `${styles.bubble}`;
+            bubble.style.animationDelay = `${delay}s`;
+            bubble.style.animationDuration = `${duration}s`;
+
+            bubbles.appendChild(bubble);
+          }, i * 1000);
+        }
+      }
+    }
+
   useEffect(() => {
     getUserQuery();
   });
+
+    useEffect(() => {
+      createBubbles();
+    }, []);
 
   return (
     <>
@@ -59,15 +90,26 @@ const profile = () => {
           margin: 0, // Add this to remove any margin
           padding: 0, // Add this to remove any padding
         }}
-        className="flex max-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]"
+        className="flex max-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#89C2D9] to-[#012A4A]"
       >
+        <div
+          style={{
+            position: "absolute",
+            overflow: "hidden",
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
+          }}
+        >
+          <div ref={bubblesContainerRef}></div>
+        </div>
         <Paper
           elevation={3}
           style={{
             borderRadius: 25,
             height: "80vh",
             display: "flex",
-            width: "80%",
+            width: "60%",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
