@@ -16,3 +16,7 @@ const Header = () => {
 };
 
 export default Header;
+
+Header.auth = {
+  role: "User",
+};

@@ -1,4 +1,3 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import {
   DataGrid,
@@ -12,7 +11,6 @@ import {
   GridEventListener,
   GridRowEditStopReasons,
 } from "@mui/x-data-grid";
-import withAdmin from "../../src/pages/api/auth/withAdmin";
 import styles from "../../src/styles/styles.module.css";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
@@ -26,6 +24,8 @@ import CancelIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
+import { useSession } from "next-auth/react";
+import { useEffect, useState, useCallback } from "react";
 
 interface User {
   id: GridRowId;
@@ -48,13 +48,16 @@ const DELTE_USER =
 }`);
 
 const UserGrid = () => {
-  const [userGrid, setUsers] = React.useState<any[]>([]);
-  const [isAddUser, setAddUser] = React.useState(false);
-  const [isDeleteUser, setDeleteUser] = React.useState(false);
-  const [userId, setDeleteUserId] = React.useState("");
-  const [isMobile, setIsMobile] = React.useState(false);
-  const [buttonLocation, setButtonLocation] = React.useState(true);
-  const [token, setToken] = React.useState<string>("");
+  const session = useSession();
+  const [userGrid, setUsers] = useState<any[]>([]);
+  const [isAddUser, setAddUser] = useState(false);
+  const [isDeleteUser, setDeleteUser] = useState(false);
+  const [userId, setDeleteUserId] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+  const [buttonLocation, setButtonLocation] = useState(true);
+  const [token, setToken] = useState<string>(
+    session.data?.user?.token as string,
+  );
 
   const users = useQuery(GET_USERS, {
     variables: {
@@ -74,11 +77,7 @@ const UserGrid = () => {
     },
   });
 
-
-
-  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
-    {},
-  );
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const handleDeleteClick = (id: GridRowId) => () => {
     userGrid.map((user: any) => {
@@ -124,14 +123,14 @@ const UserGrid = () => {
     }
   };
 
-  const [snackbar, setSnackbar] = React.useState<Pick<
+  const [snackbar, setSnackbar] = useState<Pick<
     AlertProps,
     "children" | "severity"
   > | null>(null);
 
   const handleCloseSnackbar = () => setSnackbar(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth > 1000);
       if (window.innerWidth > 1000) {
@@ -147,18 +146,18 @@ const UserGrid = () => {
     };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     getUsersData();
-  }, []);
+  }, [session]);
 
   const getUsersData = async () => {
-    const token = localStorage.getItem("token") || "";
+    const token = session.data?.user?.token as string;
     setToken(token);
     await users.refetch();
     // Delete the users id and change the id to index.
   };
 
-  const handleProcessRowUpdateError = React.useCallback((error: Error) => {
+  const handleProcessRowUpdateError = useCallback((error: Error) => {
     setSnackbar({ children: error.message, severity: "error" });
   }, []);
 
@@ -307,4 +306,4 @@ const UserGrid = () => {
   );
 };
 
-export default withAdmin(UserGrid);
+export default UserGrid;

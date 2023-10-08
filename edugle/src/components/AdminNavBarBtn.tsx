@@ -1,4 +1,3 @@
-import withAdmin from "../../src/pages/api/auth/withAdmin";
 import Link from "next/link";
 
 const NabarBtn = () => {
@@ -11,4 +10,4 @@ const NabarBtn = () => {
   );
 };
 
-export default withAdmin(NabarBtn);
+export default NabarBtn;

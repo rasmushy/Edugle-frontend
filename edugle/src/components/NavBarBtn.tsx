@@ -13,7 +13,7 @@ const NavBarBtn = () => {
 
   return (
     <>
-      {session.data?.user.role === "admin" && <AdminNavBarBtn />}
+      {session.data?.user.role === "Admin" && <AdminNavBarBtn />}
       <Link href="/profile">
         <button
           onClick={() => {}}

@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
-import { useQuery, gql, useMutation, useSubscription } from "@apollo/client";
-import { Chat, User, Message } from "../__generated__/graphql";
+import { gql, useMutation } from "@apollo/client";
+import { Chat, User } from "../__generated__/graphql";
 import SideBar from "../components/SideBar";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
-import {set} from "zod";
+import { useRouter } from "next/router";
 
 const CREATE_MESSAGE = gql(`
 mutation CreateMessage($chat: ID!, $message: MessageInput!) {
@@ -74,67 +74,9 @@ mutation JoinChat($chatId: ID!, $token: String!) {
   }
 }`);
 
-const CHAT_BY_USER = gql(`
-query ChatByUser($token: String!) {
-  chatByUser(token: $token) {
-    created_date
-    id
-    messages {
-      date
-      content
-      id
-      sender {
-        description
-        avatar
-        email
-        id
-        lastLogin
-        password
-        role
-        username
-      }
-    }
-  }
-}`);
-
-const CHAT_BY_ID = gql(`
-query ChatById($chatByIdId: ID!) {
-  chatById(id: $chatByIdId) {
-    created_date
-    id
-    messages {
-      content
-      date
-      id
-      sender {
-        avatar
-        description
-        email
-        id
-        lastLogin
-        password
-        role
-        username
-      }
-    }
-  }
-}`);
-
-const GET_USER_BY_ID = gql(`
-query GetUserById($getUserByIdId: ID!) {
-  getUserById(id: $getUserByIdId) {
-    id
-    username
-    email
-    password
-    description
-    avatar
-    lastLogin
-    role
-  }
-}`);
-
 const ChatApp = () => {
+  const session = useSession();
+  const router = useRouter();
   const [message, setMessage] = useState("");
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [chatID, setChatID] = useState("651fe7b7d18679a5933d8da9");
@@ -142,8 +84,15 @@ const ChatApp = () => {
   const [user2, setUser2] = useState<User | null>(null);
   const [chat, setChat] = useState<Chat | null>(null);
   const [isLikeUser, setIsLikeUser] = useState<Boolean>(false);
-  const session = useSession();
   const [token, setToken] = useState(session.data?.user?.token as string);
+
+  useEffect(() => {
+    if (session.status === "unauthenticated") {
+      router.replace("/");
+    }
+    setToken(session.data?.user?.token as string);
+    console.log("token=", token);
+  }, [session]);
 
   const [joinChat] = useMutation(JOIN_CHAT, {
     variables: {
@@ -217,7 +166,6 @@ const ChatApp = () => {
     if (prompt) {
       setChatID(prompt);
       console.log("Joining chat...");
-      console.log("token=", token as string);
       console.log("chatID=", chatID);
       joinChat();
     }
@@ -298,3 +246,8 @@ const ChatApp = () => {
   );
 };
 export default ChatApp;
+
+ChatApp.auth = {
+  role: "User",
+  unauthorized: "/",
+};
