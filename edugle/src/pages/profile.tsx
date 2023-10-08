@@ -118,12 +118,23 @@ export default function Profile() {
   }
 
   useEffect(() => {
-    getUserQuery();
+    if (session.status === "authenticated") {
+      getUserQuery();
+    }
   });
 
   useEffect(() => {
     createBubbles();
   }, []);
+
+  if (session.status === "loading") {
+    return null;
+  }
+
+  if (session?.data?.user?.token === undefined) {
+    return null;
+  }
+
   if (session.status === "authenticated") {
     return (
       <>
@@ -163,7 +174,13 @@ export default function Profile() {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setIsPopupOpen(false)}>Cancel</Button>
-                <Button onClick={() => { setIsPopupOpen(false); updateUser(); }} color="primary">
+              <Button
+                onClick={() => {
+                  setIsPopupOpen(false);
+                  updateUser();
+                }}
+                color="primary"
+              >
                 Save
               </Button>
             </DialogActions>
