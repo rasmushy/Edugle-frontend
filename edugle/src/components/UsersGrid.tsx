@@ -99,17 +99,20 @@ const UserGrid = () => {
         new Promise<Partial<User>>((resolve, reject) => {
           setTimeout(() => {
             try {
-              if (user.role === true) {
-                setIsAdmin("Admin");
-                setModifyUserID(user.id?.toString() || ""); // convert to string before setting state
+              if (session.data?.user.id === user.id) {
+                reject(new Error("Et voi muuttaa omaa rooliasi!"));
               } else {
-                setIsAdmin("User");
-                setModifyUserID(user.id?.toString() || ""); // convert to string before setting state
+                if (user.role === true) {
+                  setIsAdmin("Admin");
+                  setModifyUserID(user.id?.toString() || ""); // convert to string before setting state
+                } else {
+                  setIsAdmin("User");
+                  setModifyUserID(user.id?.toString() || ""); // convert to string before setting state
+                }
               }
             } catch (err) {
               reject(new Error("Käyttäjän tallennus epäonnistui!"));
             }
-
             resolve({
               ...user,
             });
