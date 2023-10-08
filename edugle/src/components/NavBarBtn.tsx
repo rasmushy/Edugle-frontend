@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMutation, useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 import withAuth from "../pages/api/auth/withAuth";
+import AdminNavBarBtn from "./AdminNavBarBtn";
 
 const NavBarBtn = () => {
   return (
@@ -11,7 +12,7 @@ const NavBarBtn = () => {
       <Link href="/profile">
         <button
           onClick={() => {}}
-          className="rounded bg-[#FFFFFF p-2 text-[#012A4A]"
+          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
         >
           Profile
         </button>
@@ -19,14 +20,15 @@ const NavBarBtn = () => {
       <Link href="/settings">
         <button
           onClick={() => {}}
-          className="rounded bg-[#FFFFFF p-2 text-[#012A4A]"
+          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
         >
           Settings
         </button>
       </Link>
+      <AdminNavBarBtn />
       <Link href="/logout">
         <button
-          className="rounded bg-[#FFFFFF p-2 text-[#012A4A]"
+          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
           onClick={() => {
             localStorage.removeItem(AUTH_TOKEN);
           }}

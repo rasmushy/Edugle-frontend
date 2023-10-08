@@ -7,18 +7,21 @@ const withAuth = (WrappedComponent: any) => {
   const WithAuthComponent = (props: any) => {
     const [token, setToken] = useState<string>("");
     const [authUser, setAuth] = useState(null);
-    const CHECK_TOKEN = gql(`query CheckToken($token: String!) {
-          checkToken(token: $token) {
+
+    const CHECK_ADMIN = gql(`query CheckAdmin($token: String!) {
+          checkAdmin(token: $token) {
             email
+            id
+            role
         }
       }`);
 
-    const checkToken = useQuery(CHECK_TOKEN, {
+    const checkAdmin = useQuery(CHECK_ADMIN, {
       variables: {
         token: token,
       },
-      onCompleted: ({ checkToken }) => {
-        setAuth(checkToken);
+      onCompleted: ({ checkAdmin }) => {
+        setAuth(checkAdmin);
       },
     });
 
@@ -27,7 +30,7 @@ const withAuth = (WrappedComponent: any) => {
         // Perform localStorage action
         const token = localStorage.getItem("token") || "";
         setToken(token);
-        const userToken = await checkToken.refetch();
+        const userToken = await checkAdmin.refetch();
         return userToken;
       } catch (exception) {
         setAuth(null);
@@ -42,7 +45,7 @@ const withAuth = (WrappedComponent: any) => {
       isAuthentication().then((isAuth) => {
         if (!isAuth) {
           // Redirect to the main page if not authenticated
-          router.replace("/");
+          return null;
         }
       });
     }, []);
