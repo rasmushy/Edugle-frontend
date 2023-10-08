@@ -47,7 +47,6 @@ export default function Home({ session: initialSession }: { session: any }) {
   }, []);
 
   useEffect(() => {
-    console.log(status, " isAuth");
   }, [status]);
 
   return (

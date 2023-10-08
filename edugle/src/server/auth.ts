@@ -57,8 +57,6 @@ export const authOptions: NextAuthOptions = {
           }
         `;
 
-        console.log("Credentials: ", credentials);
-
         //console.log("Credentials: ", credentials?.data);
         const response = await fetch(`http://localhost:3000/graphql`, {
           method: "POST",
@@ -77,8 +75,6 @@ export const authOptions: NextAuthOptions = {
         });
 
         const data = await response.json();
-
-        console.log("Data: ", data);
 
         // Now, check the response
         if (data?.data?.loginUser?.token) {
