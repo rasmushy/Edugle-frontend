@@ -5,21 +5,15 @@ import { useSession } from "next-auth/react";
 import MainPageBtn from "~/components/MainPageBtn";
 import styles from "../styles/styles.module.css";
 import { useEffect, useState, useRef, MutableRefObject } from "react";
-import { relative } from "path";
 
 export default function Home({session: initialSession}: {session: any}) {
 const { data: session = initialSession, status } = useSession();
   const [activePopup, setActivePopup] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
 
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));
-  }
-
-  function handleGoChat(): void {
-    console.log(isAuthenticated, " isAuthhthth");
   }
 
   function createBubbles() {
@@ -52,8 +46,8 @@ const { data: session = initialSession, status } = useSession();
   }, []);
 
   useEffect(() => {
-    console.log(session, " isAuth");
-  }, [session]);
+    console.log(status, " isAuth");
+  }, [status]);
 
   return (
     <>

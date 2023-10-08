@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { useSubscription, gql } from "@apollo/client";
-import { IMessage } from "../lib/types";
 import { Message } from "../__generated__/graphql";
 import { useState } from "react";
 import { Chat } from "../__generated__/graphql";

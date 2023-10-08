@@ -1,17 +1,31 @@
 import React, { useState } from "react";
-import { AUTH_TOKEN } from "~/constants";
 import Link from "next/link";
-import { useMutation, useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
-import withAuth from "../pages/api/auth/withAuth";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 const NavBarBtn = () => {
+  const session = useSession();
+  const status = session.status;
+
+  if (status === "loading") return <div>Loading...</div>;
+  if (status === "unauthenticated") return null;
+
   return (
     <>
+      {session.data?.user.role === "admin" && (
+        <Link href="/admin">
+          <button
+            onClick={() => {}}
+            className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
+          >
+            Admin
+          </button>
+        </Link>
+      )}
       <Link href="/profile">
         <button
           onClick={() => {}}
-          className="rounded bg-[#FFFFFF p-2 text-[#012A4A]"
+          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
         >
           Profile
         </button>
@@ -19,16 +33,18 @@ const NavBarBtn = () => {
       <Link href="/settings">
         <button
           onClick={() => {}}
-          className="rounded bg-[#FFFFFF p-2 text-[#012A4A]"
+          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
         >
           Settings
         </button>
       </Link>
-      <Link href="/logout">
+      <Link href="/">
         <button
-          className="rounded bg-[#FFFFFF p-2 text-[#012A4A]"
+          className="bg-[#FFFFFF rounded p-2 text-[#012A4A]"
           onClick={() => {
-            localStorage.removeItem(AUTH_TOKEN);
+            signOut({
+              callbackUrl: "/",
+            });
           }}
         >
           Logout
@@ -38,4 +54,4 @@ const NavBarBtn = () => {
   );
 };
 
-export default withAuth(NavBarBtn);
+export default NavBarBtn;

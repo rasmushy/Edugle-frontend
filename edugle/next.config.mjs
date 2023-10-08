@@ -17,6 +17,14 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/graphql/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}graphql/:path*`,
+      },
+    ];
+  },
 };
 
 export default config;

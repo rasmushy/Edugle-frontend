@@ -3,12 +3,10 @@ import Head from "next/head";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
 import { useQuery, gql, useMutation, useSubscription } from "@apollo/client";
-import { Chat } from "../__generated__/graphql";
-import { IUser, IMessage } from "../lib/types";
+import { Chat, User } from "../__generated__/graphql";
 import SideBar from "../components/SideBar";
-import { join } from "path";
-import withAuth from "./api/auth/withAuth";
 import LikeUser from "~/components/LikeUser";
+import { useSession } from "next-auth/react";
 
 const CREATE_MESSAGE = gql(`
 mutation CreateMessage($chat: ID!, $message: MessageInput!) {
@@ -139,10 +137,11 @@ const ChatApp = () => {
   const [message, setMessage] = useState("");
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [chatID, setChatID] = useState("652122c39edea4edd683aba8");
-  const [user1, setUser1] = useState<IUser | null>(null);
-  const [user2, setUser2] = useState<IUser | null>(null);
+  const [user1, setUser1] = useState<User | null>(null);
+  const [user2, setUser2] = useState<User | null>(null);
   const [chat, setChat] = useState<Chat | null>(null);
   const [isLikeUser, setIsLikeUser] = useState<Boolean>(false);
+  const session = useSession();
 
   /*   const chatByUser = useQuery(CHAT_BY_USER, {
     variables: {
@@ -156,7 +155,7 @@ const ChatApp = () => {
   const [joinChat] = useMutation(JOIN_CHAT, {
     variables: {
       chatId: chatID,
-      token: localStorage.getItem("token"),
+      token: session.data?.user.token as string,
     },
     onCompleted: ({ joinChat }) => {
       console.log("joinChat=", joinChat);
@@ -186,7 +185,7 @@ const ChatApp = () => {
       chat: chatID,
       message: {
         content: message,
-        senderToken: localStorage.getItem("token"),
+        senderToken: session.data?.user.token as string,
       },
     },
     onCompleted: ({ createMessage }) => {
@@ -218,6 +217,7 @@ const ChatApp = () => {
     if (prompt) {
       setChatID(prompt);
       console.log("Joining chat...");
+      console.log('token=', session.data?.user?.token);
       joinChat();
     }
   };
@@ -285,7 +285,7 @@ const ChatApp = () => {
               }`}
             >
               <SideBar
-                users={[user1 as IUser, user2 as IUser]}
+                users={[user1 as User, user2 as User]}
                 handleNextUser={handleNextUser}
                 handleLikeUser={handleLikeUser}
               />

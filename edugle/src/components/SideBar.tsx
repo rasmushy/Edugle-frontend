@@ -1,8 +1,8 @@
 import React from "react";
-import { IUser } from "../lib/types";
+import { User } from "../__generated__/graphql";
 
 type SidebarProps = {
-  users: IUser[] | null;
+  users: User[] | null;
   handleNextUser: () => void;
   handleLikeUser: () => void;
 };

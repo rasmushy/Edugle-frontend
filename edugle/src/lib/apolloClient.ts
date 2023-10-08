@@ -9,12 +9,10 @@ import { setContext } from "@apollo/client/link/context";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { HTTP_URI, WS_URI, AUTH_TOKEN } from "../constants";
 import { onError } from "@apollo/client/link/error";
-import { useSession } from "next-auth/react";
 
 const httpLink = new HttpLink({
-  uri: HTTP_URI,
+  uri: `${process.env.NEXT_PUBLIC_API_URL}graphql`,
   credentials: "same-origin",
 });
 
@@ -22,7 +20,7 @@ const wsLink =
   typeof window !== "undefined"
     ? new GraphQLWsLink(
         createClient({
-          url: WS_URI,
+          url: `${process.env.NEXT_PUBLIC_WS_URL}`,
         }),
       )
     : null;
@@ -55,10 +53,8 @@ const link =
       )
     : httpLink;
 
+function createApolloClient(token: string | null) {
 const authMiddleware = setContext(async (_, { headers }) => {
-  const { data: session } = useSession();
-  const token = localStorage.getItem(AUTH_TOKEN) || session?.user.id || "";
-  console.log('token=', token);
   return {
     headers: {
       ...headers,
@@ -67,10 +63,11 @@ const authMiddleware = setContext(async (_, { headers }) => {
   };
 });
 
-const client = new ApolloClient({
+return new ApolloClient({
   link: from([authMiddleware, link]),
   credentials: "same-origin",
   cache: new InMemoryCache(),
 });
+}
 
-export default client;
+export default createApolloClient;

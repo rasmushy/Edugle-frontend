@@ -5,41 +5,20 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { AccountCircle } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
-import { gql, useMutation } from "@apollo/client";
 
-const LOGIN_USER = gql(`
-  mutation LoginUser($credentials: LoginInput!) {
-    loginUser(credentials: $credentials) {
-      user {
-        username
-        email
-        password
-        id
-      }
-      token
-      message
-    }
-  }
-`);
-
-const REGISTER_USER = gql(`
-  mutation RegUser($user: RegisterInput!) {
-    registerUser(user: $user) {
-      user {
-        username
-        email
-        password
-      }
-    }
-  }
-`);
-
-type AuthFormProps = {
+export default function AuthForm({
+  title,
+  onFormSubmit,
+  toggle,
+  error,
+  successMessage,
+}: {
   title: string;
+  onFormSubmit: (e: FormEvent<HTMLFormElement>, data: {username: string, email: string, password: string, description?: string}) => void;
   toggle: () => void;
-};
-
-export default function AuthForm({ title, toggle }: AuthFormProps) {
+  error: any;
+  successMessage: string;
+}) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -51,29 +30,7 @@ export default function AuthForm({ title, toggle }: AuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const [loginUserMutation, { error: loginError, data: loginData }] =
-    useMutation(LOGIN_USER, {
-      variables: {
-        credentials: { email, password },
-      },
-      onCompleted: ({ loginUser }) => {
-          localStorage.setItem("token", loginUser.token);
-          console.log("loginUser", loginUser.token);
-      },
-    });
-
-  const [registerUserMutation, { error: registerError, data: registerData }] =
-    useMutation(REGISTER_USER, {
-      variables: {
-        user: { username, email, password, description },
-      },
-      onCompleted: ({ registerUser }) => {
-        localStorage.setItem("token", registerUser.token);
-        console.log("registerUser", registerUser.token);
-      },
-    });
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const validateInput = (e: FormEvent<HTMLFormElement>) => {
     if (title === "Sign Up") {
@@ -105,26 +62,17 @@ export default function AuthForm({ title, toggle }: AuthFormProps) {
     }
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
-    console.log("handleSubmit");
-    if (title === "Login") {
-      try {
-        loginUserMutation();
-        console.log("loginUserMutation");
-      } catch (err) {
-        console.error(err);
-      }
-    } else if (title === "Sign Up") {
-      try {
-        await registerUserMutation();
-      } catch (err) {
-        console.error(err);
-      }
-    }
+    await onFormSubmit(e, {
+      username,
+      email,
+      password,
+      description,
+    });
     setIsLoading(false);
-  };
+  }
 
   return (
     <div className="flex h-[800px] w-[400px] flex-col items-center justify-center rounded-lg bg-gradient-to-b from-[#2e026d] to-[#15162c]">
@@ -240,13 +188,18 @@ export default function AuthForm({ title, toggle }: AuthFormProps) {
           </div>
         </form>
         <div className="mb-2 h-5">
-          {loginError || registerError ? (
-            <div className="mb-2 block text-sm font-bold text-red-700">
-              {loginError?.message || registerError?.message}
-            </div>
-          ) : null}
-        </div>
+        {error ? (
+          <div className="mb-2 block text-sm font-bold text-red-700">
+            {error.message}
+          </div>
+        ) : null}
+        {successMessage ? (
+          <div className="text-green mb-2 block text-sm font-bold">
+            {successMessage}
+          </div>
+        ) : null}
       </div>
+    </div>
     </div>
   );
 }

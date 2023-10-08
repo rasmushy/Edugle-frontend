@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import { AUTH_TOKEN } from "~/constants";
 import Link from "next/link";
-import { useMutation, useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
-import withAuth from "../pages/api/auth/withAuth";
 import NavBarBtn from "./NavBarBtn";
 
 const Header = () => {

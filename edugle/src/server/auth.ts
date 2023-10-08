@@ -5,7 +5,8 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { verifyUserCredentials } from "~/pages/api/auth/verifyUserCredentials";
+import { gql } from "@apollo/client";
+import { print } from "graphql";
 
 import { env } from "~/env.mjs";
 
@@ -20,7 +21,12 @@ declare module "next-auth" {
     user: DefaultSession["user"] & {
       id: string;
       role: string;
+      token: string;
     };
+  }
+
+  interface JWT {
+    token: string;
   }
 }
 
@@ -38,20 +44,55 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        if (!credentials) {
-          return null;
+        const CHECK_CREDENTIALS = gql`
+          mutation LoginUser($credentials: LoginInput!) {
+            loginUser(credentials: $credentials) {
+              message
+              token
+              user {
+                username
+                id
+                email
+              }
+            }
+          }
+        `;
+
+        console.log("Credentials: ", credentials);
+
+        //console.log("Credentials: ", credentials?.data);
+        const response = await fetch(`http://localhost:3000/graphql`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: print(CHECK_CREDENTIALS),
+            variables: {
+              credentials: {
+                email: credentials?.email,
+                password: credentials?.password,
+              },
+            },
+          }),
+        });
+
+        const data = await response.json();
+
+        console.log("Data: ", data);
+
+        // Now, check the response
+        if (data?.data?.loginUser?.token) {
+          // Return user details and token to next-auth to manage session
+          return {
+            role: data.data.loginUser.user.role,
+            id: data.data.loginUser.user.id,
+            token: data.data.loginUser.token,
+          };
         }
-        const user: any = await verifyUserCredentials(
-          credentials.email as string,
-          credentials.password as string,
-        );
-        if (user) {
-          // If user credentials are valid, return the user object
-          return user;
-        } else {
-          // Else return null, which will throw an error and redirect to the error page (change behavior as needed)
-          return null;
-        }
+
+        // If something goes wrong
+        return null;
       },
     }),
   ],
@@ -67,8 +108,20 @@ export const authOptions: NextAuthOptions = {
       session.user = token.user as DefaultSession["user"] & {
         id: string;
         role: string;
+        token: string;
       };
       return session;
+    },
+  },
+  cookies: {
+    sessionToken: {
+      name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: env.NODE_ENV === "production",
+      },
     },
   },
 };
