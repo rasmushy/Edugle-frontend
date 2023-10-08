@@ -7,8 +7,8 @@ import {
 import CredentialsProvider from "next-auth/providers/credentials";
 import { gql } from "@apollo/client";
 import { print } from "graphql";
-
 import { env } from "~/env.mjs";
+import { withAuth } from "next-auth/middleware";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -100,6 +100,20 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      const isAllowedToSignIn = true;
+      if (isAllowedToSignIn) {
+        return true;
+      } else {
+        // Return false to display a default error message
+        return false;
+        // Or you can return a URL to redirect to:
+        // return '/unauthorized'
+      }
+    },
+    async redirect({ url, baseUrl }) {
+      return baseUrl;
+    },
     jwt: async ({ token, user }) => {
       user && (token.user = user);
       return token;
