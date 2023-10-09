@@ -14,7 +14,15 @@ export default function AuthForm({
   successMessage,
 }: {
   title: string;
-  onFormSubmit: (e: FormEvent<HTMLFormElement>, data: {username: string, email: string, password: string, description?: string}) => void;
+  onFormSubmit: (
+    e: FormEvent<HTMLFormElement>,
+    data: {
+      username: string;
+      email: string;
+      password: string;
+      description?: string;
+    },
+  ) => void;
   toggle: () => void;
   error: any;
   successMessage: string;
@@ -30,7 +38,7 @@ export default function AuthForm({
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const validateInput = (e: FormEvent<HTMLFormElement>) => {
     if (title === "Sign Up") {
@@ -75,9 +83,9 @@ const handleClickShowPassword = () => setShowPassword((show) => !show);
   }
 
   return (
-    <div className="flex h-[800px] w-[400px] flex-col items-center justify-center rounded-lg bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+    <div className="flex h-[750px] w-[400px] flex-col items-center justify-center rounded-lg bg-gradient-to-b from-[#2C7DA0] to-[#15162c] drop-shadow-2xl ">
       <button
-        className="color-white absolute right-2 top-2 text-2xl"
+        className="color-white absolute right-2 top-2 text-4xl"
         onClick={toggle}
         aria-label="Close"
       >
@@ -122,8 +130,9 @@ const handleClickShowPassword = () => setShowPassword((show) => !show);
             <TextField
               error={!checkEmail}
               required
-              sx={{ width: "100%", backgroundColor: "white", borderRadius: 2 }}
+              sx={{ width: "100%", backgroundColor: "white" }}
               id="Email"
+              autoComplete="email"
               placeholder="Email"
               label="Required"
               variant="filled"
@@ -137,7 +146,7 @@ const handleClickShowPassword = () => setShowPassword((show) => !show);
             <TextField
               error={!checkPassword}
               required
-              sx={{ width: "100%", backgroundColor: "white", borderRadius: 2 }}
+              sx={{ width: "100%", backgroundColor: "white" }}
               id="PassWord"
               label="Required"
               variant="filled"
@@ -168,7 +177,12 @@ const handleClickShowPassword = () => setShowPassword((show) => !show);
               </label>
               <TextField
                 id="outlined-multiline-static"
-                sx={{ width: "100%", backgroundColor: "white" }}
+                sx={{
+                  width: "100%",
+                  backgroundColor: "white",
+                  borderRadius: 2,
+                  marginBottom: 5,
+                }}
                 multiline
                 autoComplete="off"
                 rows={4}
@@ -177,10 +191,10 @@ const handleClickShowPassword = () => setShowPassword((show) => !show);
               />
             </div>
           )}
-          <div className="flex items-center justify-between">
+          <div className="flex justify-center">
             <button
               type="submit"
-              className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+              className="focus:shadow-outline rounded bg-[#2C7DA0] px-20 py-2 font-bold text-white hover:bg-[#01497C] focus:outline-none"
               disabled={isLoading}
             >
               {isLoading ? "Loading..." : title}
@@ -188,18 +202,18 @@ const handleClickShowPassword = () => setShowPassword((show) => !show);
           </div>
         </form>
         <div className="mb-2 h-5">
-        {error ? (
-          <div className="mb-2 block text-sm font-bold text-red-700">
-            {error.message}
-          </div>
-        ) : null}
-        {successMessage ? (
-          <div className="text-green mb-2 block text-sm font-bold">
-            {successMessage}
-          </div>
-        ) : null}
+          {error ? (
+            <div className="mb-2 block text-sm font-bold text-red-700">
+              {error.message}
+            </div>
+          ) : null}
+          {successMessage ? (
+            <div className="text-green mb-2 block text-sm font-bold">
+              {successMessage}
+            </div>
+          ) : null}
+        </div>
       </div>
-    </div>
     </div>
   );
 }

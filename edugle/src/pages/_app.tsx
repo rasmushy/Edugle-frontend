@@ -6,6 +6,7 @@ import { ApolloProviderWrapper } from "../components/ApolloProviderWrapper";
 import Header from "../components/Header";
 
 import "~/styles/globals.css";
+import { NavBarProvider } from "./api/NavBarProvider";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -14,8 +15,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider
       session={session}
-      refetchInterval={5 * 60} // Re-fetch session every 5 minutes
-      refetchOnWindowFocus={true} // Re-fetches session when window is focused
     >
       <style>
         {`
@@ -23,12 +22,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
             background: #2C7DA0;
             overflow-x: hidden;
           }
-        `}
+          `}
       </style>
-      <ApolloProviderWrapper>
-        <Header />
-        <Component {...pageProps} />
-      </ApolloProviderWrapper>
+      <NavBarProvider>
+        <ApolloProviderWrapper>
+          <Header />
+          <Component {...pageProps} />
+        </ApolloProviderWrapper>
+      </NavBarProvider>
     </SessionProvider>
   );
 };

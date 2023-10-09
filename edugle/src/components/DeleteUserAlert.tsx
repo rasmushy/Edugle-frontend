@@ -37,12 +37,10 @@ const AlertDialogSlide = ({
       },
     },
     onCompleted: ({ deleteUserAsAdmin }) => {
-      console.log(deleteUserAsAdmin);
     },
   });
 
   const deleteUserDatabase = async () => {
-    console.log(userId);
     await deleteUserAsAdmin();
   };
 

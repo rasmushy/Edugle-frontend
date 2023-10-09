@@ -26,6 +26,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, useCallback } from "react";
+import { useNavBar } from "~/pages/api/NavBarProvider";
 
 interface User {
   id: GridRowId;
@@ -38,26 +39,30 @@ const GET_USERS = gql(`query Users($token: String!) {
             role
             username
         }
-      }`);
+}`);
 
-const DELTE_USER =
-  gql(`mutation DeleteUserAsAdmin($deleteUserId: ID!, $user: deleteUserAsAdminInput) {
-  deleteUserAsAdmin(deleteUserID: $deleteUserId, user: $user) {
+const MODIFY_USER =
+  gql(`mutation Mutation($user: modifyUserAsAdminInput, $modifyUser: ModifyUserWithTokenAndRoleInput) {
+  modifyUserAsAdmin(user: $user, modifyUser: $modifyUser) {
+    user {
+      role
+    }
     message
   }
 }`);
 
 const UserGrid = () => {
-  const session = useSession();
   const [userGrid, setUsers] = useState<any[]>([]);
-  const [isAddUser, setAddUser] = useState(false);
   const [isDeleteUser, setDeleteUser] = useState(false);
   const [userId, setDeleteUserId] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [buttonLocation, setButtonLocation] = useState(true);
-  const [token, setToken] = useState<string>(
-    session.data?.user?.token as string,
-  );
+  const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
+  const session = useSession();
+  const [token, setToken] = useState<string>("");
+  const [modifyUserID, setModifyUserID] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState<string>("");
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const users = useQuery(GET_USERS, {
     variables: {
@@ -71,19 +76,62 @@ const UserGrid = () => {
           role: user.role?.toLowerCase() === "admin" ? true : false,
         };
       });
-
-      console.log(userGrid);
       setUsers(usersWithId);
     },
   });
 
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const [modifyUserAsAdmin] = useMutation(MODIFY_USER, {
+    variables: {
+      user: {
+        token: token,
+      },
+      modifyUser: {
+        role: isAdmin,
+        id: modifyUserID,
+      },
+    },
+    onCompleted: ({ modifyUserAsAdmin }) => {},
+  });
+
+  const editUserState = () => {
+    return useCallback(
+      (user: Partial<User>) =>
+        new Promise<Partial<User>>((resolve, reject) => {
+          setTimeout(() => {
+            try {
+              if (session.data?.user.id === user.id) {
+                reject(new Error("Et voi muuttaa omaa rooliasi!"));
+              } else {
+                if (user.role === true) {
+                  setIsAdmin("Admin");
+                  setModifyUserID(user.id?.toString() || ""); // convert to string before setting state
+                } else {
+                  setIsAdmin("User");
+                  setModifyUserID(user.id?.toString() || ""); // convert to string before setting state
+                }
+              }
+            } catch (err) {
+              reject(new Error("Käyttäjän tallennus epäonnistui!"));
+            }
+            resolve({
+              ...user,
+            });
+          }, 200);
+        }),
+      [],
+    );
+  };
+
+  useEffect(() => {
+    if (modifyUserID ) {
+      modifyUserAsAdmin();
+    }
+  }, [modifyUserID]);
 
   const handleDeleteClick = (id: GridRowId) => () => {
     userGrid.map((user: any) => {
       if (user.id === id) {
         setDeleteUserId(user.id);
-        console.log("user.id", user.id);
       }
     });
     setDeleteUser(true);
@@ -123,12 +171,27 @@ const UserGrid = () => {
     }
   };
 
+  const mutateRow = editUserState();
+
   const [snackbar, setSnackbar] = useState<Pick<
     AlertProps,
     "children" | "severity"
   > | null>(null);
 
   const handleCloseSnackbar = () => setSnackbar(null);
+
+  const processRowUpdate = useCallback(
+    async (newRow: GridRowModel) => {
+      // Make the HTTP request to save in the backend
+      const response = await mutateRow(newRow);
+      setSnackbar({
+        children: "Käyttäjä tallennettu onnistuneesti!",
+        severity: "success",
+      });
+      return response;
+    },
+    [mutateRow],
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -162,11 +225,11 @@ const UserGrid = () => {
   }, []);
 
   const columns: GridColDef[] = [
-    { field: "tunnus", headerName: "Tunnus", width: 300 },
+    { field: "tunnus", headerName: "Tunnus", width: 200 },
     {
       field: "username",
       headerName: "Username",
-      width: 300,
+      width: 200,
       editable: false,
     },
     {
@@ -179,14 +242,14 @@ const UserGrid = () => {
       field: "role",
       headerName: "Admin",
       type: "boolean",
-      width: 110,
+      width: 200,
       editable: true,
     },
     {
       field: "actions",
       type: "actions",
       headerName: "Toiminnot",
-      width: 100,
+      width: 300,
       cellClassName: "actions",
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
@@ -273,6 +336,7 @@ const UserGrid = () => {
             rowModesModel={rowModesModel}
             onRowModesModelChange={handleRowModesModelChange}
             onRowEditStop={handleRowEditStop}
+            processRowUpdate={processRowUpdate}
             onProcessRowUpdateError={handleProcessRowUpdateError}
             initialState={{
               pagination: {
