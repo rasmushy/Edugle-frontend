@@ -1,14 +1,9 @@
 import { type GetServerSidePropsContext } from "next";
-import {
-  getServerSession,
-  type DefaultSession,
-  type NextAuthOptions,
-} from "next-auth";
+import { getServerSession, type DefaultSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { gql } from "@apollo/client";
-import { print } from "graphql";
-import { env } from "~/env.mjs";
-import { withAuth } from "next-auth/middleware";
+import { env } from "../env.mjs";
+import { print } from "graphql/language/printer";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -57,8 +52,7 @@ export const authOptions: NextAuthOptions = {
           }
         `;
 
-        //console.log("Credentials: ", credentials?.data);
-        const response = await fetch(`http://localhost:3000/graphql`, {
+        const response = await fetch(`${env.NEXT_PUBLIC_API_URL}/graphql`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -73,11 +67,8 @@ export const authOptions: NextAuthOptions = {
             },
           }),
         });
-
         const data = await response.json();
-
-        // Now, check the response
-        if (data?.data?.loginUser?.token) {
+        if (data?.data.loginUser?.token) {
           // Return user details and token to next-auth to manage session
           return {
             role: data.data.loginUser.user.role,
@@ -85,7 +76,6 @@ export const authOptions: NextAuthOptions = {
             token: data.data.loginUser.token,
           };
         }
-
         // If something goes wrong
         return null;
       },
@@ -95,18 +85,11 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      const isAllowedToSignIn = true;
-      if (isAllowedToSignIn) {
-        return true;
-      } else {
-        // Return false to display a default error message
-        return false;
-        // Or you can return a URL to redirect to:
-        // return '/unauthorized'
-      }
-    },
     async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
     jwt: async ({ token, user }) => {
@@ -145,9 +128,6 @@ export const authOptions: NextAuthOptions = {
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export const getServerAuthSession = (ctx: {
-  req: GetServerSidePropsContext["req"];
-  res: GetServerSidePropsContext["res"];
-}) => {
+export const getServerAuthSession = (ctx: { req: GetServerSidePropsContext["req"]; res: GetServerSidePropsContext["res"] }) => {
   return getServerSession(ctx.req, ctx.res, authOptions);
 };

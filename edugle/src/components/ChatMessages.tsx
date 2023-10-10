@@ -1,10 +1,8 @@
-import React, { useEffect, useRef } from "react";
-import { useSubscription, gql } from "@apollo/client";
-import { Message } from "../__generated__/graphql";
-import { Chat } from "../__generated__/graphql";
+import React, { use, useEffect, useRef } from "react";
+import { Message, Chat } from "../__generated__/graphql";
 
 type ChatMessagesProps = {
-  chat: Chat;
+  chatMessages: Message[];
 };
 
 //Adds breaks to long messages, so they don't overflow the chat box.
@@ -20,64 +18,35 @@ function addBreaks(str: string) {
       }
       newStr += line[i];
     }
-    return newStr; 
+    return newStr;
   });
   return processedLines;
 }
 
-const MESSAGE_CREATED = gql(`subscription Subscription($chatId: ID!) {
-  messageCreated(chatId: $chatId) {
-    created_date
-    id
-    messages {
-      content
-      date
-      id
-      sender {
-        avatar
-        description
-        email
-        id
-        lastLogin
-        password
-        role
-        username
-      }
-    }
-  }
-}`);
-
-const ChatMessages: React.FC<ChatMessagesProps> = ({ chat }) => {
-
-  const messageCreated = useSubscription(MESSAGE_CREATED, {
-    variables: { chatId: chat.id },
-    onSubscriptionData: ({ subscriptionData }) => {
-      console.log("subscriptionData=", subscriptionData);
-    }, onError: (error) => {
-      console.log("error=", error);
-    }
-  });
-
+const ChatMessages: React.FC<ChatMessagesProps> = ({
+  chatMessages: messages,
+}) => {
   return (
-    <div className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch max-h-[390px] min-h-[70vh] space-y-4  space-y-4 overflow-x- overflow-y-scroll bg-white/10 p-3 p-3">
-      {messageCreated.data?.messageCreated.messages.map((message: Message) => {
-        return (
-          <div
-            key={message?.id}
-            className="order-2 flex max-w-xs flex-col items-start space-y-2 text-xs"
-          >
-            <strong>{message?.sender?.username}:</strong>
-            <span className="inline-block rounded-lg rounded-bl-none bg-gray-300 px-4 py-2 text-gray-600">
-              {addBreaks(message.content).map((line, lineIndex) => (
-                <span key={lineIndex}>
-                  {line}
-                  {lineIndex < message.content.length - 1 && <br />}
-                </span>
-              ))}
-            </span>
-          </div>
-        );
-      })}
+    <div className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch overflow-x- max-h-[390px] min-h-[70vh]  space-y-4 space-y-4 overflow-y-scroll bg-white/10 p-3 p-3">
+      {messages &&
+        messages.map((message: Message) => {
+          return (
+            <div
+              key={message?.id}
+              className="order-2 flex max-w-xs flex-col items-start space-y-2 text-xs"
+            >
+              <strong>{message?.sender?.username}:</strong>
+              <span className="inline-block rounded-lg rounded-bl-none bg-gray-300 px-4 py-2 text-gray-600">
+                {addBreaks(message.content).map((line, lineIndex) => (
+                  <span key={lineIndex}>
+                    {line}
+                    {lineIndex < message.content.length - 1 && <br />}
+                  </span>
+                ))}
+              </span>
+            </div>
+          );
+        })}
     </div>
   );
 };
