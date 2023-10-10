@@ -1,6 +1,6 @@
 import createApolloClient from "../lib/apolloClient"; 
 import { ApolloProvider } from "@apollo/client";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
   const client = createApolloClient;
