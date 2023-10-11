@@ -1,253 +1,217 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, use } from "react";
 import Head from "next/head";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
-import { gql, useMutation } from "@apollo/client";
-import { Chat, User } from "../__generated__/graphql";
-import SideBar from "../components/SideBar";
+import { gql, useMutation, useSubscription } from "@apollo/client";
+import ChatBar from "../components/ChatBar";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import type { Message } from "../__generated__/graphql";
+import {set} from "zod";
 
-const CREATE_MESSAGE = gql(`
-mutation CreateMessage($chat: ID!, $message: MessageInput!) {
-  createMessage(chat: $chat, message: $message) {
-    content
-    date
-    id
-    sender {
-      email
-      username
-    }
-  }
-}`);
-
-const CREATE_CHAT = gql(`
-mutation CreateChat($chat: CreateChatInput) {
-  createChat(chat: $chat) {
-    created_date
-    id
-    messages {
-      content
-      date
-      id
-      sender {
-        username
-        id
+const INITIATE_CHAT = gql`
+  mutation InitiateChat($token: String!) {
+    initiateChat(token: $token) {
+      ... on PairedChatResponse {
+        chatId
+        status
+      }
+      ... on QueuePositionResponse {
+        position
+        status
       }
     }
-    users {
-      username
-      lastLogin
+  }
+`;
+const MESSAGE_CREATED = gql`
+  subscription Subscription($chatId: ID!) {
+    messageCreated(chatId: $chatId) {
+      created_date
+      id
+      messages {
+        id
+        content
+        date
+        sender {
+          avatar
+          id
+          username
+        }
+      }
     }
   }
-}`);
-
-const JOIN_CHAT = gql(`
-mutation JoinChat($chatId: ID!, $token: String!) {
-  joinChat(chatId: $chatId, token: $token) {
-    messages {
-      content
-      date
+`;
+const CHAT_STARTED = gql`
+  subscription ChatStarted {
+    chatStarted {
+      created_date
       id
-      sender {
-        avatar
-        description
-        email
+      messages {
         id
-        lastLogin
-        password
-        role
+        date
+        content
+        sender {
+          id
+          username
+        }
+      }
+      users {
+        id
         username
       }
     }
-    created_date
-    id
-    users {
-      avatar
-      description
-      email
-      lastLogin
+  }
+`;
+
+const CHAT_ENDED = gql`
+  subscription ChatEnded {
+    chatEnded {
+      created_date
       id
-      username
+      users {
+        id
+        username
+      }
+      messages {
+        id
+        content
+        date
+        sender {
+          id
+          username
+        }
+      }
     }
   }
-}`);
+`;
 
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
-  const [message, setMessage] = useState("");
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  const [chatID, setChatID] = useState("651fe7b7d18679a5933d8da9");
-  const [user1, setUser1] = useState<User | null>(null);
-  const [user2, setUser2] = useState<User | null>(null);
-  const [chat, setChat] = useState<Chat | null>(null);
-  const [isLikeUser, setIsLikeUser] = useState<Boolean>(false);
+  const [chatId, setChatId] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [chatStatus, setChatStatus] = useState("");
+  const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
   const [token, setToken] = useState(session.data?.user?.token as string);
 
-  useEffect(() => {
-    if (session.status === "unauthenticated") {
-      router.replace("/");
-    }
-    setToken(session.data?.user?.token as string);
-    console.log("token=", token);
-  }, [session]);
+  if (!session || !session.data?.user) {
+    router.replace("/");
+  }
 
-  const [joinChat] = useMutation(JOIN_CHAT, {
+  const [initiateChat] = useMutation(INITIATE_CHAT, {
     variables: {
-      chatId: chatID,
       token: token,
-      sender: {
-        username: session.data?.user?.name as string,
-        email: session.data?.user?.email as string,
-        token: session.data?.user?.token as string,
-      },
     },
-    onCompleted: ({ joinChat }) => {
-      console.log("joinChat=", joinChat);
-      setUser1(joinChat.users[0]);
-      setUser2(joinChat.users[1]);
-      setChat(joinChat);
+    onCompleted: ({ initiateChat }) => {
+      console.log("initiateChat=", initiateChat);
+      setChatStatus(initiateChat.status);
     },
     onError: (error) => {
-      console.log("error token=", token);
-      console.log("error chatID=", chatID);
+      console.log("initiateChat error=", initiateChat);
+      console.log("error", error.message);
+    },
+  });
+
+  const messageCreated = useSubscription(MESSAGE_CREATED, {
+    variables: { chatId: chatId },
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log("messageCreated: subscriptionData=", subscriptionData);
+    },
+    onError: (error) => {
+      messageCreated.data.messageCreated.messages.refetch();
+      console.log("error=", error.message);
+    },
+  });
+
+  const chatStarted = useSubscription(CHAT_STARTED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log("chatStarted: subData=", subscriptionData.data.chatStarted);
+      setChatId(subscriptionData.data.chatStarted.id);
+      setChatStatus("Paired");
+    },
+    onError: (error) => {
       console.log("error", error);
     },
   });
 
-  const [createChat] = useMutation(CREATE_CHAT, {
-    variables: {
-      chat: {
-        users: [],
-      },
-    },
-    onCompleted: ({ createChat }) => {
-      console.log("createChat=", createChat);
-      setChatID(createChat.id);
-    },
-  });
-
-  const [createMessage] = useMutation(CREATE_MESSAGE, {
-    variables: {
-      chat: chatID,
-      message: {
-        content: message,
-        senderToken: token,
-      },
-    },
-    onCompleted: ({ createMessage }) => {
-      console.log("createMessage=", createMessage);
+  const chatEnded = useSubscription(CHAT_ENDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log("chatEnded: subData=", subscriptionData.data.chatEnded);
+      setChatId("");
+      setChatStatus("Ended");
+      setMessages([]);
     },
     onError: (error) => {
-      console.log("message that failed=", message);
       console.log("error", error);
     },
   });
 
-  const handleNextUser = () => {
-    console.log("Creating chat...");
-    createChat();
-  };
-  /* {
-    "created_date": "2023-10-07T09:20:03.482Z",
-    "id": "652122c39edea4edd683aba8",
-    "messages": [],
-    "users": [],
-    "__typename": "Chat"
-} */
   const handleLikeUser = () => {
     setIsLikeUser(true);
   };
 
-  const handleJoinChat = () => {
-    let prompt = window.prompt("Enter chat ID", "651fe7b7d18679a5933d8da9");
-    if (prompt) {
-      setChatID(prompt);
-      console.log("Joining chat...");
-      console.log("chatID=", chatID);
-      joinChat();
-    }
+  const handleNextUser = () => {
+    console.log("handleJoinChat: Joining queue...");
+    initiateChat();
+    console.log("handleJoinChat: chatID=", chatId);
   };
 
-  const handleSendMessage = () => {
-    if (message !== "") {
-      createMessage();
-      console.log("Sent message:", message);
-      setMessage("");
+  useEffect(() => {
+    if (messageCreated.data) {
+      console.log("messageCreated.data=", messageCreated.data);
+      setMessages(messageCreated.data?.messageCreated?.messages as Message[]);
     }
-  };
+  }, [messageCreated.data]);
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && e.shiftKey) {
-      e.preventDefault();
-      // Manually handle new lines for shift+enter
-      const cursorPosition = e.currentTarget.selectionStart;
-      const content =
-        message.substring(0, cursorPosition) +
-        "\n" +
-        message.substring(cursorPosition);
-      setMessage(content);
-
-      // Set cursor position right after the inserted newline
-      setTimeout(() => {
-        if (e.currentTarget) {
-          e.currentTarget.selectionStart = cursorPosition + 1;
-          e.currentTarget.selectionEnd = cursorPosition + 1;
-        }
-      }, 0);
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      handleSendMessage();
+  useEffect(() => {
+    if (chatStarted.data) {
+      console.log("chatStarted.data=", chatStarted.data);
     }
-  };
+  }, [chatStarted.data]);
 
-  return (
-    <>
-      <Head>
-        <title>Edugle</title>
-        <meta name="chat" content="Chatroom" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="h-screen flex-row pl-4 pr-4">
-          <div className="flex-col">
-            {/* Chat messages */}
-            {chat != null && <ChatMessages chat={chat as unknown as Chat} />}
+  useEffect(() => {
+    if (chatEnded.data) {
+      console.log("chatEnded.data=", chatEnded.data);
+    }
+  }, [chatEnded.data]);
 
-            {/* Chat box */}
-            <ChatBox
-              message={message}
-              setMessage={setMessage}
-              handleSendMessage={handleSendMessage}
-              handleKeyPress={handleKeyPress}
-              handleJoinChat={handleJoinChat}
-            />
+  if (session.status === "authenticated") {
+    return (
+      <>
+        <Head>
+          <title>Edugle</title>
+          <meta name="chat" content="Chatroom" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+          <div className="h-screen flex-row pl-4 pr-4">
+            <div className="flex-col">
+              {/* Chat messages */}
+              {chatId != "" && <ChatMessages chatMessages={messages} />}
 
-            {isLikeUser && (
-              <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />
-            )}
-            <div
-              className={`transition-all duration-500  ${
-                isSidebarVisible ? "h-full" : "h-0"
-              }`}
-            >
-              <SideBar
-                users={[user1 as User, user2 as User]}
-                handleNextUser={handleNextUser}
+              {/* Chat box */}
+              <ChatBox chatId={chatId} user={token} />
+
+              {isLikeUser && (
+                <LikeUser
+                  isLikeUser={isLikeUser}
+                  setIsLikeUser={setIsLikeUser}
+                />
+              )}
+              {/* Sidebar: with functions for liking and joining next chat */}
+              <ChatBar
+                chatId={chatId}
+                user={token}
+                chatStatus={chatStatus}
                 handleLikeUser={handleLikeUser}
+                handleNextUser={handleNextUser}
               />
             </div>
           </div>
-        </div>
-      </main>
-    </>
-  );
+        </main>
+      </>
+    );
+  }
 };
 export default ChatApp;
-
-ChatApp.auth = {
-  role: "User",
-  unauthorized: "/",
-};

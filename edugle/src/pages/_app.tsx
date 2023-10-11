@@ -1,7 +1,6 @@
 import { SessionProvider } from "next-auth/react";
-import { AppType } from "next/dist/shared/lib/utils";
-import { Session } from "next-auth";
-import { useSession } from "next-auth/react";
+import type { AppType } from "next/dist/shared/lib/utils";
+import type { Session } from "next-auth";
 import { ApolloProviderWrapper } from "../components/ApolloProviderWrapper";
 import Header from "../components/Header";
 
@@ -13,9 +12,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider
-      session={session}
-    >
+    <SessionProvider session={session}>
       <style>
         {`
           body {
