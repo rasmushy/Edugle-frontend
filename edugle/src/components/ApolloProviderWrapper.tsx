@@ -1,9 +1,11 @@
+import { useSession } from "next-auth/react";
 import createApolloClient from "../lib/apolloClient"; 
 import { ApolloProvider } from "@apollo/client";
 import type { PropsWithChildren } from "react";
 
 export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
-  const client = createApolloClient;
+  const { data: session } = useSession();
+  const client = createApolloClient(session?.token as string);
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

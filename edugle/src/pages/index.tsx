@@ -4,7 +4,7 @@ import SignUp from "../components/SignUp";
 import { useSession } from "next-auth/react";
 import MainPageBtn from "~/components/MainPageBtn";
 import styles from "../styles/styles.module.css";
-import { useEffect, useState, useRef, MutableRefObject } from "react";
+import { useEffect, useState, useRef, MutableRefObject, use } from "react";
 import { useNavBar } from "./api/NavBarProvider";
 
 export default function Home({ session: initialSession }: { session: any }) {
@@ -12,6 +12,10 @@ export default function Home({ session: initialSession }: { session: any }) {
   const [activePopup, setActivePopup] = useState(null);
   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
   const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
+
+  useEffect(() => {
+    console.log("session", session);
+  }, [session]);
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));
@@ -46,8 +50,7 @@ export default function Home({ session: initialSession }: { session: any }) {
     createBubbles();
   }, []);
 
-  useEffect(() => {
-  }, [status]);
+  useEffect(() => {}, [status]);
 
   return (
     <>
@@ -76,9 +79,7 @@ export default function Home({ session: initialSession }: { session: any }) {
         >
           <div ref={bubblesContainerRef}></div>
         </div>
-        {activePopup ? (
-          <div className="backdrop" onClick={() => togglePopup(null)}></div>
-        ) : null}
+        {activePopup ? <div className="backdrop" onClick={() => togglePopup(null)}></div> : null}
 
         {activePopup === "Login" ? (
           <div className="modal">

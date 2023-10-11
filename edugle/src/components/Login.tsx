@@ -18,7 +18,6 @@ export default function Login(props: any) {
       redirect: false,
     });
 
-    console.log(result, "result");
     // Check the result of signIn. If it's null, there was an error.
     if (result?.ok === false) {
       console.error("Login failed");

@@ -8,7 +8,6 @@ import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import type { Message } from "../__generated__/graphql";
-import {set} from "zod";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -93,9 +92,10 @@ const ChatApp = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
-  const [token, setToken] = useState(session.data?.user?.token as string);
+  const [token, setToken] = useState(session.data?.token as string);
 
-  if (!session || !session.data?.user) {
+  if (!session || session.status === "unauthenticated") {
+    console.log("session=", session);
     router.replace("/");
   }
 
@@ -108,8 +108,8 @@ const ChatApp = () => {
       setChatStatus(initiateChat.status);
     },
     onError: (error) => {
-      console.log("initiateChat error=", initiateChat);
-      console.log("error", error.message);
+      console.log("initiateChat error=", token);
+      console.log("error", error);
     },
   });
 
@@ -119,7 +119,9 @@ const ChatApp = () => {
       console.log("messageCreated: subscriptionData=", subscriptionData);
     },
     onError: (error) => {
-      messageCreated.data.messageCreated.messages.refetch();
+      if (messageCreated?.data?.messageCreated?.messages) {
+        messageCreated.data.messageCreated.messages;
+      }
       console.log("error=", error.message);
     },
   });
@@ -193,20 +195,9 @@ const ChatApp = () => {
               {/* Chat box */}
               <ChatBox chatId={chatId} user={token} />
 
-              {isLikeUser && (
-                <LikeUser
-                  isLikeUser={isLikeUser}
-                  setIsLikeUser={setIsLikeUser}
-                />
-              )}
+              {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
               {/* Sidebar: with functions for liking and joining next chat */}
-              <ChatBar
-                chatId={chatId}
-                user={token}
-                chatStatus={chatStatus}
-                handleLikeUser={handleLikeUser}
-                handleNextUser={handleNextUser}
-              />
+              <ChatBar chatId={chatId} user={token} chatStatus={chatStatus} handleLikeUser={handleLikeUser} handleNextUser={handleNextUser} />
             </div>
           </div>
         </main>

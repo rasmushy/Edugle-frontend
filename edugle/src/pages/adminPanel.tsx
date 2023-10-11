@@ -9,7 +9,7 @@ export default function AdminPanel() {
 
   useEffect(() => {
     if (status === "loading") return;
-    if (session?.user.role.toLowerCase() !== "admin") router.replace("/");
+    if (session?.user?.role.toLowerCase() !== "admin") router.replace("/");
   }, [status, session, router]);
 
   if (status === "loading") {
