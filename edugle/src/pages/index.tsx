@@ -8,14 +8,9 @@ import { useEffect, useState, useRef, MutableRefObject, use } from "react";
 import { useNavBar } from "./api/NavBarProvider";
 
 export default function Home({ session: initialSession }: { session: any }) {
-  const { data: session = initialSession, status } = useSession();
   const [activePopup, setActivePopup] = useState(null);
   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
   const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
-
-  useEffect(() => {
-    console.log("session", session);
-  }, [session]);
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));

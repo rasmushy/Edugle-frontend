@@ -1,10 +1,10 @@
 import { type GetServerSidePropsContext } from "next";
-import { getServerSession, type DefaultSession, type NextAuthOptions } from "next-auth";
+import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { gql } from "@apollo/client";
 import { env } from "../env.mjs";
 import { print } from "graphql/language/printer";
-import type { User, Session } from "next-auth";
+import type { Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 
 const LOGIN_USER = gql`
@@ -40,9 +40,7 @@ const CHECK_TOKEN = gql`
  */
 declare module "next-auth" {
   interface Session {
-    refreshTokenExpires?: number;
     accessTokenExpires?: string;
-    refreshToken?: string;
     token?: string;
     error?: string;
     user: User;
@@ -55,9 +53,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
-    refreshTokenExpires?: number;
-    accessTokenExpires?: number;
-    refreshToken?: string;
+    accessTokenExpires: number;
     token: string;
     exp?: number;
     iat?: number;
@@ -100,6 +96,7 @@ export const authOptions: NextAuthOptions = {
           return {
             ...data.data.loginUser.user,
             token: data.data.loginUser.token,
+            accessTokenExpires: Date.now() / 1000 + 60 * 60,
             error: data.data.loginUser.message,
           };
         }
@@ -112,36 +109,30 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    jwt: async ({ token, user }: { token: JWT; user?: User }) => {
-      if (user?.role) {
+    jwt: async ({ token, user }: { token: JWT; user: any }) => {
+      if (user) {
         // This will only be executed at login. Each next invocation will skip this part.
-        return { ...token, ...user };
+        return {
+          ...token,
+          ...user,
+        };
       }
 
-      // on subsequent calls, token is provided and we need to check if it's expired
-      if (token?.accessTokenExpires) {
-        if (Date.now() / 1000 < token?.accessTokenExpires) return { ...token, ...user };
-      } else if (token?.refreshToken) return refreshAccessToken(token);
+      if (token?.accessTokenExpires && Date.now() / 1000 > token.accessTokenExpires) {
+        return refreshAccessToken(token);
+      }
 
       return { ...token, ...user };
     },
     session: async ({ session, token }: { session: Session; token: JWT }): Promise<Session> => {
-      if (
-        token?.accessTokenExpires &&
-        Date.now() / 1000 > token.accessTokenExpires &&
-        token?.refreshTokenExpires &&
-        Date.now() / 1000 > token.refreshTokenExpires
-      )
-
- {
+      if (token?.accessTokenExpires && Date.now() / 1000 > token.accessTokenExpires) {
         return Promise.reject({
           error: new Error("Refresh token has expired. Please log in again to get a new refresh token."),
         });
       }
 
-      const accessTokenData = JSON.parse(atob(token.token.split(".")?.[1] ?? ""));
-      token.accessTokenExpires = accessTokenData.exp;
-      session.user = {id: token.id, role: token.role} as User;
+      console.log("session callback token: ", token);
+      session.user = { id: token.id as string, role: token.role as string };
       session.token = token?.token;
 
       return Promise.resolve(session);
@@ -162,27 +153,29 @@ export const authOptions: NextAuthOptions = {
 };
 
 async function refreshAccessToken(tokenObject: JWT) {
+  console.log("refreshing access token");
+  console.log(tokenObject);
   try {
     // Get a new set of tokens with a refreshToken
     const tokenResponse = await fetch(`${env.NEXT_PUBLIC_API_URL}/graphql`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         query: print(CHECK_TOKEN),
         variables: {
-          token: tokenObject.refreshToken,
+          token: tokenObject.token,
         },
       }),
     });
-
-    console.log("tokenResponse=", tokenResponse);
 
     const data = await tokenResponse.json();
 
     return {
       ...tokenObject,
       token: data.user.token,
-      accessTokenExpires: data.accessTokenExpires,
-      refreshToken: data.refreshToken,
+      accessTokenExpires: Date.now() / 1000 + 60 * 60,
     };
   } catch (error) {
     return {

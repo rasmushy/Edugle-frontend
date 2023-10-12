@@ -6,7 +6,6 @@ import { gql, useMutation, useSubscription } from "@apollo/client";
 import ChatBar from "../components/ChatBar";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import type { Message } from "../__generated__/graphql";
 
 const INITIATE_CHAT = gql`
@@ -87,17 +86,15 @@ const CHAT_ENDED = gql`
 
 const ChatApp = () => {
   const session = useSession();
-  const router = useRouter();
   const [chatId, setChatId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
   const [token, setToken] = useState(session.data?.token as string);
 
-  if (!session || session.status === "unauthenticated") {
+/*   if (!session || session.status === "unauthenticated") {
     console.log("session=", session);
-    router.replace("/");
-  }
+  } */
 
   const [initiateChat] = useMutation(INITIATE_CHAT, {
     variables: {
