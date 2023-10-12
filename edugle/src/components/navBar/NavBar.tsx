@@ -95,7 +95,7 @@ const NavBar = () => {
             <div
               className={`${styles.navElements}  ${
                 !closeNavbar
-                  ? session.data?.user.role.toLowerCase() !== "admin"
+                  ? session.data?.user?.role?.toLowerCase() !== "admin"
                     ? styles.active
                     : styles.biggerActive
                   : styles.none
@@ -142,7 +142,7 @@ const NavBar = () => {
                       </div>
                     </Link>
                   </li>
-                  {session.data?.user.role.toLocaleLowerCase() === "admin" ? (
+                  {session.data?.user?.role?.toLocaleLowerCase() === "admin" ? (
                     <li>
                       <div
                         className={`${styles.navbar_item} ${
@@ -166,6 +166,7 @@ const NavBar = () => {
                         onClick={() => {
                           handleLogOut();
                           signOut({
+                            redirect: false,
                             callbackUrl: "/",
                           });
                         }}

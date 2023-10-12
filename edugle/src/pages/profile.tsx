@@ -85,7 +85,7 @@ export default function Profile() {
   });
 
   const getUserQuery = async () => {
-    const token = session.data?.user?.token;
+    const token = session.data?.token;
     if (token) {
       setToken(token);
       await getUser.refetch();
@@ -131,7 +131,7 @@ export default function Profile() {
     return null;
   }
 
-  if (session?.data?.user?.token === undefined) {
+  if (session?.data?.token === undefined) {
     return null;
   }
 

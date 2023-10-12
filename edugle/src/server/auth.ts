@@ -1,9 +1,35 @@
 import { type GetServerSidePropsContext } from "next";
-import { getServerSession, type DefaultSession, type NextAuthOptions } from "next-auth";
+import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { gql } from "@apollo/client";
 import { env } from "../env.mjs";
 import { print } from "graphql/language/printer";
+import type { Session } from "next-auth";
+import type { JWT } from "next-auth/jwt";
+
+const LOGIN_USER = gql`
+  mutation LoginUser($credentials: LoginInput!) {
+    loginUser(credentials: $credentials) {
+      message
+      token
+      user {
+        id
+        role
+      }
+    }
+  }
+`;
+
+const CHECK_TOKEN = gql`
+  query CheckToken($token: String!) {
+    checkToken(token: $token) {
+      id
+      role
+      token
+      username
+    }
+  }
+`;
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -12,16 +38,25 @@ import { print } from "graphql/language/printer";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: DefaultSession["user"] & {
-      id: string;
-      role: string;
-      token: string;
-    };
+  interface Session {
+    accessTokenExpires?: string;
+    token?: string;
+    error?: string;
+    user: User;
   }
-
+  interface User {
+    id: string;
+    role: string;
+  }
+}
+declare module "next-auth/jwt" {
+  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
+    accessTokenExpires: number;
     token: string;
+    exp?: number;
+    iat?: number;
+    jti?: string;
   }
 }
 
@@ -39,26 +74,13 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const CHECK_CREDENTIALS = gql`
-          mutation LoginUser($credentials: LoginInput!) {
-            loginUser(credentials: $credentials) {
-              message
-              token
-              user {
-                id
-                role
-              }
-            }
-          }
-        `;
-
         const response = await fetch(`${env.NEXT_PUBLIC_API_URL}/graphql`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            query: print(CHECK_CREDENTIALS),
+            query: print(LOGIN_USER),
             variables: {
               credentials: {
                 email: credentials?.email,
@@ -71,9 +93,10 @@ export const authOptions: NextAuthOptions = {
         if (data?.data.loginUser?.token) {
           // Return user details and token to next-auth to manage session
           return {
-            role: data.data.loginUser.user.role,
-            id: data.data.loginUser.user.id,
+            ...data.data.loginUser.user,
             token: data.data.loginUser.token,
+            accessTokenExpires: Date.now() / 1000 + 60 * 60,
+            error: data.data.loginUser.message,
           };
         }
         // If something goes wrong
@@ -85,24 +108,33 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+    jwt: async ({ token, user }: { token: JWT; user: any }) => {
+      if (user) {
+        // This will only be executed at login. Each next invocation will skip this part.
+        return {
+          ...token,
+          ...user,
+        };
+      }
+
+      if (token?.accessTokenExpires && Date.now() / 1000 > token.accessTokenExpires) {
+        return refreshAccessToken(token);
+      }
+
+      return { ...token, ...user };
     },
-    jwt: async ({ token, user }) => {
-      user && (token.user = user);
-      return token;
-    },
-    session: async ({ session, token }) => {
-      session.user = token.user as DefaultSession["user"] & {
-        id: string;
-        role: string;
-        token: string;
-      };
-      return session;
+    session: async ({ session, token }: { session: Session; token: JWT }): Promise<Session> => {
+      if (token?.accessTokenExpires && Date.now() / 1000 > token.accessTokenExpires) {
+        return Promise.reject({
+          error: new Error("Refresh token has expired. Please log in again to get a new refresh token."),
+        });
+      }
+
+      //console.log("session callback token: ", token);
+      session.user = { id: token.id as string, role: token.role as string };
+      session.token = token?.token;
+
+      return Promise.resolve(session);
     },
   },
   cookies: {
@@ -116,12 +148,41 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },
-  pages: {
-    signIn: "/auth/login",
-    signOut: "/",
-    error: "/",
-  },
+  secret: env.NEXTAUTH_SECRET,
 };
+
+async function refreshAccessToken(tokenObject: JWT) {
+  console.log("refreshing access token");
+  //console.log(tokenObject);
+  try {
+    // Get a new set of tokens with a refreshToken
+    const tokenResponse = await fetch(`${env.NEXT_PUBLIC_API_URL}/graphql`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: print(CHECK_TOKEN),
+        variables: {
+          token: tokenObject.token,
+        },
+      }),
+    });
+
+    const data = await tokenResponse.json();
+
+    return {
+      ...tokenObject,
+      token: data.user.token,
+      accessTokenExpires: Date.now() / 1000 + 60 * 60,
+    };
+  } catch (error) {
+    return {
+      ...tokenObject,
+      error: "RefreshAccessTokenError",
+    };
+  }
+}
 
 /**
  * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.

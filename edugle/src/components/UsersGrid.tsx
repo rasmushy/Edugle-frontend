@@ -99,7 +99,7 @@ const UserGrid = () => {
         new Promise<Partial<User>>((resolve, reject) => {
           setTimeout(() => {
             try {
-              if (session.data?.user.id === user.id) {
+              if (session.data?.user?.id === user.id) {
                 reject(new Error("Et voi muuttaa omaa rooliasi!"));
               } else {
                 if (user.role === true) {
@@ -214,7 +214,7 @@ const UserGrid = () => {
   }, [session]);
 
   const getUsersData = async () => {
-    const token = session.data?.user?.token as string;
+    const token = session.data?.token as string;
     setToken(token);
     await users.refetch();
     // Delete the users id and change the id to index.

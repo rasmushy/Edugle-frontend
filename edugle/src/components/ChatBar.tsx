@@ -72,11 +72,11 @@ const ChatBar: React.FC<ChatBarProps> = ({
       token: user,
     },
     onCompleted: ({ joinChat }) => {
-      console.log("joinChat=", joinChat);
+      console.log("joinChat COMPLETED=", joinChat);
       setUsers(joinChat.users as User[]);
     },
     onError: (error) => {
-      console.log("error", error);
+      console.log("joinChat: error=", error);
     },
   });
 
@@ -86,11 +86,11 @@ const ChatBar: React.FC<ChatBarProps> = ({
       token: user,
     },
     onCompleted: ({ leaveChat }) => {
-      console.log("leaveChat=", leaveChat);
+      console.log("leaveChat COMPLETED=", leaveChat);
       setUsers([]);
     },
     onError: (error) => {
-      console.log("error", error);
+      console.log("leaveChat: error=", error);
     },
   });
 
@@ -101,8 +101,8 @@ const ChatBar: React.FC<ChatBarProps> = ({
       }
       console.log("Still in queue");
     } else if (chatStatus === "Paired") {
-      console.log("Paired with chatId:", chatId);
       joinChat();
+      console.log("Paired with chatId:", chatId);
     } 
   }, [chatStatus]);
 
