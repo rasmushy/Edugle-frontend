@@ -12,6 +12,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
+import LikeUser from "./LikeUser";
 
 type ChatMessagesProps = {
   chatMessages: Message[];
@@ -98,7 +99,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
                   {message?.sender?.username}:
                 </strong>
 
-                {isMessageActive && <HoverUserInfo user={message.sender} isPopUpOpen={true} handleClose={handleClose} />}
+                {isMessageActive && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen}></LikeUser>}
 
                 <span className={`${messageTextClass}`}>
                   {addBreaks(message.content).map((line, lineIndex) => (

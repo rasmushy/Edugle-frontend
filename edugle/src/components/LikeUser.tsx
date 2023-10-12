@@ -39,16 +39,11 @@ const inputStyle = {
   WebkitTextFillColor: "#000",
 };
 
-const CreateUserPopUp = ({
-  isLikeUser,
-  setIsLikeUser,
-  getUsersData,
-  classes,
-}: any) => {
+const CreateUserPopUp = ({ isPopUpOpen, setIsPopUpOpen, getUsersData, classes }: any) => {
   const [modalStyle] = useState(getModalStyle);
 
   return (
-    <Modal open={isLikeUser} onClose={() => setIsLikeUser(false)}>
+    <Modal open={isPopUpOpen} onClose={() => setIsPopUpOpen(false)}>
       <div
         style={{
           position: "absolute",
