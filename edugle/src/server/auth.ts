@@ -23,7 +23,6 @@ const LOGIN_USER = gql`
 const CHECK_TOKEN = gql`
   query CheckToken($token: String!) {
     checkToken(token: $token) {
-      email
       id
       role
       token
@@ -131,7 +130,7 @@ export const authOptions: NextAuthOptions = {
         });
       }
 
-      console.log("session callback token: ", token);
+      //console.log("session callback token: ", token);
       session.user = { id: token.id as string, role: token.role as string };
       session.token = token?.token;
 
@@ -154,7 +153,7 @@ export const authOptions: NextAuthOptions = {
 
 async function refreshAccessToken(tokenObject: JWT) {
   console.log("refreshing access token");
-  console.log(tokenObject);
+  //console.log(tokenObject);
   try {
     // Get a new set of tokens with a refreshToken
     const tokenResponse = await fetch(`${env.NEXT_PUBLIC_API_URL}/graphql`, {

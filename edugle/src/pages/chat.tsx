@@ -7,6 +7,7 @@ import ChatBar from "../components/ChatBar";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
+import { useRouter } from "next/router";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -41,22 +42,21 @@ const MESSAGE_CREATED = gql`
   }
 `;
 const CHAT_STARTED = gql`
-  subscription ChatStarted {
-    chatStarted {
+  subscription ChatStarted($userId: ID!) {
+    chatStarted(userId: $userId) {
       created_date
       id
+      users {
+        id
+      }
       messages {
         id
-        date
         content
+        date
         sender {
           id
           username
         }
-      }
-      users {
-        id
-        username
       }
     }
   }
@@ -86,51 +86,49 @@ const CHAT_ENDED = gql`
 
 const ChatApp = () => {
   const session = useSession();
+  const router = useRouter();
   const [chatId, setChatId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
-  const [token, setToken] = useState(session.data?.token as string);
 
-/*   if (!session || session.status === "unauthenticated") {
+  if (!session || session.status === "unauthenticated") {
     console.log("session=", session);
-  } */
+    router.push("/");
+  }
 
   const [initiateChat] = useMutation(INITIATE_CHAT, {
     variables: {
-      token: token,
+      token: session.data?.token as string,
     },
     onCompleted: ({ initiateChat }) => {
-      console.log("initiateChat=", initiateChat);
+      console.log("initiateChat COMPLETED=", initiateChat);
       setChatStatus(initiateChat.status);
+      if (initiateChat.status === "Paired") {
+        setChatId(initiateChat.chatId);
+      }
     },
     onError: (error) => {
-      console.log("initiateChat error=", token);
-      console.log("error", error);
+      console.log("initiateChat: error=", error.message);
     },
   });
 
   const messageCreated = useSubscription(MESSAGE_CREATED, {
     variables: { chatId: chatId },
-    onSubscriptionData: ({ subscriptionData }) => {
-      console.log("messageCreated: subscriptionData=", subscriptionData);
-    },
     onError: (error) => {
-      if (messageCreated?.data?.messageCreated?.messages) {
-        messageCreated.data.messageCreated.messages;
-      }
-      console.log("error=", error.message);
+      console.log("messageCreated: error=", error.message);
     },
   });
 
   const chatStarted = useSubscription(CHAT_STARTED, {
+    variables: { userId: session.data?.user?.id },
     onSubscriptionData: ({ subscriptionData }) => {
       console.log("chatStarted: subData=", subscriptionData.data.chatStarted);
       setChatId(subscriptionData.data.chatStarted.id);
       setChatStatus("Paired");
     },
     onError: (error) => {
-      console.log("error", error);
+      console.log("chatStarted: error=", error);
     },
   });
 
@@ -142,7 +140,7 @@ const ChatApp = () => {
       setMessages([]);
     },
     onError: (error) => {
-      console.log("error", error);
+      console.log("chatEnded: error=", error);
     },
   });
 
@@ -151,55 +149,59 @@ const ChatApp = () => {
   };
 
   const handleNextUser = () => {
-    console.log("handleJoinChat: Joining queue...");
     initiateChat();
-    console.log("handleJoinChat: chatID=", chatId);
   };
 
   useEffect(() => {
-    if (messageCreated.data) {
-      console.log("messageCreated.data=", messageCreated.data);
-      setMessages(messageCreated.data?.messageCreated?.messages as Message[]);
+    if (!messageCreated.data) {
+      setMessages([]);
+      return;
     }
+   // console.log("messageCreated.data=", messageCreated.data);
+    setMessages(messageCreated.data?.messageCreated?.messages as Message[]);
   }, [messageCreated.data]);
 
   useEffect(() => {
     if (chatStarted.data) {
-      console.log("chatStarted.data=", chatStarted.data);
+      // console.log("chatStarted.data=", chatStarted.data);
     }
   }, [chatStarted.data]);
 
   useEffect(() => {
     if (chatEnded.data) {
-      console.log("chatEnded.data=", chatEnded.data);
+      // console.log("chatEnded.data=", chatEnded.data);
     }
   }, [chatEnded.data]);
 
-  if (session.status === "authenticated") {
-    return (
-      <>
-        <Head>
-          <title>Edugle</title>
-          <meta name="chat" content="Chatroom" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-        <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-          <div className="h-screen flex-row pl-4 pr-4">
-            <div className="flex-col">
-              {/* Chat messages */}
-              {chatId != "" && <ChatMessages chatMessages={messages} />}
+  return (
+    <>
+      <Head>
+        <title>Edugle</title>
+        <meta name="chat" content="Chatroom" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+        <div className="h-screen flex-row pl-4 pr-4">
+          <div className="flex-col">
+            {/* Chat messages */}
+            {chatId != "" && <ChatMessages chatMessages={messages} />}
 
-              {/* Chat box */}
-              <ChatBox chatId={chatId} user={token} />
+            {/* Chat box */}
+            <ChatBox chatId={chatId} user={session.data?.token as string} />
 
-              {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
-              {/* Sidebar: with functions for liking and joining next chat */}
-              <ChatBar chatId={chatId} user={token} chatStatus={chatStatus} handleLikeUser={handleLikeUser} handleNextUser={handleNextUser} />
-            </div>
+            {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
+            {/* Sidebar: with functions for liking and joining next chat */}
+            <ChatBar
+              chatId={chatId}
+              user={session.data?.token as string}
+              chatStatus={chatStatus}
+              handleLikeUser={handleLikeUser}
+              handleNextUser={handleNextUser}
+            />
           </div>
-        </main>
-      </>
-    );
-  }
+        </div>
+      </main>
+    </>
+  );
 };
 export default ChatApp;
