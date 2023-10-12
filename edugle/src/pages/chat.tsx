@@ -8,6 +8,11 @@ import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
 import { useRouter } from "next/router";
+import { set } from "zod";
+import Paper from "@mui/material/Paper";
+import CardMedia from "@mui/material/CardMedia";
+import OceanImage from "../../public/images/asd.jpg";
+import Image from "next/image";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -86,7 +91,7 @@ const CHAT_ENDED = gql`
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
-  const [chatId, setChatId] = useState("");
+  const [chatId, setChatId] = useState("651fe685a4cdf622986a9f14");
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
@@ -156,7 +161,7 @@ const ChatApp = () => {
       setMessages([]);
       return;
     }
-   // console.log("messageCreated.data=", messageCreated.data);
+   console.log("messageCreated.data=", messageCreated.data);
     setMessages(messageCreated.data?.messageCreated?.messages as Message[]);
   }, [messageCreated.data]);
 
@@ -172,35 +177,45 @@ const ChatApp = () => {
     }
   }, [chatEnded.data]);
 
-  return (
-    <>
-      <Head>
-        <title>Edugle</title>
-        <meta name="chat" content="Chatroom" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="h-screen flex-row pl-4 pr-4">
-          <div className="flex-col">
-            {/* Chat messages */}
-            {chatId != "" && <ChatMessages chatMessages={messages} />}
+    return (
+      <>
+        <Head>
+          <title>Edugle</title>
+          <meta name="chat" content="Chatroom" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
+          <Paper
+            elevation={3} // Add elevation for shadow
+            sx={{
+              borderRadius: 5, // Add rounded corners
+              margin: 0,
+              marginLeft: "20px",
+              marginRight: "20px",
+              padding: 0,
+              boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
+              position: "relative",
+              overflow: "hidden",
+              backgroundColor: "white", // Background color
+              backgroundImage: `url(${OceanImage.src})`,
+            }}
+          >
+            <div className="flex-row">
+              <div className="flex-col" style={{ top: "3%", position: "relative" }}>
+                {/* Chat messages */}
+                {chatId != "" && <ChatMessages chatMessages={messages} />}
 
-            {/* Chat box */}
-            <ChatBox chatId={chatId} user={session.data?.token as string} />
+                {/* Chat box */}
+                <ChatBox chatId={chatId} user={session.data?.token as string} />
 
-            {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
-            {/* Sidebar: with functions for liking and joining next chat */}
-            <ChatBar
-              chatId={chatId}
-              user={session.data?.token as string}
-              chatStatus={chatStatus}
-              handleLikeUser={handleLikeUser}
-              handleNextUser={handleNextUser}
-            />
-          </div>
-        </div>
-      </main>
-    </>
-  );
+                {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
+                {/* Sidebar: with functions for liking and joining next chat */}
+                {/*  <ChatBar chatId={chatId} user={token} chatStatus={chatStatus} handleLikeUser={handleLikeUser} handleNextUser={handleNextUser} />*/}
+              </div>
+            </div>
+          </Paper>
+        </main>
+      </>
+    );
 };
 export default ChatApp;

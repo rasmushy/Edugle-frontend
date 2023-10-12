@@ -118,6 +118,20 @@
   background-color: #f1f5f9;
 }
 
+.glassPanel {
+  background: rgba(255, 255, 255, 0.3);
+  /* Set the background to a semi-transparent white */
+  border-radius: 17px 17px 0 0;
+  height: 70vh;
+  /* Add some border radius for the glass effect */
+  padding: 10px;
+  /* Adjust padding as needed */
+  backdrop-filter: blur(10px);
+  /* Apply a backdrop filter to simulate glass blur */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  /* Add a slight shadow for depth */
+}
+
 @media (max-width: 790px) {
   .buttonWrapper {
     display: none;

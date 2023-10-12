@@ -65,10 +65,6 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
     }
   };
 
-  const handleEmoji = () => {
-    console.log("handleEmoji: Clicked...");
-  };
-
   const handleSendMessage = () => {
     createMessage();
     if (message !== "" && chatId !== "") {
@@ -90,12 +86,6 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
           onKeyDown={handleKeyPress}
         />
         <div className="absolute bottom-0 right-0 flex h-full items-center pr-2">
-          <button
-            onClick={handleEmoji}
-            className="mx-1 rounded bg-[hsl(280,100%,70%)] p-2 text-white"
-          >
-            😃
-          </button>
           <button
             onClick={handleSendMessage}
             className="mx-1 rounded bg-[hsl(280,100%,70%)] p-2 text-white"
