@@ -83,7 +83,7 @@ export default function AuthForm({
   }
 
   return (
-    <div className="flex h-[750px] w-[400px] flex-col items-center justify-center rounded-lg bg-gradient-to-b from-[#2C7DA0] to-[#15162c] drop-shadow-2xl ">
+    <div className="flex max-h-[100vh] min-w-[40vh] flex-col items-center justify-center rounded-lg bg-gradient-to-b from-[#2C7DA0] to-[#15162c] drop-shadow-2xl ">
       <button
         className="color-white absolute right-2 top-2 text-4xl"
         onClick={toggle}

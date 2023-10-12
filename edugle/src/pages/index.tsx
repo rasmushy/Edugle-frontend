@@ -46,8 +46,7 @@ export default function Home({ session: initialSession }: { session: any }) {
     createBubbles();
   }, []);
 
-  useEffect(() => {
-  }, [status]);
+  useEffect(() => {}, [status]);
 
   return (
     <>
@@ -76,20 +75,24 @@ export default function Home({ session: initialSession }: { session: any }) {
         >
           <div ref={bubblesContainerRef}></div>
         </div>
-        {activePopup ? (
-          <div className="backdrop" onClick={() => togglePopup(null)}></div>
-        ) : null}
 
-        {activePopup === "Login" ? (
-          <div className="modal">
-            <Login toggle={() => togglePopup("Login")} />
-          </div>
-        ) : null}
-        {activePopup === "SignUp" ? (
-          <div className="modal">
-            <SignUp toggle={() => togglePopup("SignUp")} />
-          </div>
-        ) : null}
+        {session?.user ? null : (
+          <>
+            {activePopup ? <div className="backdrop" onClick={() => togglePopup(null)}></div> : null}
+
+            {activePopup === "Login" ? (
+              <div className="modal">
+                <Login toggle={() => togglePopup("Login")} />
+              </div>
+            ) : null}
+            {activePopup === "SignUp" ? (
+              <div className="modal">
+                <SignUp toggle={() => togglePopup("SignUp")} />
+              </div>
+            ) : null}
+          </>
+        )}
+
         <MainPageBtn togglePopup={togglePopup} />
       </main>
       <style>{`
@@ -106,7 +109,7 @@ export default function Home({ session: initialSession }: { session: any }) {
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
+          background-color: rgba(0, 0, 0, 0.9);
           z-index: 9998;
         }
       `}</style>
