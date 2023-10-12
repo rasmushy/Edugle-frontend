@@ -14,6 +14,14 @@ const MainPageBtn = ({ handleGoChat, togglePopup, session: initialSession }: any
     }
   }
 
+  const handleGoChatRouletteBtn = () => {
+    if (session?.user) {
+      router.replace("/chatRoulette");
+    } else {
+      togglePopup("Login");
+    }
+  }
+
 
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
@@ -31,9 +39,12 @@ const MainPageBtn = ({ handleGoChat, togglePopup, session: initialSession }: any
               <h3 className="text-2xl font-bold">Start chatting!</h3>
               <div className="text-lg">Start chatting in a big room full of cock heads</div>
             </button>
-            <button className="flex max-w-xs flex-col gap-4 rounded-xl bg-[#2A6F97] p-4 text-white hover:bg-white/20" onClick={() => togglePopup("SignUp")}>
-              <h3 className="text-2xl font-bold">Feeling lucky?</h3>
-              <div className="text-lg">Are you feeling lucky? Start chatting with random person!</div>
+            <button
+              className="flex max-w-xs flex-col gap-4 rounded-xl bg-[#2A6F97] p-4 text-white hover:bg-white/20"
+              onClick={() => handleGoChatRouletteBtn()}
+            >
+              <h3 className="text-2xl font-bold">Feeling kakka in pylly?</h3>
+              <div className="text-lg">Pylly kakka</div>
             </button>
           </div>
         </>

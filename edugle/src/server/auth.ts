@@ -15,6 +15,7 @@ const LOGIN_USER = gql`
       user {
         id
         role
+        username
       }
     }
   }
@@ -47,6 +48,7 @@ declare module "next-auth" {
   interface User {
     id: string;
     role: string;
+    username: string;
   }
 }
 declare module "next-auth/jwt" {
@@ -131,7 +133,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       //console.log("session callback token: ", token);
-      session.user = { id: token.id as string, role: token.role as string };
+      session.user = { id: token.id as string, role: token.role as string, username: token.username as string };
       session.token = token?.token;
 
       return Promise.resolve(session);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, use } from "react";
 import Head from "next/head";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
-import { gql, useMutation, useSubscription } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import ChatBar from "../components/ChatBar";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
@@ -11,7 +11,8 @@ import { useRouter } from "next/router";
 import { set } from "zod";
 import Paper from "@mui/material/Paper";
 import CardMedia from "@mui/material/CardMedia";
-import OceanImage from "../../public/images/asd.jpg";
+import RulesGif from "../../public/images/rules.gif";
+import OceanImage from "../../public/images/ocean.jpg";
 import Image from "next/image";
 import styles from "../styles/styles.module.css";
 
@@ -29,6 +30,7 @@ const INITIATE_CHAT = gql`
     }
   }
 `;
+
 const MESSAGE_CREATED = gql`
   subscription Subscription($chatId: ID!) {
     messageCreated(chatId: $chatId) {
@@ -42,8 +44,6 @@ const MESSAGE_CREATED = gql`
           avatar
           id
           username
-          likes
-          description
         }
       }
     }
@@ -91,19 +91,39 @@ const CHAT_ENDED = gql`
   }
 `;
 
+const IS_QUEUE = gql(`query QueuePosition($token: String!) {
+  queuePosition(token: $token) {
+    position
+    status
+  }
+}`);
+
+const ASD = gql(`query Queue {
+  queue {
+    joinedAt
+    position
+    userId {
+      id
+    }
+  }
+}`);
+
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
-  const [chatId, setChatId] = useState("651fe685a4cdf622986a9f14");
+  const [chatId, setChatId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
+  const [isQueue, setIsQueue] = useState<string>("");
+  const { loading, error, data } = useQuery(IS_QUEUE);
+  const [firstTime, setFirstTime] = useState<boolean>(true);
 
-  if (!session || session.status === "unauthenticated") {
-    console.log("ChatApp: session=", session);
-    router.push("/");
-  }
-  console.log("seesio nasjdsfg sd", session.data);
+  const isQuery = useQuery(IS_QUEUE, {
+    variables: {
+      token: session.data?.token as string,
+    },
+  });
 
   const [initiateChat] = useMutation(INITIATE_CHAT, {
     variables: {
@@ -118,6 +138,7 @@ const ChatApp = () => {
     },
     onError: (error) => {
       console.log("initiateChat: error=", error.message);
+      isQuery.refetch();
     },
   });
 
@@ -181,6 +202,17 @@ const ChatApp = () => {
     }
   }, [chatEnded.data]);
 
+  useEffect(() => {
+    if (isQuery.data) {
+      console.log("isQuery.data=", isQuery.data);
+      if (isQuery.data.queuePosition.status === "Queue") {
+        setIsQueue(isQuery.data.queuePosition.status);
+      } else {
+        setIsQueue("Not Queue");
+      }
+    }
+  }, [isQuery.loading]);
+
   return (
     <>
       <Head>
@@ -189,6 +221,44 @@ const ChatApp = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
+        {firstTime ? (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Paper
+              elevation={3} // Add elevation for shadow
+              sx={{
+                borderRadius: 5, // Add rounded corners
+                margin: 0,
+                marginLeft: "20px",
+                marginRight: "20px",
+                padding: 0,
+                width: "90vw",
+                height: "78vh !important",
+                boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
+                position: "relative",
+                overflow: "hidden",
+                backgroundColor: "white", // Background color
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>
+                <img
+                  src={RulesGif.src}
+                  alt="Image"
+                  style={{ width: "650px", marginBottom: "20px", borderRadius: "50px", boxShadow: "5px 5px 3px gray" }}
+                />
+                <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Read Before Entering</h1>
+                <p style={{ fontSize: "16px", textAlign: "center", marginBottom: "40px" }}>Do you know the rules about talking to strangers online? </p>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <button style={{ fontSize: "16px", padding: "10px 20px", background: "#014F86", color: "white", border: "none", borderRadius: "5px" }}>
+                    I Know the Rules
+                  </button>
+                  <button style={{ fontSize: "16px", padding: "10px 20px", background: "#E53E3E", color: "white", border: "none", borderRadius: "5px" }}>
+                    Go Back
+                  </button>
+                </div>
+              </div>
+            </Paper>
+          </div>
+        ) : (
           <Paper
             elevation={3} // Add elevation for shadow
             sx={{
@@ -214,10 +284,17 @@ const ChatApp = () => {
 
                 {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
                 {/* Sidebar: with functions for liking and joining next chat */}
-                {/*  <ChatBar chatId={chatId} user={token} chatStatus={chatStatus} handleLikeUser={handleLikeUser} handleNextUser={handleNextUser} />*/}
+                <ChatBar
+                  chatId={chatId}
+                  user={session.data?.token as string}
+                  chatStatus={chatStatus}
+                  handleLikeUser={handleLikeUser}
+                  handleNextUser={handleNextUser}
+                />
               </div>
             </div>
           </Paper>
+        )}
       </main>
     </>
   );

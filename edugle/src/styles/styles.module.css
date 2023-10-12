@@ -122,7 +122,9 @@
   background: rgba(255, 255, 255, 0.3);
   /* Set the background to a semi-transparent white */
   border-radius: 17px 17px 0 0;
-  height: 70vh;
+  height: auto;
+  min-height: 70vh;
+  display: grid;
   /* Add some border radius for the glass effect */
   padding: 10px;
   /* Adjust padding as needed */

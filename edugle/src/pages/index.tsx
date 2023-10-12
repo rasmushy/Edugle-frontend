@@ -60,7 +60,7 @@ export default function Home({ session: initialSession }: { session: any }) {
           overflowX: "hidden",
           zIndex: isNavBarOpen == true ? -1 : 1,
         }}
-        className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2C7DA0] to-[#2C7DA0]"
+        className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#012A4A] to-[#2C7DA0]"
       >
         <div
           style={{
