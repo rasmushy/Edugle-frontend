@@ -44,10 +44,10 @@ const MESSAGE_CREATED = gql`
 const CHAT_STARTED = gql`
   subscription ChatStarted($userId: ID!) {
     chatStarted(userId: $userId) {
-      created_date
       id
       users {
         id
+        username
       }
       messages {
         id
@@ -65,7 +65,6 @@ const CHAT_STARTED = gql`
 const CHAT_ENDED = gql`
   subscription ChatEnded {
     chatEnded {
-      created_date
       id
       users {
         id
@@ -93,7 +92,7 @@ const ChatApp = () => {
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
 
   if (!session || session.status === "unauthenticated") {
-    console.log("session=", session);
+    console.log("ChatApp: session=", session);
     router.push("/");
   }
 

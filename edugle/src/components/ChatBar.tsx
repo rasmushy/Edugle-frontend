@@ -76,7 +76,7 @@ const ChatBar: React.FC<ChatBarProps> = ({
       setUsers(joinChat.users as User[]);
     },
     onError: (error) => {
-      console.log("error", error);
+      console.log("joinChat: error=", error);
     },
   });
 
@@ -90,7 +90,7 @@ const ChatBar: React.FC<ChatBarProps> = ({
       setUsers([]);
     },
     onError: (error) => {
-      console.log("error", error);
+      console.log("leaveChat: error=", error);
     },
   });
 
