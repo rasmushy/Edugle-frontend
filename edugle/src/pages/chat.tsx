@@ -161,7 +161,6 @@ const ChatApp = () => {
 
   useEffect(() => {
     if (!messageCreated.data) {
-      setMessages([]);
       return;
     }
     console.log("messageCreated.data=", messageCreated.data);

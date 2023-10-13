@@ -126,6 +126,11 @@ const ChatApp = () => {
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
   const [isQueue, setIsQueue] = useState<boolean>(false);
   const [firstTime, setFirstTime] = useState<boolean>(true);
+  const { loading, error, data } = useQuery(IS_QUEUE, {
+    variables: {
+      token: session.data?.token as string,
+    },
+  });
 
   const isQuery = useQuery(IS_QUEUE, {
     variables: {
@@ -202,7 +207,7 @@ const ChatApp = () => {
     initiateChat();
   };
 
-  const handleAsd = () => {
+  const handleStartQueue = () => {
     const isQueuePosition = isQuery.data?.queuePosition.position;
 
     if (isQueuePosition === 0) {
@@ -216,13 +221,12 @@ const ChatApp = () => {
 
   const handleBack = () => {
     dequeueUser().then(() => {
-      console.log(isQuery.data?.queuePosition);
+      console.log(data.queuePosition.position);
     });
   };
 
   useEffect(() => {
     if (!messageCreated.data) {
-      setMessages([]);
       return;
     }
     console.log("messageCreated.data=", messageCreated.data);
@@ -240,6 +244,10 @@ const ChatApp = () => {
       // console.log("chatEnded.data=", chatEnded.data);
     }
   }, [chatEnded.data]);
+
+  useEffect(() => {
+    if (chatStatus === "Paired") setFirstTime(false);
+  }, [chatStatus]);
 
   return (
     <>
@@ -273,7 +281,7 @@ const ChatApp = () => {
                 <p style={{ fontSize: "16px", textAlign: "center", marginBottom: "40px" }}>Do you know the rules about talking to strangers online? </p>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <button
-                    onClick={() => handleAsd()}
+                    onClick={() => handleStartQueue()}
                     style={{ fontSize: "16px", padding: "10px 20px", background: "#014F86", color: "white", border: "none", borderRadius: "5px" }}
                   >
                     I Know the Rules
