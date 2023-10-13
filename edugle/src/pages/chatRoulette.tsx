@@ -426,13 +426,6 @@ const ChatApp = () => {
 
                 {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
                 {/* Sidebar: with functions for liking and joining next chat */}
-                <ChatBar
-                  chatId={chatId}
-                  user={session.data?.token as string}
-                  chatStatus={chatStatus}
-                  handleLikeUser={handleLikeUser}
-                  handleNextUser={handleNextUser}
-                />
               </div>
             </div>
           </Paper>
