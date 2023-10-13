@@ -38,7 +38,6 @@ export const env = createEnv({
    */
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
@@ -47,5 +46,5 @@ export const env = createEnv({
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
    * This is especially useful for Docker builds.
    */
-  skipValidation: false,
+  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 });

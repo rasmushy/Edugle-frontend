@@ -6,6 +6,7 @@ import { env } from "../env.mjs";
 import { print } from "graphql/language/printer";
 import type { Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
+import {HTTP_URI, WS_URI} from "../../constants";
 
 const LOGIN_USER = gql`
   mutation LoginUser($credentials: LoginInput!) {
@@ -74,7 +75,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const response = await fetch(`${env.NEXT_PUBLIC_API_URL}/graphql`, {
+        const response = await fetch(`${HTTP_URI}/graphql`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -148,7 +149,6 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },
-  secret: env.NEXTAUTH_SECRET,
 };
 
 async function refreshAccessToken(tokenObject: JWT) {
@@ -156,7 +156,7 @@ async function refreshAccessToken(tokenObject: JWT) {
   //console.log(tokenObject);
   try {
     // Get a new set of tokens with a refreshToken
-    const tokenResponse = await fetch(`${env.NEXT_PUBLIC_API_URL}/graphql`, {
+    const tokenResponse = await fetch(`${HTTP_URI}/graphql`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

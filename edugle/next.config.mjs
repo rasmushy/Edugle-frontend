@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import {HTTP_URI} from "./constants";
 dotenv.config();
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
@@ -23,7 +24,7 @@ const config = {
     return [
       {
         source: "/api/graphql/:path*",
-        destination: `${process.env.NEXTAUTH_URL}/graphql/:path*`,
+        destination: `${HTTP_URI}/graphql/:path*`,
       },
     ];
   },

@@ -31,7 +31,6 @@ jobs:
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL}}
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_WS_URL: ${{ secrets.NEXT_PUBLIC_WS_URL }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           SKIP_ENV_VALIDATION: ${{ secrets.SKIP_ENV_VALIDATION }}
         run: |
           npm install
