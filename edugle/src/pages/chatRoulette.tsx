@@ -243,7 +243,7 @@ const ChatApp = () => {
 
   useEffect(() => {
     if (chatStarted.data) {
-      // console.log("chatStarted.data=", chatStarted.data);
+      console.log("chatStarted.data=", chatStarted.data);
     }
   }, [chatStarted.data]);
 
