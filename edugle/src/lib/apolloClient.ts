@@ -3,9 +3,10 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { setContext } from "@apollo/client/link/context";
+import { env } from "../env.mjs";
 
 const httpLink = new HttpLink({
-  uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
+  uri: `${env.API_URL}/graphql`,
   credentials: "same-origin",
 });
 
@@ -13,7 +14,7 @@ const wsLink =
   typeof window !== "undefined"
     ? new GraphQLWsLink(
         createClient({
-          url: `${process.env.NEXT_PUBLIC_WS_URL}`,
+          url: `${env.WS_URL}`,
         }),
       )
     : null;

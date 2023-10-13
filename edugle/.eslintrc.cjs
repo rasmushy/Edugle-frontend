@@ -5,8 +5,9 @@ const config = {
   parserOptions: {
     project: true,
   },
-  plugins: ["@typescript-eslint", "plugin:@next/next/recommended"],
-  extends: ["eslint:recommended", "next"],
+  plugins: ["@typescript-eslint", "react", "react-hooks"],
+  extends: [
+  ],
   rules: {
     // These opinionated rules are enabled in stylistic-type-checked above.
     // Feel free to reconfigure them to your own preference.
@@ -22,11 +23,11 @@ const config = {
     ],
     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
   },
-  settings: {
-    react: {
-      version: "detect",
+    settings: {
+      react: {
+        version: "detect",
+      },
     },
-  },
 };
 
 module.exports = config;

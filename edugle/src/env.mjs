@@ -1,4 +1,4 @@
-import { createEnv } from "@t3-oss/env-nextjs";
+import {createEnv} from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
@@ -19,6 +19,8 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string().min(1) : z.string(),
     ),
+    WS_URL: z.string().min(1).url(),
+    API_URL: z.string().min(1).url(),
   },
 
   /**
@@ -28,8 +30,6 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
-    NEXT_PUBLIC_WS_URL: z.string().min(1),
-    NEXT_PUBLIC_API_URL: z.string().min(1),
   },
 
   /**
@@ -39,13 +39,13 @@ export const env = createEnv({
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    WS_URL: process.env.WS_URL,
+    API_URL: process.env.API_URL,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
    * This is especially useful for Docker builds.
    */
-  skipValidation: !process.env.SKIP_ENV_VALIDATION,
+  skipValidation: true,
 });

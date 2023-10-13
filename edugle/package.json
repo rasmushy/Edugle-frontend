@@ -9,7 +9,7 @@
     "start": "next start",
     "compile": "graphql-codegen",
     "watch": "graphql-codegen -w",
-    "prettier": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+    "prettier": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
     "@apollo/client": "^3.8.5",
@@ -18,13 +18,13 @@
     "@mui/icons-material": "^5.14.12",
     "@mui/material": "^5.14.12",
     "@mui/x-data-grid": "^6.16.1",
-    "@t3-oss/env-nextjs": "^0.6.1",
+    "@t3-oss/env-core": "^0.7.0",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.14.1",
-    "next": "^13.4.13",
+    "next": "^13.5.4",
     "next-auth": "^4.23.2",
     "react": "^18.2.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
@@ -32,6 +32,7 @@
     "@graphql-eslint/eslint-plugin": "^3.20.1",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@next/eslint-plugin-next": "^13.5.4",
+    "@t3-oss/env-nextjs": "^0.7.0",
     "@types/eslint": "^8.44.2",
     "@types/next": "^9.0.0",
     "@types/next-auth": "^3.15.0",

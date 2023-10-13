@@ -21,7 +21,7 @@ const config = {
     return [
       {
         source: "/api/graphql/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/graphql/:path*`,
+        destination: `${process.env.API_URL}/graphql/:path*`,
       },
     ];
   },

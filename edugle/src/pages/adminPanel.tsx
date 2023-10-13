@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import UsersGrid from "../components/UsersGrid";
@@ -9,14 +9,14 @@ export default function AdminPanel() {
 
   useEffect(() => {
     if (status === "loading") return;
-    if (session?.user?.role.toLowerCase() !== "admin") router.replace("/");
+    if (session?.user?.role?.toLowerCase() !== "admin") router.replace("/");
   }, [status, session, router]);
 
   if (status === "loading") {
     return <div>loading...</div>;
   }
 
-  if (session?.user?.role.toLowerCase() !== "admin") {
+  if (session?.user?.role?.toLowerCase() !== "admin") {
     return null;
   }
 
