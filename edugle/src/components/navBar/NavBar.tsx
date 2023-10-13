@@ -38,12 +38,6 @@ const NavBar = () => {
     setActiveButton("profile");
   };
 
-  const handleSettingsPage = () => {
-    setCloseNavbar(!closeNavbar);
-    setShowNavbar(!showNavbar);
-    setActiveButton("settings");
-  };
-
   const handleAdminPanelPage = () => {
     setCloseNavbar(!closeNavbar);
     setShowNavbar(!showNavbar);
@@ -126,19 +120,6 @@ const NavBar = () => {
                         }`}
                       >
                         <p>Profile</p>
-                      </div>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/settings" onClick={() => handleSettingsPage()}>
-                      <div
-                        className={`${styles.navbar_item} ${
-                          activeButton === "settings"
-                            ? styles.active
-                            : styles.inactive
-                        }`}
-                      >
-                        <p>Settings</p>
                       </div>
                     </Link>
                   </li>
