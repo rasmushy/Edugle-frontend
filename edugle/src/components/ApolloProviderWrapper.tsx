@@ -12,7 +12,7 @@ export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "loading" && !router.isReady) return;
+    if (status === "loading") return;
 
     console.log("session=", session);
     if (status === "unauthenticated") {
@@ -22,12 +22,6 @@ export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
 
     if (session?.error === "RefreshAccessTokenError") {
       signOut({ callbackUrl: "/", redirect: true });
-    }
-
-    if (session === null) {
-      if (router.route !== "/") {
-        router.replace("/");
-      }
     }
   }, [session]);
 
