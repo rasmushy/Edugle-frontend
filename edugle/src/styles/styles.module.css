@@ -124,7 +124,6 @@
   border-radius: 17px 17px 0 0;
   height: auto;
   min-height: 70vh;
-  display: grid;
   /* Add some border radius for the glass effect */
   padding: 10px;
   /* Adjust padding as needed */
@@ -132,6 +131,16 @@
   /* Apply a backdrop filter to simulate glass blur */
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   /* Add a slight shadow for depth */
+}
+
+.fadeIn {
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+}
+
+.fadeOut {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
 }
 
 @media (max-width: 790px) {

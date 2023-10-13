@@ -15,6 +15,9 @@ import RulesGif from "../../public/images/rules.gif";
 import OceanImage from "../../public/images/ocean.jpg";
 import Image from "next/image";
 import styles from "../styles/styles.module.css";
+import CircularProgress from "@mui/material/CircularProgress";
+import tips from "../styles/tips";
+import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -126,6 +129,8 @@ const ChatApp = () => {
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
   const [isQueue, setIsQueue] = useState<boolean>(false);
   const [firstTime, setFirstTime] = useState<boolean>(true);
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+  const [showTip, setShowTip] = useState(true);
   const { loading, error, data } = useQuery(IS_QUEUE, {
     variables: {
       token: session.data?.token as string,
@@ -208,12 +213,14 @@ const ChatApp = () => {
   };
 
   const handleStartQueue = () => {
-    const isQueuePosition = isQuery.data?.queuePosition.position;
+    const isQueuePosition = data.queuePosition.position;
 
     if (isQueuePosition === 0) {
-      console.log(isQueue);
+      console.log(isQueuePosition);
+      console.log("asdasdasdasda ", session.data?.token as string);
       initiateChat();
       setIsQueue(true);
+      setFirstTime(false);
     } else {
       console.log(isQuery.data?.queuePosition);
     }
@@ -222,6 +229,7 @@ const ChatApp = () => {
   const handleBack = () => {
     dequeueUser().then(() => {
       console.log(data.queuePosition.position);
+      setFirstTime(true);
     });
   };
 
@@ -246,8 +254,28 @@ const ChatApp = () => {
   }, [chatEnded.data]);
 
   useEffect(() => {
-    if (chatStatus === "Paired") setFirstTime(false);
+    if (chatStatus === "Paired") {
+      setFirstTime(false);
+      setIsQueue(false);
+    }
   }, [chatStatus]);
+
+  useEffect(() => {
+    const tipInterval = setInterval(() => {
+      // Hide the current tip
+      setShowTip(false);
+
+      // Wait for a moment before showing the next tip
+      setTimeout(() => {
+        setCurrentTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
+        setShowTip(true);
+      }, 500); // Adjust the delay between tips (in milliseconds) as needed
+    }, 6000); // Adjust the interval for changing tips (in milliseconds) as needed
+
+    return () => {
+      clearInterval(tipInterval);
+    };
+  }, []);
 
   return (
     <>
@@ -278,7 +306,18 @@ const ChatApp = () => {
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>
                 <img src={RulesGif.src} alt="Image" style={{ width: "650px", marginBottom: "20px", borderRadius: "50px", boxShadow: "5px 5px 3px gray" }} />
                 <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Read Before Entering</h1>
-                <p style={{ fontSize: "16px", textAlign: "center", marginBottom: "40px" }}>Do you know the rules about talking to strangers online? </p>
+                <p style={{ fontSize: "16px", textAlign: "center", marginBottom: "40px" }}>
+                  Do you know the rules about talking to{" "}
+                  <a
+                    style={{ fontWeight: "bolder", textDecoration: "underline" }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://faze.ca/dos-and-donts-chatting-strangers-online/"
+                  >
+                    strangers online
+                  </a>
+                  ?
+                </p>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <button
                     onClick={() => handleStartQueue()}
@@ -286,6 +325,48 @@ const ChatApp = () => {
                   >
                     I Know the Rules
                   </button>
+                  <button
+                    onClick={() => handleBack()}
+                    style={{ fontSize: "16px", padding: "10px 20px", background: "#E53E3E", color: "white", border: "none", borderRadius: "5px" }}
+                  >
+                    Go Back
+                  </button>
+                </div>
+              </div>
+            </Paper>
+          </div>
+        ) : isQueue ? (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Paper
+              elevation={3} // Add elevation for shadow
+              sx={{
+                borderRadius: 5, // Add rounded corners
+                margin: 0,
+                marginLeft: "20px",
+                marginRight: "20px",
+                padding: 0,
+                width: "90vw",
+                height: "78vh !important",
+                boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
+                position: "relative",
+                overflow: "hidden",
+                backgroundColor: "white", // Background color
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>
+                <p style={{ fontSize: "20px", marginBottom: "40px", color: "#2C7DA0" }}>
+                  <strong>Finding someone to talk to!</strong>
+                </p>
+                <CircularProgress style={{ width: "150px", height: "150px", marginBottom: "20px" }} />
+                <p style={{ fontSize: "20px", marginBottom: "20px" }}>
+                  <strong>Daily tips</strong>
+                </p>
+                <div style={{ display: "flex", alignItems: "center", flexDirection: "column", gap: "10px" }}>
+                  <div className={` ${showTip ? `${styles.fadeIn}` : `${styles.fadeOut}`}`} style={{ fontSize: "16px", textAlign: "center" }}>
+                    <TipsAndUpdatesIcon style={{ color: "orange", marginRight: "20px" }}></TipsAndUpdatesIcon> {tips[currentTipIndex]}
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", bottom: "20px", position: "absolute" }}>
                   <button
                     onClick={() => handleBack()}
                     style={{ fontSize: "16px", padding: "10px 20px", background: "#E53E3E", color: "white", border: "none", borderRadius: "5px" }}

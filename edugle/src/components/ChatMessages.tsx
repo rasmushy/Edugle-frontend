@@ -68,7 +68,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
 
   return (
     <div
-      style={{ overflow: "auto", scrollBehavior: "smooth" }}
+      style={{ overflow: "auto" }}
       ref={messagesContainerRef}
       className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch max-h-[390px] min-h-[70vh] space-y-4 space-y-4 "
     >
