@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-import {HTTP_URI} from "./constants";
-dotenv.config();
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
@@ -24,7 +21,7 @@ const config = {
     return [
       {
         source: "/api/graphql/:path*",
-        destination: `${HTTP_URI}/graphql/:path*`,
+        destination: `https://edugle-backend.azurewebsites.net/graphql/:path*`,
       },
     ];
   },

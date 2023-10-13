@@ -6,7 +6,7 @@ import { env } from "../env.mjs";
 import { print } from "graphql/language/printer";
 import type { Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
-import {HTTP_URI, WS_URI} from "../../constants";
+import {HTTP_URI, WS_URI} from "../constants";
 
 const LOGIN_USER = gql`
   mutation LoginUser($credentials: LoginInput!) {

@@ -3,7 +3,7 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { setContext } from "@apollo/client/link/context";
-import {HTTP_URI, WS_URI} from "../../constants";
+import {HTTP_URI, WS_URI} from "../constants";
 
 const httpLink = new HttpLink({
   uri: `${HTTP_URI}/graphql`,
