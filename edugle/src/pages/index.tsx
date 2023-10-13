@@ -57,7 +57,7 @@ export default function Home({ session: initialSession }: { session: any }) {
           overflowX: "hidden",
           zIndex: isNavBarOpen == true ? -1 : 1,
         }}
-        className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2C7DA0] to-[#2C7DA0]"
+        className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#012A4A] to-[#2C7DA0]"
       >
         <div
           style={{
@@ -71,24 +71,30 @@ export default function Home({ session: initialSession }: { session: any }) {
         >
           <div ref={bubblesContainerRef}></div>
         </div>
-        {activePopup ? <div className="backdrop" onClick={() => togglePopup(null)}></div> : null}
 
-        {activePopup === "Login" ? (
-          <div className="modal">
-            <Login toggle={() => togglePopup("Login")} />
-          </div>
-        ) : null}
-        {activePopup === "SignUp" ? (
-          <div className="modal">
-            <SignUp toggle={() => togglePopup("SignUp")} />
-          </div>
-        ) : null}
+        {initialSession?.user ? null : (
+          <>
+            {activePopup ? <div className="backdrop" onClick={() => togglePopup(null)}></div> : null}
+
+            {activePopup === "Login" ? (
+              <div className="modal">
+                <Login toggle={() => togglePopup("Login")} />
+              </div>
+            ) : null}
+            {activePopup === "SignUp" ? (
+              <div className="modal">
+                <SignUp toggle={() => togglePopup("SignUp")} />
+              </div>
+            ) : null}
+          </>
+        )}
+
         <MainPageBtn togglePopup={togglePopup} />
       </main>
       <style>{`
         .modal {
-          position: fixed;
-          top: 50%;
+          position: absolute;
+          top: 43%;
           left: 50%;
           transform: translate(-50%, -50%);
           z-index: 9999;
@@ -99,7 +105,7 @@ export default function Home({ session: initialSession }: { session: any }) {
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
+          background-color: rgba(0, 0, 0, 0.9);
           z-index: 9998;
         }
       `}</style>

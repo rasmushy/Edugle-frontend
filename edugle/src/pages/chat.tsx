@@ -2,12 +2,13 @@ import React, { useState, useEffect, use } from "react";
 import Head from "next/head";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
-import { gql, useMutation, useSubscription } from "@apollo/client";
-import ChatBar from "../components/ChatBar";
-import LikeUser from "../components/LikeUser";
+import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
+import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
+import Paper from "@mui/material/Paper";
+import OceanImage from "../../public/images/asd.jpg";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -36,6 +37,8 @@ const MESSAGE_CREATED = gql`
           avatar
           id
           username
+          likes
+          description
         }
       }
     }
@@ -62,6 +65,32 @@ const CHAT_STARTED = gql`
   }
 `;
 
+const MSG_BY_ID = gql`
+  query Messages($chatByIdId: ID!) {
+  chatById(id: $chatByIdId) {
+    messages {
+      id
+      date
+      content
+      sender {
+        id
+        username
+        email
+        password
+        description
+        avatar
+        lastLogin
+        role
+        likes
+      }
+    }
+    created_date
+    id
+  }
+}
+`;
+
+
 const CHAT_ENDED = gql`
   subscription ChatEnded {
     chatEnded {
@@ -86,7 +115,7 @@ const CHAT_ENDED = gql`
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
-  const [chatId, setChatId] = useState("");
+  const [chatId, setChatId] = useState("651fe685a4cdf622986a9f14");
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
@@ -125,6 +154,7 @@ const ChatApp = () => {
       console.log("chatStarted: subData=", subscriptionData.data.chatStarted);
       setChatId(subscriptionData.data.chatStarted.id);
       setChatStatus("Paired");
+
     },
     onError: (error) => {
       console.log("chatStarted: error=", error);
@@ -150,13 +180,21 @@ const ChatApp = () => {
   const handleNextUser = () => {
     initiateChat();
   };
+  
+  const x = useQuery(MSG_BY_ID, { variables: { chatByIdId: "651fe685a4cdf622986a9f14" }, 
+          onCompleted: (data) => { console.log(data); return data} });
+  useEffect(() => {
+    if (!x.data) {
+      return;
+    }
+    setMessages(x.data.chatById.messages as Message[])
+  },[x]);
 
   useEffect(() => {
     if (!messageCreated.data) {
-      setMessages([]);
       return;
     }
-   // console.log("messageCreated.data=", messageCreated.data);
+    console.log("messageCreated.data=", messageCreated.data);
     setMessages(messageCreated.data?.messageCreated?.messages as Message[]);
   }, [messageCreated.data]);
 
@@ -179,26 +217,36 @@ const ChatApp = () => {
         <meta name="chat" content="Chatroom" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="min-w-screen min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="h-screen flex-row pl-4 pr-4">
-          <div className="flex-col">
-            {/* Chat messages */}
-            {chatId != "" && <ChatMessages chatMessages={messages} />}
+      <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
+          <Paper
+            elevation={3} // Add elevation for shadow
+            sx={{
+              borderRadius: 5, // Add rounded corners
+              margin: 0,
+              marginLeft: "20px",
+              marginRight: "20px",
+              padding: 0,
+              boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
+              position: "relative",
+              overflow: "hidden",
+              backgroundColor: "white", // Background color
+              backgroundImage: `url(${OceanImage.src})`,
+            }}
+          >
+            <div className="flex-row">
+              <div className="flex-col" style={{ top: "3%", position: "relative" }}>
+                {/* Chat messages */}
+                {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} />}
 
-            {/* Chat box */}
-            <ChatBox chatId={chatId} user={session.data?.token as string} />
+                {/* Chat box */}
+                <ChatBox chatId={chatId} user={session.data?.token as string} />
 
-            {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
-            {/* Sidebar: with functions for liking and joining next chat */}
-            <ChatBar
-              chatId={chatId}
-              user={session.data?.token as string}
-              chatStatus={chatStatus}
-              handleLikeUser={handleLikeUser}
-              handleNextUser={handleNextUser}
-            />
-          </div>
-        </div>
+                {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
+                {/* Sidebar: with functions for liking and joining next chat */}
+                {/*  <ChatBar chatId={chatId} user={token} chatStatus={chatStatus} handleLikeUser={handleLikeUser} handleNextUser={handleNextUser} />*/}
+              </div>
+            </div>
+          </Paper>
       </main>
     </>
   );

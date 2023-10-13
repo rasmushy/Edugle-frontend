@@ -18,6 +18,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
+import { get } from "http";
 
 const GET_USER = gql(`query GetUserByToken($token: String!) {
     getUserByToken(token: $token) {
@@ -25,6 +26,7 @@ const GET_USER = gql(`query GetUserByToken($token: String!) {
         username
         email
         id
+        likes
   }
 }`);
 
@@ -44,8 +46,8 @@ export default function Profile() {
   const [userName, setUserName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
+  const [likeCount, setLikes] = useState<string>("");
   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
-  const likeCount = 42;
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   useEffect(() => {
@@ -63,6 +65,7 @@ export default function Profile() {
       setUserName(getUserByToken.username);
       setDescription(getUserByToken.description);
       setUserEmail(getUserByToken.email);
+      setLikes(getUserByToken.likes);
     },
     onError: (error) => {
       console.log("error", error);

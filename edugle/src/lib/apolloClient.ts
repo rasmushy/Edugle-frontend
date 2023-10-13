@@ -24,7 +24,10 @@ const splitLink =
     ? split(
         ({ query }) => {
           const definition = getMainDefinition(query);
-          return definition.kind === "OperationDefinition" && definition.operation === "subscription";
+          return (
+            definition.kind === "OperationDefinition" &&
+            definition.operation === "subscription"
+          );
         },
         wsLink,
         httpLink,
@@ -36,7 +39,7 @@ const client = (token: string) => {
     return {
       headers: {
         ...headers,
-        authorization: `Bearer ${token}`,
+        authorization: token ? `Bearer ${token}` : "",
       },
     };
   });
