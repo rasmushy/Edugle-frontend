@@ -222,8 +222,8 @@ const ChatApp = () => {
       console.log(isQuery.data?.queuePosition);
     } else {
       console.log(isQueuePosition);
-      await startChat();
       setIsQueue(true);
+      await startChat();
       setFirstTime(false);
     }
   };
