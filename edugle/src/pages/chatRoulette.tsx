@@ -128,17 +128,6 @@ const ChatApp = () => {
   const [firstTime, setFirstTime] = useState<boolean>(true);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [showTip, setShowTip] = useState(true);
-  const { loading, error, data } = useQuery(IS_QUEUE, {
-    variables: {
-      token: session.data?.token as string,
-    },
-  });
-
-  const isQuery = useQuery(IS_QUEUE, {
-    variables: {
-      token: session.data?.token as string,
-    },
-  });
 
   const [dequeueUser] = useMutation(DE_QUEUE, {
     variables: {
@@ -177,6 +166,30 @@ const ChatApp = () => {
     },
   });
 
+  const isQuery = useQuery(IS_QUEUE, {
+    variables: {
+      token: session.data?.token as string,
+    },
+    onCompleted: ({ queuePosition }) => {
+      console.log("queuePosition COMPLETED=", queuePosition);
+      if (queuePosition.position === 0) {
+        setIsQueue(true);
+      }
+    }
+  });
+
+    useEffect(() => {
+    if (isQuery.loading) {
+      console.log('loading...')
+    } else if (isQuery.error) {
+      console.log('error', + isQuery.error.message)
+    }
+    else {
+      console.log("queuePosition COMPLETED=", isQuery.data.queuePosition);
+    }
+  },[isQuery]);
+
+
   const chatStarted = useSubscription(CHAT_STARTED, {
     variables: { userId: session.data?.user?.id },
     onSubscriptionData: ({ subscriptionData }) => {
@@ -189,6 +202,28 @@ const ChatApp = () => {
     },
   });
 
+  const startChat = async () => {
+    await initiateChat();
+    if (chatStarted.data) {
+      console.log("chatStarted.data=", chatStarted.data);
+    }
+  };
+  
+  const handleStartQueue = async () => {
+    if (isQuery.loading) {
+      return;
+    }
+    const isQueuePosition = isQuery.data.queuePosition.position;
+    
+    if (isQueuePosition > 0) {
+      console.log(isQuery.data?.queuePosition);
+    } else {
+      console.log(isQueuePosition);
+      await startChat();
+      setIsQueue(true);
+      setFirstTime(false);
+    }
+  };
   const chatEnded = useSubscription(CHAT_ENDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       console.log("chatEnded: subData=", subscriptionData.data.chatEnded);
@@ -209,19 +244,6 @@ const ChatApp = () => {
     initiateChat();
   };
 
-  const handleStartQueue = () => {
-    const isQueuePosition = data.queuePosition.position;
-
-    if (isQueuePosition === 0) {
-      console.log(isQueuePosition);
-      console.log("asdasdasdasda ", session.data?.token as string);
-      initiateChat();
-      setIsQueue(true);
-      setFirstTime(false);
-    } else {
-      console.log(isQuery.data?.queuePosition);
-    }
-  };
 
   const handleBack = () => {
     dequeueUser().then(() => {
