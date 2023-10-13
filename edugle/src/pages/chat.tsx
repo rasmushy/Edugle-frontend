@@ -103,7 +103,6 @@ const ChatApp = () => {
     console.log("ChatApp: session=", session);
     router.push("/");
   }
-  console.log("seesio nasjdsfg sd", session.data);
 
   const [initiateChat] = useMutation(INITIATE_CHAT, {
     variables: {

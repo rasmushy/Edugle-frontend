@@ -31,6 +31,15 @@ const INITIATE_CHAT = gql`
   }
 `;
 
+const DE_QUEUE = gql`
+  mutation DeQueueUser($token: String!) {
+    dequeueUser(token: $token) {
+      position
+      status
+    }
+  }
+`;
+
 const MESSAGE_CREATED = gql`
   subscription Subscription($chatId: ID!) {
     messageCreated(chatId: $chatId) {
@@ -115,13 +124,25 @@ const ChatApp = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
-  const [isQueue, setIsQueue] = useState<string>("");
-  const { loading, error, data } = useQuery(IS_QUEUE);
+  const [isQueue, setIsQueue] = useState<boolean>(false);
   const [firstTime, setFirstTime] = useState<boolean>(true);
 
   const isQuery = useQuery(IS_QUEUE, {
     variables: {
       token: session.data?.token as string,
+    },
+  });
+
+  const [dequeueUser] = useMutation(DE_QUEUE, {
+    variables: {
+      token: session.data?.token as string,
+    },
+    onCompleted: ({ dequeueUser }) => {
+      console.log("dequeueUser COMPLETED=", dequeueUser);
+      setIsQueue(false);
+    },
+    onError: (error) => {
+      console.log("dequeueUser: error=", error.message);
     },
   });
 
@@ -181,6 +202,24 @@ const ChatApp = () => {
     initiateChat();
   };
 
+  const handleAsd = () => {
+    const isQueuePosition = isQuery.data?.queuePosition.position;
+
+    if (isQueuePosition === 0) {
+      console.log(isQueue);
+      initiateChat();
+      setIsQueue(true);
+    } else {
+      console.log(isQuery.data?.queuePosition);
+    }
+  };
+
+  const handleBack = () => {
+    dequeueUser().then(() => {
+      console.log(isQuery.data?.queuePosition);
+    });
+  };
+
   useEffect(() => {
     if (!messageCreated.data) {
       setMessages([]);
@@ -201,17 +240,6 @@ const ChatApp = () => {
       // console.log("chatEnded.data=", chatEnded.data);
     }
   }, [chatEnded.data]);
-
-  useEffect(() => {
-    if (isQuery.data) {
-      console.log("isQuery.data=", isQuery.data);
-      if (isQuery.data.queuePosition.status === "Queue") {
-        setIsQueue(isQuery.data.queuePosition.status);
-      } else {
-        setIsQueue("Not Queue");
-      }
-    }
-  }, [isQuery.loading]);
 
   return (
     <>
@@ -240,18 +268,20 @@ const ChatApp = () => {
               }}
             >
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>
-                <img
-                  src={RulesGif.src}
-                  alt="Image"
-                  style={{ width: "650px", marginBottom: "20px", borderRadius: "50px", boxShadow: "5px 5px 3px gray" }}
-                />
+                <img src={RulesGif.src} alt="Image" style={{ width: "650px", marginBottom: "20px", borderRadius: "50px", boxShadow: "5px 5px 3px gray" }} />
                 <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Read Before Entering</h1>
                 <p style={{ fontSize: "16px", textAlign: "center", marginBottom: "40px" }}>Do you know the rules about talking to strangers online? </p>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <button style={{ fontSize: "16px", padding: "10px 20px", background: "#014F86", color: "white", border: "none", borderRadius: "5px" }}>
+                  <button
+                    onClick={() => handleAsd()}
+                    style={{ fontSize: "16px", padding: "10px 20px", background: "#014F86", color: "white", border: "none", borderRadius: "5px" }}
+                  >
                     I Know the Rules
                   </button>
-                  <button style={{ fontSize: "16px", padding: "10px 20px", background: "#E53E3E", color: "white", border: "none", borderRadius: "5px" }}>
+                  <button
+                    onClick={() => handleBack()}
+                    style={{ fontSize: "16px", padding: "10px 20px", background: "#E53E3E", color: "white", border: "none", borderRadius: "5px" }}
+                  >
                     Go Back
                   </button>
                 </div>
