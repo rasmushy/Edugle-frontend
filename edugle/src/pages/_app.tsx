@@ -12,7 +12,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session} basePath="/">
+    <SessionProvider session={session}>
       <style>
         {`
           body {
