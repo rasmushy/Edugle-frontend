@@ -3,7 +3,6 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { setContext } from "@apollo/client/link/context";
-// import { getServerAuthSession } from "../server/auth";
 
 const httpLink = new HttpLink({
   uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
@@ -24,7 +23,10 @@ const splitLink =
     ? split(
         ({ query }) => {
           const definition = getMainDefinition(query);
-          return definition.kind === "OperationDefinition" && definition.operation === "subscription";
+          return (
+            definition.kind === "OperationDefinition" &&
+            definition.operation === "subscription"
+          );
         },
         wsLink,
         httpLink,
@@ -36,7 +38,7 @@ const client = (token: string) => {
     return {
       headers: {
         ...headers,
-        authorization: `Bearer ${token}`,
+        authorization: token ? `Bearer ${token}` : "",
       },
     };
   });
