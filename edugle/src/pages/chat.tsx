@@ -2,18 +2,13 @@ import React, { useState, useEffect, use } from "react";
 import Head from "next/head";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
-import { gql, useMutation, useSubscription } from "@apollo/client";
-import ChatBar from "../components/ChatBar";
+import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
 import { useRouter } from "next/router";
-import { set } from "zod";
 import Paper from "@mui/material/Paper";
-import CardMedia from "@mui/material/CardMedia";
 import OceanImage from "../../public/images/asd.jpg";
-import Image from "next/image";
-import styles from "../styles/styles.module.css";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -69,6 +64,32 @@ const CHAT_STARTED = gql`
     }
   }
 `;
+
+const MSG_BY_ID = gql`
+  query Messages($chatByIdId: ID!) {
+  chatById(id: $chatByIdId) {
+    messages {
+      id
+      date
+      content
+      sender {
+        id
+        username
+        email
+        password
+        description
+        avatar
+        lastLogin
+        role
+        likes
+      }
+    }
+    created_date
+    id
+  }
+}
+`;
+
 
 const CHAT_ENDED = gql`
   subscription ChatEnded {
@@ -133,6 +154,7 @@ const ChatApp = () => {
       console.log("chatStarted: subData=", subscriptionData.data.chatStarted);
       setChatId(subscriptionData.data.chatStarted.id);
       setChatStatus("Paired");
+
     },
     onError: (error) => {
       console.log("chatStarted: error=", error);
@@ -158,6 +180,16 @@ const ChatApp = () => {
   const handleNextUser = () => {
     initiateChat();
   };
+  
+  const x = useQuery(MSG_BY_ID, { variables: { chatByIdId: "651fe685a4cdf622986a9f14" }, 
+          onCompleted: (data) => { console.log(data); return data} });
+  useEffect(() => {
+    if (!x.data) {
+      return;
+    }
+    console.log('x.data', x.data)
+    setMessages(x.data.chatById.messages as Message[])
+  },[x]);
 
   useEffect(() => {
     if (!messageCreated.data) {
