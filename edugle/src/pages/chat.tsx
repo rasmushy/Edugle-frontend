@@ -187,7 +187,6 @@ const ChatApp = () => {
     if (!x.data) {
       return;
     }
-    console.log('x.data', x.data)
     setMessages(x.data.chatById.messages as Message[])
   },[x]);
 
