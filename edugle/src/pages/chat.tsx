@@ -4,7 +4,7 @@ import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
 import { gql, useMutation, useSubscription } from "@apollo/client";
 import ChatBar from "../components/ChatBar";
-import LikeUser from "~/components/LikeUser";
+import LikeUser from "../components/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
 import { useRouter } from "next/router";

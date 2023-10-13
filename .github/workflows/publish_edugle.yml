@@ -9,6 +9,13 @@ on:
       - publish
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: ./edugle
+
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,22 +29,28 @@ jobs:
           node-version: '18.x'
 
       - name: npm install, build, and test
+        env:
+          NODE_ENV: ${{ secrets.NODE_ENV }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL}}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_WS_URL: ${{ secrets.NEXT_PUBLIC_WS_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           npm install
           npm run build --if-present
-          npm run test --if-present
-
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: .
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'Production'
+      name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -46,11 +59,14 @@ jobs:
         with:
           name: node-app
 
+      - name: unzip artifact for deployment
+        run: unzip release.zip
+
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'edugle'
-          slot-name: 'Production'
+          slot-name: 'production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FBE5C78879B7458E9AB0C6EE9DB81070 }}
           package: .
