@@ -178,6 +178,8 @@ const ChatApp = () => {
     }
   });
 
+  // UseEffect for checking query status
+
     useEffect(() => {
     if (isQuery.loading) {
       console.log('loading...')
@@ -224,6 +226,7 @@ const ChatApp = () => {
       setFirstTime(false);
     }
   };
+
   const chatEnded = useSubscription(CHAT_ENDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       console.log("chatEnded: subData=", subscriptionData.data.chatEnded);
@@ -247,7 +250,7 @@ const ChatApp = () => {
 
   const handleBack = () => {
     dequeueUser().then(() => {
-      console.log(data.queuePosition.position);
+      console.log(isQuery.data?.queuePosition);
       setFirstTime(true);
     });
   };
