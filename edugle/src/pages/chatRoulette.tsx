@@ -212,6 +212,7 @@ const ChatApp = () => {
   };
   
   const handleStartQueue = async () => {
+    console.log('isQuery', isQuery)
     if (isQuery.loading) {
       return;
     }
