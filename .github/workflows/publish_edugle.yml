@@ -26,7 +26,15 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v1
         with:
-          node-version: '18.x'
+          node-version: "18.x"
+
+      - name: Print environment variables
+        run: |
+          echo NODE_ENV=${{ secrets.NODE_ENV }}
+          echo NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+          echo NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+          echo NEXT_PUBLIC_WS_URL=${{ secrets.NEXT_PUBLIC_WS_URL }}
+          echo NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
 
       - name: npm install, build, and test
         env:
@@ -34,7 +42,7 @@ jobs:
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL}}
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_WS_URL: ${{ secrets.NEXT_PUBLIC_WS_URL }}
-          NEXTAUTH_SECRET: ${{ secrets.JWT_SECRET }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
         run: |
           npm install
           npm run build --if-present
@@ -50,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'production'
+      name: "production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -62,11 +70,11 @@ jobs:
       - name: unzip artifact for deployment
         run: unzip release.zip
 
-      - name: 'Deploy to Azure Web App'
+      - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'edugle'
-          slot-name: 'production'
+          app-name: "edugle"
+          slot-name: "production"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FBE5C78879B7458E9AB0C6EE9DB81070 }}
           package: .
