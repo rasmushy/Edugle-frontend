@@ -6,7 +6,7 @@ import { setContext } from "@apollo/client/link/context";
 import { env } from "../env.mjs";
 
 const httpLink = new HttpLink({
-  uri: `${env.API_URL}/graphql`,
+  uri: `${env.NEXT_PUBLIC_API_URL}/graphql`,
   credentials: "same-origin",
 });
 
@@ -14,7 +14,7 @@ const wsLink =
   typeof window !== "undefined"
     ? new GraphQLWsLink(
         createClient({
-          url: `${env.WS_URL}`,
+          url: `${env.NEXT_PUBLIC_WS_URL}`,
         }),
       )
     : null;

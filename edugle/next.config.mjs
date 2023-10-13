@@ -4,7 +4,7 @@ dotenv.config();
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-!process.env.SKIP_ENV_VALIDATION && await import("./src/env.mjs");
+await import("./src/env.mjs");
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -23,7 +23,7 @@ const config = {
     return [
       {
         source: "/api/graphql/:path*",
-        destination: `${process.env.API_URL}/graphql/:path*`,
+        destination: `${process.env.NEXTAUTH_URL}/graphql/:path*`,
       },
     ];
   },

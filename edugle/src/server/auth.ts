@@ -2,10 +2,10 @@ import { type GetServerSidePropsContext } from "next";
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { gql } from "@apollo/client";
+import { env } from "../env.mjs";
 import { print } from "graphql/language/printer";
 import type { Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
-import { env } from "../env.mjs";
 
 const LOGIN_USER = gql`
   mutation LoginUser($credentials: LoginInput!) {
@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const response = await fetch(`${env.API_URL}/graphql`, {
+        const response = await fetch(`${env.NEXT_PUBLIC_API_URL}/graphql`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -144,7 +144,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: env.NODE_ENV === "development",
+        secure: env.NODE_ENV === "production",
       },
     },
   },
@@ -156,7 +156,7 @@ async function refreshAccessToken(tokenObject: JWT) {
   //console.log(tokenObject);
   try {
     // Get a new set of tokens with a refreshToken
-    const tokenResponse = await fetch(`${env.API_URL}/graphql`, {
+    const tokenResponse = await fetch(`${env.NEXT_PUBLIC_API_URL}/graphql`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -190,19 +190,5 @@ async function refreshAccessToken(tokenObject: JWT) {
  * @see https://next-auth.js.org/configuration/nextjs
  */
 export const getServerAuthSession = (ctx: { req: GetServerSidePropsContext["req"]; res: GetServerSidePropsContext["res"] }) => {
-  const session = getServerSession(ctx.req, ctx.res, authOptions);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      session,
-    },
-  };
+  return getServerSession(ctx.req, ctx.res, authOptions);
 };
