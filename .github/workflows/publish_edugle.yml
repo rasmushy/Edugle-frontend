@@ -36,6 +36,7 @@ jobs:
           NEXT_PUBLIC_WS_URL: ${{ secrets.NEXT_PUBLIC_WS_URL }}
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           SKIP_ENV_VALIDATION: ${{ secrets.SKIP_ENV_VALIDATION }}
+          NEXTAUTH_URL_INTERNAL: ${{ secrets.NEXTAUTH_URL_INTERNAL }}
         run: |
           npm install
           npm run build --if-present
