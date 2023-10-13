@@ -138,17 +138,6 @@ export const authOptions: NextAuthOptions = {
       return Promise.resolve(session);
     },
   },
-  cookies: {
-    sessionToken: {
-      name: "next-auth.session-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: env.NODE_ENV === "production",
-      },
-    },
-  },
 };
 
 async function refreshAccessToken(tokenObject: JWT) {
