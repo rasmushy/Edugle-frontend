@@ -45,14 +45,11 @@ export default function Home({ session: initialSession }: { session: any }) {
     createBubbles();
   }, []);
 
-  useEffect(() => {}, [status]);
-
   return (
     <>
       <Head>
         <title>Edugle</title>
-        <meta name="description" content="Random chatting" />
-        <link rel="icon" href="/favicon.ico" />
+        <meta name="description" content="Edugle" />
       </Head>
       <main
         style={{
