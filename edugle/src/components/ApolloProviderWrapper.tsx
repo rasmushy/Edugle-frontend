@@ -3,7 +3,7 @@ import createApolloClient from "../lib/apolloClient";
 import { ApolloProvider } from "@apollo/client";
 import type { PropsWithChildren } from "react";
 import { useEffect} from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 
 export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {

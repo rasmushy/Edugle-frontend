@@ -7,7 +7,7 @@ import ChatBar from "../components/ChatBar";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
