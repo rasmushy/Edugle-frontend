@@ -1,53 +1,26 @@
 "use client";
 import React, { useState } from "react";
 import {
-  Alert,
-  Box,
-  Button,
-  Checkbox,
-  FilledInput,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  ListItemText,
-  MenuItem,
   Modal,
-  OutlinedInput,
-  Paper,
-  Select,
-  SelectChangeEvent,
-  TextField,
 } from "@mui/material";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
 
-const inputStyle = {
-  WebkitBoxShadow: "0 0 0 1000px white inset",
-  WebkitTextFillColor: "#000",
-};
+const CreateUserPopUp = ({ isPopUpOpen, setIsPopUpOpen, user }: any) => {
 
-const CreateUserPopUp = ({ isPopUpOpen, setIsPopUpOpen, getUsersData, classes }: any) => {
-  const [modalStyle] = useState(getModalStyle);
+  function handleLikeUser(id: any): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function handleDislikeUser(id: any): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <Modal open={isPopUpOpen} onClose={() => setIsPopUpOpen(false)}>
       <div
         style={{
           position: "absolute",
-          width: "680px",
+          minWidth: "300px",
           height: "300px",
           backgroundColor: "white",
           border: "2px solid", // Added "solid" for border style
@@ -57,80 +30,44 @@ const CreateUserPopUp = ({ isPopUpOpen, setIsPopUpOpen, getUsersData, classes }:
           top: `${50}%`,
           left: `${50}%`,
           transform: `translate(-${50}%, -${50}%)`,
+          textAlign: "center", // Center text
         }}
       >
-        <header>
-          <h1>Luo uusi käyttäjä</h1>
+        <header style={{ color: "black" }}>
+          <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Käyttäjän {user.username} profiili!</h1>
         </header>
-        <Box
-          component="form"
-          sx={{
-            "& .MuiTextField-root": { m: 1, width: "30ch" },
-          }}
-          autoComplete="off"
-        >
-          <TextField
-            label="Nimi"
-            variant="outlined"
-            size="small"
-            focused
-            required
-            name="Nimi"
-            autoComplete="new-name"
-            type="text"
-            margin="dense"
-            InputProps={{
-              sx: { color: "black" },
-              startAdornment: (
-                <InputAdornment position="start">
-                  <AccountCircle />
-                </InputAdornment>
-              ),
+        <p style={{ color: "black", marginBottom: "20px" }}>{user.description}</p>
+        <p style={{ color: "black", marginBottom: "20px" }}>Likes: {user.likes}</p>
+
+        <div style={{ position: "absolute", bottom: "20px", left: "20%" }}>
+          <button
+            style={{
+              fontSize: "16px",
+              padding: "10px 20px",
+              background: "#E53E3E",
+              color: "white", // Text color
+              border: "none",
+              borderRadius: "5px",
+              marginRight: "10px", // Add a gap
             }}
-            inputProps={{
-              style: inputStyle,
-              sx: { color: "black" },
+            onClick={() => handleDislikeUser(user.id)}
+          >
+            Dislike
+          </button>
+          <button
+            style={{
+              fontSize: "16px",
+              padding: "10px 20px",
+              background: "#014F86",
+              color: "white", // Text color
+              border: "none",
+              borderRadius: "5px",
             }}
-          />
-          <TextField
-            label="Sähköposti"
-            variant="outlined"
-            size="small"
-            color="primary"
-            focused
-            autoComplete="name-email"
-            required
-            name="Sähköposti"
-            type="text"
-            margin="dense"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <AccountCircle />
-                </InputAdornment>
-              ),
-            }}
-            inputProps={{ style: inputStyle }}
-          />
-        </Box>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          sx={{
-            marginTop: "18px",
-            borderRadius: "20px",
-            backgroundColor: "#aac929",
-            color: "black",
-            width: "33.5ch",
-            position: "absolute",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            bottom: "5%",
-          }}
-        >
-          Luo käyttäjä
-        </Button>
+            onClick={() => handleLikeUser(user.id)}
+          >
+            Like
+          </button>
+        </div>
       </div>
     </Modal>
   );

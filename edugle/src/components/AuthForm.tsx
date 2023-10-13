@@ -30,7 +30,6 @@ export default function AuthForm({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [checkEmail, setCheckEmail] = useState(true);
   const [checkUserName, setCheckUserName] = useState(true);
@@ -77,7 +76,6 @@ export default function AuthForm({
       username,
       email,
       password,
-      description,
     });
     setIsLoading(false);
   }
@@ -170,31 +168,10 @@ export default function AuthForm({
               }}
             />
           </div>
-          {title === "Sign Up" && ( // Conditional rendering for description field
-            <div className="mb-4">
-              <label className="mb-2 block text-sm font-bold text-white">
-                Description
-              </label>
-              <TextField
-                id="outlined-multiline-static"
-                sx={{
-                  width: "100%",
-                  backgroundColor: "white",
-                  borderRadius: 2,
-                  marginBottom: 5,
-                }}
-                multiline
-                autoComplete="off"
-                rows={4}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Tell us about yourself"
-              />
-            </div>
-          )}
           <div className="flex justify-center">
             <button
               type="submit"
-              className="focus:shadow-outline rounded bg-[#2C7DA0] px-20 py-2 font-bold text-white hover:bg-[#01497C] focus:outline-none"
+              className="focus:shadow-outline rounded bg-[#2C7DA0] px-10 py-2 font-bold text-white hover:bg-[#01497C] focus:outline-none"
               disabled={isLoading}
             >
               {isLoading ? "Loading..." : title}

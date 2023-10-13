@@ -96,8 +96,8 @@ export default function Home({ session: initialSession }: { session: any }) {
       </main>
       <style>{`
         .modal {
-          position: fixed;
-          top: 50%;
+          position: absolute;
+          top: 43%;
           left: 50%;
           transform: translate(-50%, -50%);
           z-index: 9999;

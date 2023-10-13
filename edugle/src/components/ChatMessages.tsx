@@ -98,7 +98,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
                   {message?.sender?.username}:
                 </strong>
 
-                {isMessageActive && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen}></LikeUser>}
+                {isMessageActive && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} user={message.sender} />}
 
                 <span className={`${messageTextClass}`}>
                   {addBreaks(message.content).map((line, lineIndex) => (
