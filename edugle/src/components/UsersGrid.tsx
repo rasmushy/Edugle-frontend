@@ -30,12 +30,14 @@ interface User {
   id: GridRowId;
   userName: string;
   role: boolean;
+  likes: number;
 }
 const GET_USERS = gql(`query Users($token: String!) {
           users(token: $token) {
             id
             role
             username
+            likes
         }
 }`);
 
@@ -231,7 +233,7 @@ const UserGrid = () => {
       editable: false,
     },
     {
-      field: "LikeCount",
+      field: "likes",
       headerName: "Like count",
       width: 200,
       editable: false,

@@ -118,6 +118,31 @@
   background-color: #f1f5f9;
 }
 
+.glassPanel {
+  background: rgba(255, 255, 255, 0.3);
+  /* Set the background to a semi-transparent white */
+  border-radius: 17px 17px 0 0;
+  height: auto;
+  min-height: 70vh;
+  /* Add some border radius for the glass effect */
+  padding: 10px;
+  /* Adjust padding as needed */
+  backdrop-filter: blur(10px);
+  /* Apply a backdrop filter to simulate glass blur */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  /* Add a slight shadow for depth */
+}
+
+.fadeIn {
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+}
+
+.fadeOut {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
 @media (max-width: 790px) {
   .buttonWrapper {
     display: none;
@@ -183,4 +208,29 @@
     width: 330px;
     height: 400px;
   }
+}
+
+@media only screen and (max-width: 600px) {
+  /* Your styles for small screens go here */
+}
+
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+  /* Your styles for medium screens go here */
+}
+
+@media only screen and (min-width: 1025px) {
+  /* Your styles for large screens go here */
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+  /* Your styles for high-resolution screens go here */
+}
+
+@media screen and (orientation: landscape) {
+  /* Your styles for landscape orientation go here */
+}
+
+@media screen and (orientation: portrait) {
+  /* Your styles for portrait orientation go here */
 }

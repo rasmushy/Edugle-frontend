@@ -25,7 +25,6 @@ export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
     }
   }, [session]);
 
-
   if(status === "loading") return <div>Loading...</div>
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
