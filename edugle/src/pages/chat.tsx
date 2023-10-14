@@ -6,9 +6,10 @@ import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Paper from "@mui/material/Paper";
 import OceanImage from "../../public/images/asd.jpg";
+
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {

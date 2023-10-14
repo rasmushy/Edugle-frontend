@@ -12,7 +12,7 @@ import React, { PropsWithRef, use, useEffect, useRef, useState } from "react";
 import { gql } from "@apollo/client";
 import styles from "../styles/styles.module.css";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import ChatMessages from "../components/ChatMessages";
 import ChatBox from "../components/ChatBox";
@@ -7,13 +7,10 @@ import ChatBar from "../components/ChatBar";
 import LikeUser from "~/components/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
-import { useRouter } from "next/router";
-import { set } from "zod";
+import { useRouter } from "next/navigation";
 import Paper from "@mui/material/Paper";
-import CardMedia from "@mui/material/CardMedia";
 import RulesGif from "../../public/images/rules.gif";
 import OceanImage from "../../public/images/ocean.jpg";
-import Image from "next/image";
 import styles from "../styles/styles.module.css";
 import CircularProgress from "@mui/material/CircularProgress";
 import tips from "../styles/tips";
@@ -131,17 +128,6 @@ const ChatApp = () => {
   const [firstTime, setFirstTime] = useState<boolean>(true);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
   const [showTip, setShowTip] = useState(true);
-  const { loading, error, data } = useQuery(IS_QUEUE, {
-    variables: {
-      token: session.data?.token as string,
-    },
-  });
-
-  const isQuery = useQuery(IS_QUEUE, {
-    variables: {
-      token: session.data?.token as string,
-    },
-  });
 
   const [dequeueUser] = useMutation(DE_QUEUE, {
     variables: {
@@ -180,6 +166,32 @@ const ChatApp = () => {
     },
   });
 
+  const isQuery = useQuery(IS_QUEUE, {
+    variables: {
+      token: session.data?.token as string,
+    },
+    onCompleted: ({ queuePosition }) => {
+      console.log("queuePosition COMPLETED=", queuePosition);
+      if (queuePosition.position === 0) {
+        setIsQueue(true);
+      }
+    }
+  });
+
+  // UseEffect for checking query status
+
+    useEffect(() => {
+    if (isQuery.loading) {
+      console.log('loading...')
+    } else if (isQuery.error) {
+      console.log('error', + isQuery.error.message)
+    }
+    else {
+      console.log("queuePosition COMPLETED=", isQuery.data.queuePosition);
+    }
+  },[isQuery]);
+
+
   const chatStarted = useSubscription(CHAT_STARTED, {
     variables: { userId: session.data?.user?.id },
     onSubscriptionData: ({ subscriptionData }) => {
@@ -191,6 +203,30 @@ const ChatApp = () => {
       console.log("chatStarted: error=", error);
     },
   });
+
+  const startChat = async () => {
+    await initiateChat();
+    if (chatStarted.data) {
+      console.log("chatStarted.data=", chatStarted.data);
+    }
+  };
+  
+  const handleStartQueue = async () => {
+    console.log('isQuery', isQuery)
+    if (isQuery.loading) {
+      return;
+    }
+    const isQueuePosition = isQuery.data.queuePosition.position;
+    
+    if (isQueuePosition > 0) {
+      console.log(isQuery.data?.queuePosition);
+    } else {
+      console.log(isQueuePosition);
+      setIsQueue(true);
+      await startChat();
+      setFirstTime(false);
+    }
+  };
 
   const chatEnded = useSubscription(CHAT_ENDED, {
     onSubscriptionData: ({ subscriptionData }) => {
@@ -212,23 +248,10 @@ const ChatApp = () => {
     initiateChat();
   };
 
-  const handleStartQueue = () => {
-    const isQueuePosition = data.queuePosition.position;
-
-    if (isQueuePosition === 0) {
-      console.log(isQueuePosition);
-      console.log("asdasdasdasda ", session.data?.token as string);
-      initiateChat();
-      setIsQueue(true);
-      setFirstTime(false);
-    } else {
-      console.log(isQuery.data?.queuePosition);
-    }
-  };
 
   const handleBack = () => {
     dequeueUser().then(() => {
-      console.log(data.queuePosition.position);
+      console.log(isQuery.data?.queuePosition);
       setFirstTime(true);
     });
   };
@@ -403,13 +426,6 @@ const ChatApp = () => {
 
                 {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
                 {/* Sidebar: with functions for liking and joining next chat */}
-                <ChatBar
-                  chatId={chatId}
-                  user={session.data?.token as string}
-                  chatStatus={chatStatus}
-                  handleLikeUser={handleLikeUser}
-                  handleNextUser={handleNextUser}
-                />
               </div>
             </div>
           </Paper>

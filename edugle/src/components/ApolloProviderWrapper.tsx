@@ -3,7 +3,7 @@ import createApolloClient from "../lib/apolloClient";
 import { ApolloProvider } from "@apollo/client";
 import type { PropsWithChildren } from "react";
 import { useEffect} from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 
 export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
@@ -12,7 +12,7 @@ export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "loading" && !router.isReady) return;
+    if (status === "loading") return;
 
     console.log("session=", session);
     if (status === "unauthenticated") {
@@ -22,12 +22,6 @@ export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
 
     if (session?.error === "RefreshAccessTokenError") {
       signOut({ callbackUrl: "/", redirect: true });
-    }
-
-    if (session === null) {
-      if (router.route !== "/") {
-        router.replace("/");
-      }
     }
   }, [session]);
 
