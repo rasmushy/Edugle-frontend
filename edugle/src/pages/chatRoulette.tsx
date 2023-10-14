@@ -14,6 +14,8 @@ import RulesPanel from "~/components/chatRoulette/RulesPanel";
 import CircleIcon from "@mui/icons-material/Circle";
 import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { set } from "zod";
+import { init } from "@graphql-codegen/cli";
+import { StackedLineChartOutlined } from "@mui/icons-material";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -30,73 +32,43 @@ const INITIATE_CHAT = gql`
   }
 `;
 
-const DE_QUEUE = gql`
-  mutation DeQueueUser($token: String!) {
-    dequeueUser(token: $token) {
-      position
-      status
-    }
-  }
-`;
-
-const MESSAGE_CREATED = gql`
-  subscription Subscription($chatId: ID!) {
-    messageCreated(chatId: $chatId) {
-      created_date
-      id
-      messages {
+const SUBSCRIPTION_CHAT = gql`
+  subscription UpdatedChat($userId: ID!) {
+    updatedChat(userId: $userId) {
+      eventType
+      timestamp
+      message
+      chat {
+        created_date
         id
-        content
-        date
-        sender {
-          avatar
+        messages {
+          id
+          date
+          content
+          sender {
+            description
+            avatar
+            id
+            likes
+            username
+          }
+        }
+        users {
           id
           username
-          likes
+          avatar
           description
         }
       }
     }
   }
 `;
-const CHAT_STARTED = gql`
-  subscription ChatStarted($userId: ID!) {
-    chatStarted(userId: $userId) {
-      id
-      users {
-        id
-        username
-      }
-      messages {
-        id
-        content
-        date
-        sender {
-          id
-          username
-        }
-      }
-    }
-  }
-`;
 
-const CHAT_ENDED = gql`
-  subscription ChatEnded {
-    chatEnded {
-      id
-      users {
-        id
-        username
-      }
-      messages {
-        id
-        content
-        date
-        sender {
-          id
-          username
-        }
-      }
+const DE_QUEUE = gql`
+  mutation DeQueueUser($token: String!) {
+    dequeueUser(token: $token) {
+      position
+      status
     }
   }
 `;
@@ -108,15 +80,57 @@ const IS_QUEUE = gql(`query QueuePosition($token: String!) {
   }
 }`);
 
-const ASD = gql(`query Queue {
-  queue {
-    joinedAt
-    position
-    userId {
+const JOIN_CHAT = gql`
+  mutation JoinChat($chatId: ID!, $token: String!) {
+    joinChat(chatId: $chatId, token: $token) {
+      created_date
       id
+      messages {
+        content
+        date
+        id
+        sender {
+          id
+          username
+          description
+          likes
+        }
+      }
+      users {
+        username
+        email
+        description
+        id
+      }
     }
   }
-}`);
+`;
+
+const LEAVE_CHAT = gql`
+  mutation LeaveChat($chatId: ID!, $token: String!) {
+    leaveChat(chatId: $chatId, token: $token) {
+      created_date
+      id
+      messages {
+        content
+        date
+        id
+        sender {
+          id
+          username
+          description
+          likes
+        }
+      }
+      users {
+        username
+        email
+        description
+        id
+      }
+    }
+  }
+`;
 
 const ChatApp = () => {
   const session = useSession();
@@ -128,48 +142,69 @@ const ChatApp = () => {
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
   const [isQueue, setIsQueue] = useState<boolean>(chatStatus === "Paired" ? false : true);
   const [firstTime, setFirstTime] = useState<boolean>(true);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     if (session.status === "loading") return;
     if (!session?.data?.user) router.replace("/");
   }, [session.status, session, session.data]);
 
-  const [dequeueUser] = useMutation(DE_QUEUE, {
-    variables: {
-      token: session.data?.token as string,
-    },
-
-    onCompleted: ({ dequeueUser }) => {
-      console.log("dequeueUser COMPLETED=", dequeueUser);
-      setIsQueue(false);
-    },
-    onError: (error) => {
-      console.log("dequeueUser: error=", error.message);
-    },
-  });
-
-  const [initiateChat] = useMutation(INITIATE_CHAT, {
-    variables: {
-      token: session.data?.token as string,
-    },
-    onCompleted: ({ initiateChat }) => {
-      setChatStatus("Queue'd");
-
-      console.log("initiateChat COMPLETED=", initiateChat);
-      if (initiateChat.status === "Paired") {
-        setChatId(initiateChat.chatId);
+  useSubscription(SUBSCRIPTION_CHAT, {
+    variables: { userId: session.data?.user.id },
+    onSubscriptionData: ({
+      subscriptionData: {
+        data: { updatedChat },
+      },
+    }) => {
+      switch (updatedChat.eventType) {
+        case "CHAT_STARTED":
+          setChatId(updatedChat.chat.id);
+          setChatStatus("Paired");
+          setOtherUser(
+            updatedChat.chat.users[0].username === session?.data?.user.username ? updatedChat.chat.users[1].username : updatedChat.chat.users[0].username,
+          );
+          setFirstTime(false);
+          setTimeout(function () {
+            setIsQueue(false);
+          }, 1000);
+          console.log("CHAT_STARTED: chatId=", updatedChat.chat.id, ", timestamp=", updatedChat.timestamp);
+          break;
+        case "USER_JOINED_CHAT":
+          /*             const userJoinedMessage = {
+            id: ("11111" + session.data?.user.id) as string,
+            content: `${updatedChat.message}`,
+            date: updatedChat.timestamp,
+            sender: {
+              id: ("11112" + session.data?.user.id) as string,
+              username: "Edugle",
+              email: "edugle@render.com",
+            },
+          };
+          setMessages((prevMessages) => [...prevMessages, userJoinedMessage]);  */
+          break;
+        case "USER_LEFT_CHAT":
+          const userLeftMessage = {
+            id: ("00001" + session.data?.user.id) as string,
+            content: `${updatedChat.message}`,
+            date: updatedChat.timestamp,
+            sender: {
+              id: ("00002" + session.data?.user.id) as string,
+              username: "Edugle",
+              email: "edugle@render.com",
+            },
+          };
+          setMessages((prevMessages) => [...prevMessages, userLeftMessage]);
+          break;
+        case "USER_SENT_MESSAGE":
+          setMessages((prevMessages) => [...prevMessages, updatedChat.chat.messages[updatedChat.chat.messages.length - 1]]);
+          break;
+        default:
+          console.log("eventType not found", updatedChat.eventType);
+          break;
       }
     },
     onError: (error) => {
-      console.log("initiateChat: error=", error.message);
-      isQuery.refetch();
-    },
-  });
-
-  const messageCreated = useSubscription(MESSAGE_CREATED, {
-    variables: { chatId: chatId },
-    onError: (error) => {
-      console.log("messageCreated: error=", error.message);
+      console.log("SUBSCRIPTION_CHAT: error=", error);
     },
   });
 
@@ -185,8 +220,62 @@ const ChatApp = () => {
     },
   });
 
-  // UseEffect for checking query status
+  const [dequeueUser] = useMutation(DE_QUEUE, {
+    variables: {
+      token: session.data?.token as string,
+    },
+    onCompleted: ({ dequeueUser }) => {
+      console.log("dequeueUser COMPLETED=", dequeueUser);
+      setIsQueue(false);
+    },
+    onError: (error) => {
+      console.log("dequeueUser: error=", error.message);
+    },
+  });
 
+  const [initiateChat] = useMutation(INITIATE_CHAT, {
+    variables: {
+      token: session.data?.token as string,
+    },
+    onCompleted: ({ initiateChat }) => {
+      setChatStatus(initiateChat.status);
+      console.log("initiateChat COMPLETED=", initiateChat);
+      if (initiateChat.status === "Paired") {
+        setChatId(initiateChat.chatId);
+      }
+    },
+    onError: (error) => {
+      console.log("initiateChat: error=", error.message);
+      isQuery.refetch();
+    },
+  });
+  const [joinChat] = useMutation(JOIN_CHAT, {
+    variables: {
+      chatId: chatId,
+      token: session.data?.token as string,
+    },
+    onCompleted: ({ joinChat }) => {
+      console.log("joinChat COMPLETED=", joinChat);
+    },
+    onError: (error) => {
+      console.log("joinChat: error=", error);
+    },
+  });
+
+  const [leaveChat] = useMutation(LEAVE_CHAT, {
+    variables: {
+      chatId: chatId,
+      token: session.data?.token as string,
+    },
+    onCompleted: ({ leaveChat }) => {
+      console.log("leaveChat COMPLETED=", leaveChat);
+    },
+    onError: (error) => {
+      console.log("leaveChat: error=", error);
+    },
+  });
+
+  // UseEffect for checking query status
   useEffect(() => {
     if (isQuery.loading) {
       console.log("loading...");
@@ -197,33 +286,24 @@ const ChatApp = () => {
     }
   }, [isQuery]);
 
+  /*   useEffect(() => {
+    if (chatStatus === "Paired") {
+      setFirstTime(false);
+      setTimeout(function () {
+        setIsQueue(false);
+      }, 2000); // 5000 milliseconds (5 seconds) <-- 2000 on 2 sec noob
+    }
+  }, [chatStatus, isQuery]);
+ */
   useEffect(() => {
     if (chatId) {
       console.log("ligma");
       setChatStatus("Paired");
+      setIsQueue(false);
     }
   }, [chatId]);
 
-  const chatStarted = useSubscription(CHAT_STARTED, {
-    variables: { userId: session.data?.user?.id },
-    onSubscriptionData: ({ subscriptionData }) => {
-      console.log("chatStarted: subData=", subscriptionData.data.chatStarted);
-      setChatId(subscriptionData.data.chatStarted.id);
-      setChatStatus("Paired");
-    },
-    onError: (error) => {
-      console.log("chatStarted: error=", error);
-    },
-  });
-
-  const startChat = async () => {
-    await initiateChat();
-    if (chatStarted.data) {
-      console.log("chatStarted.data=", chatStarted.data);
-    }
-  };
-
-  const handleStartQueue = async () => {
+  const handleStartQueue = () => {
     console.log("isQuery", isQuery);
     if (isQuery.loading) {
       return;
@@ -235,27 +315,24 @@ const ChatApp = () => {
     } else {
       console.log(isQueuePosition);
       setIsQueue(true);
-      await startChat();
+      initiateChat();
       setFirstTime(false);
+      if (chatId != "") {
+        joinChat();
+      }
     }
   };
 
-  const chatEnded = useSubscription(CHAT_ENDED, {
-    onSubscriptionData: ({ subscriptionData }) => {
-      console.log("chatEnded: subData=", subscriptionData.data.chatEnded);
-      setChatId("");
-      setChatStatus("Ended");
-      setMessages([]);
-    },
-    onError: (error) => {
-      console.log("chatEnded: error=", error);
-    },
-  });
-
   const handleNextUser = () => {
     // FIXME: jättää toisel selaimella auki ton queue panelin, ja ku tabaa pois ja sisää nii tajuu et mähä oon paired.
-    initiateChat();
-    setIsQueue(true);
+    if (chatStatus === "Paired") {
+      setMessages([]);
+      setChatId("");
+      setChatStatus("Ended");
+      setOtherUser(null);
+      leaveChat();
+    }
+    handleStartQueue();
   };
 
   const handleBack = () => {
@@ -263,42 +340,6 @@ const ChatApp = () => {
       setFirstTime(true);
     });
   };
-
-  useEffect(() => {
-    if (!messageCreated.data) {
-      return;
-    }
-    console.log("messageCreated.data=", messageCreated.data);
-    setMessages(messageCreated.data?.messageCreated?.messages as Message[]);
-  }, [messageCreated.data]);
-
-  useEffect(() => {
-    if (chatStarted.data) {
-      console.log("chatStarted.data=!!!", chatStarted.data);
-      setOtherUser(
-        chatStarted.data?.chatStarted?.users[0].username === session?.data?.user.username
-          ? chatStarted.data?.chatStarted?.users[1].username
-          : chatStarted.data?.chatStarted?.users[0].username,
-      );
-    }
-  }, [chatStarted.data]);
-
-  useEffect(() => {
-    if (chatEnded.data) {
-      // console.log("chatEnded.data=", chatEnded.data);
-    }
-  }, [chatEnded.data]);
-
-  useEffect(() => {
-    if (chatStatus === "Paired") {
-      setFirstTime(false);
-      setTimeout(function () {
-        setIsQueue(false);
-      }, 2000); // 5000 milliseconds (5 seconds)
-    }
-  }, [chatStatus, isQuery]);
-
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -320,7 +361,7 @@ const ChatApp = () => {
           <meta name="chat" content="Chatroom" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <main style={{}} className={styles.rouletteMainContainer}>
+        <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
           {firstTime ? (
             <RulesPanel handleStartQueue={handleStartQueue} handleBack={handleBack} />
           ) : isQueue ? (
@@ -344,7 +385,7 @@ const ChatApp = () => {
               <div className="flex-row">
                 <div className="flex-col" style={{ top: "3%", position: "relative" }}>
                   {/* Chat messages */}
-                  {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} style={"roulette"} />}
+                  {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} />}
 
                   {/* Chat box */}
                   <ChatBox chatId={chatId} user={session.data?.token as string} />
@@ -354,7 +395,6 @@ const ChatApp = () => {
                       Talking to: <strong>{otherUser}</strong>
                     </h1>
                     <div
-                    className={styles.nextUserButton}
                       onClick={handleNextUser}
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}
@@ -372,7 +412,7 @@ const ChatApp = () => {
                         ...boxShadowStyle, // Apply boxShadow based on state
                       }}
                     >
-                      <h1 className={styles.nextUserText} style={{ width:"100%", marginLeft: "20px", color: "black", cursor: "pointer" }}>Next user! </h1>
+                      <h1 style={{ marginLeft: "20px", color: "black", marginRight: "20px", cursor: "pointer" }}>Next user! </h1>
                     </div>
                   </div>
                 </div>

@@ -14,6 +14,11 @@ const wsLink =
     ? new GraphQLWsLink(
         createClient({
           url: `${process.env.NEXT_PUBLIC_WS_URL}`,
+          shouldRetry(errOrCloseEvent) {
+            // If true is returned, the link will try to reconnect.
+            // Returning false halts reconnects.
+            return true;
+          },
         }),
       )
     : null;

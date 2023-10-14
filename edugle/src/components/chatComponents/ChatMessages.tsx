@@ -49,11 +49,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
     console.log(isPopUpOpen, " IsClose");
   };
 
-  useEffect(() => {
+    useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
+
 
   return (
     <div

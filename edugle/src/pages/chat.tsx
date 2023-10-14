@@ -3,7 +3,6 @@ import Head from "next/head";
 import ChatMessages from "../components/chatComponents/ChatMessages";
 import ChatBox from "../components/chatComponents/ChatBox";
 import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
-import LikeUser from "~/components/chatComponents/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
 import { useRouter } from "next/navigation";
@@ -11,55 +10,19 @@ import Paper from "@mui/material/Paper";
 import OceanImage from "../../public/images/asd.jpg";
 import styles from "../styles/styles.module.css";
 
-const INITIATE_CHAT = gql`
-  mutation InitiateChat($token: String!) {
-    initiateChat(token: $token) {
-      ... on PairedChatResponse {
-        chatId
-        status
-      }
-      ... on QueuePositionResponse {
-        position
-        status
-      }
-    }
-  }
-`;
-const MESSAGE_CREATED = gql`
-  subscription Subscription($chatId: ID!) {
+const SUBSCRIPTION_MESSAGE = gql`
+  subscription MessageCreated($chatId: ID!) {
     messageCreated(chatId: $chatId) {
-      created_date
-      id
-      messages {
-        id
+      timestamp
+      chatId
+      message {
         content
         date
-        sender {
-          avatar
-          id
-          username
-          likes
-          description
-        }
-      }
-    }
-  }
-`;
-const CHAT_STARTED = gql`
-  subscription ChatStarted($userId: ID!) {
-    chatStarted(userId: $userId) {
-      id
-      users {
         id
-        username
-      }
-      messages {
-        id
-        content
-        date
         sender {
-          id
+          email
           username
+          id
         }
       }
     }
@@ -90,128 +53,45 @@ const MSG_BY_ID = gql`
   }
 `;
 
-const CHAT_ENDED = gql`
-  subscription ChatEnded {
-    chatEnded {
-      id
-      users {
-        id
-        username
-      }
-      messages {
-        id
-        content
-        date
-        sender {
-          id
-          username
-        }
-      }
-    }
-  }
-`;
-
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
   const [chatId, setChatId] = useState("651fe685a4cdf622986a9f14");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [chatStatus, setChatStatus] = useState("");
-  const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
 
   if (!session || session.status === "unauthenticated") {
     console.log("ChatApp: session=", session);
     router.push("/");
   }
 
-  const [initiateChat] = useMutation(INITIATE_CHAT, {
-    variables: {
-      token: session.data?.token as string,
-    },
-    onCompleted: ({ initiateChat }) => {
-      console.log("initiateChat COMPLETED=", initiateChat);
-      setChatStatus(initiateChat.status);
-      if (initiateChat.status === "Paired") {
-        setChatId(initiateChat.chatId);
+  const idQuery = useQuery(MSG_BY_ID, {
+    variables: { chatByIdId: "651fe685a4cdf622986a9f14" },
+    onCompleted: (data) => {
+      console.log(data);
+      if (data.chatById.messages) {
+        setMessages(data.chatById.messages as Message[]);
+        setChatId(data.chatById.id);
       }
     },
     onError: (error) => {
-      console.log("initiateChat: error=", error.message);
+      console.log("MSG_BY_ID: error=", error.message);
     },
   });
 
-  const messageCreated = useSubscription(MESSAGE_CREATED, {
+  useSubscription(SUBSCRIPTION_MESSAGE, {
     variables: { chatId: chatId },
+    onSubscriptionData: ({
+      subscriptionData: {
+        data: { messageCreated, chatId, timestamp },
+      },
+    }) => {
+      console.log("messageCreated: sent at=", timestamp, ", chatId=", chatId, ", sender=", messageCreated.message.sender.username);
+      setMessages((prevMessages) => [...prevMessages, messageCreated.message]);
+    },
     onError: (error) => {
       console.log("messageCreated: error=", error.message);
     },
   });
-
-  const chatStarted = useSubscription(CHAT_STARTED, {
-    variables: { userId: session.data?.user?.id },
-    onSubscriptionData: ({ subscriptionData }) => {
-      console.log("chatStarted: subData=", subscriptionData.data.chatStarted);
-      setChatId(subscriptionData.data.chatStarted.id);
-      setChatStatus("Paired");
-    },
-    onError: (error) => {
-      console.log("chatStarted: error=", error);
-    },
-  });
-
-  const chatEnded = useSubscription(CHAT_ENDED, {
-    onSubscriptionData: ({ subscriptionData }) => {
-      console.log("chatEnded: subData=", subscriptionData.data.chatEnded);
-      setChatId("");
-      setChatStatus("Ended");
-      setMessages([]);
-    },
-    onError: (error) => {
-      console.log("chatEnded: error=", error);
-    },
-  });
-
-  const handleLikeUser = () => {
-    setIsLikeUser(true);
-  };
-
-  const handleNextUser = () => {
-    initiateChat();
-  };
-
-  const x = useQuery(MSG_BY_ID, {
-    variables: { chatByIdId: "651fe685a4cdf622986a9f14" },
-    onCompleted: (data) => {
-      console.log(data);
-      return data;
-    },
-  });
-  useEffect(() => {
-    if (!x.data) {
-      return;
-    }
-    setMessages(x.data.chatById.messages as Message[]);
-  }, [x]);
-
-  useEffect(() => {
-    if (!messageCreated.data) {
-      return;
-    }
-    console.log("messageCreated.data=", messageCreated.data);
-    setMessages(messageCreated.data?.messageCreated?.messages as Message[]);
-  }, [messageCreated.data]);
-
-  useEffect(() => {
-    if (chatStarted.data) {
-      // console.log("chatStarted.data=", chatStarted.data);
-    }
-  }, [chatStarted.data]);
-
-  useEffect(() => {
-    if (chatEnded.data) {
-      // console.log("chatEnded.data=", chatEnded.data);
-    }
-  }, [chatEnded.data]);
 
   if (session?.data?.user) {
     return (
@@ -226,7 +106,7 @@ const ChatApp = () => {
             elevation={3} // Add elevation for shadow
             className={styles.slideBackground}
             sx={{
-              borderRadius: 5,
+              borderRadius: 5, // Add rounded corners
               margin: 0,
               marginLeft: "20px",
               marginRight: "20px",
@@ -234,7 +114,7 @@ const ChatApp = () => {
               boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
               position: "relative",
               overflow: "hidden",
-              backgroundColor: "white",
+              backgroundColor: "white", // Background color
               backgroundImage: `url(${OceanImage.src})`,
               backgroundSize: "auto 100%",
               animation: "slideBackground 20s linear infinite",
