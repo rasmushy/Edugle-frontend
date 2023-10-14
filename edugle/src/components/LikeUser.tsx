@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Modal,
-} from "@mui/material";
+import { Modal } from "@mui/material";
+import { set } from "zod";
 
+const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, user }: any) => {
 
-const CreateUserPopUp = ({ isPopUpOpen, setIsPopUpOpen, user }: any) => {
+  const [isOpen, setIsOpen] = useState(isPopUpOpen);
 
   function handleLikeUser(id: any): void {
     throw new Error("Function not implemented.");
@@ -15,8 +15,14 @@ const CreateUserPopUp = ({ isPopUpOpen, setIsPopUpOpen, user }: any) => {
     throw new Error("Function not implemented.");
   }
 
+  const handleClose = () => {
+    setIsPopUpOpen(false);
+    setIsOpen(false);
+  };
+  console.log("isPopUpOpen:", isPopUpOpen);
+
   return (
-    <Modal open={isPopUpOpen} onClose={() => setIsPopUpOpen(false)}>
+    <Modal key={isPopUpOpen ? "open" : "closed"} open={isOpen} onClose={handleClose}>
       <div
         style={{
           position: "absolute",
@@ -36,7 +42,7 @@ const CreateUserPopUp = ({ isPopUpOpen, setIsPopUpOpen, user }: any) => {
         <header style={{ color: "black" }}>
           <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Käyttäjän {user.username} profiili!</h1>
         </header>
-        <p style={{ color: "black", marginBottom: "20px" }}>{user.description}</p>
+        <p style={{ color: "black", marginBottom: "20px" }}>{user.description ? user.description : "No description yet!"}</p>
         <p style={{ color: "black", marginBottom: "20px" }}>Likes: {user.likes}</p>
 
         <div style={{ position: "absolute", bottom: "20px", left: "20%" }}>
@@ -73,15 +79,4 @@ const CreateUserPopUp = ({ isPopUpOpen, setIsPopUpOpen, user }: any) => {
   );
 };
 
-const getModalStyle = () => {
-  const top = 50;
-  const left = 50;
-
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
-  };
-};
-
-export default CreateUserPopUp;
+export default LikeUser;

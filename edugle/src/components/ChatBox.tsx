@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
+import SendIcon from "@mui/icons-material/Send";
 
 type ChatBoxProps = {
   chatId: string;
@@ -66,8 +67,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
   };
 
   const handleSendMessage = () => {
-    createMessage();
     if (message !== "" && chatId !== "") {
+      createMessage();
       setMessage("");
     } else {
       console.log("Could not send message to chat:", chatId);
@@ -86,12 +87,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
           onKeyDown={handleKeyPress}
         />
         <div className="absolute bottom-0 right-0 flex h-full items-center pr-2">
-          <button
-            onClick={handleSendMessage}
-            className="mx-1 rounded bg-[hsl(280,100%,70%)] p-2 text-white"
-          >
-            Send
-          </button>
+          <SendIcon style={{ color: "#012A4A", marginRight: "20px" }} onClick={handleSendMessage} className="cursor-pointer" />
         </div>
       </div>
     </div>

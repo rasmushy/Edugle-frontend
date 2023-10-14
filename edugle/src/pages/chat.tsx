@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import Paper from "@mui/material/Paper";
 import OceanImage from "../../public/images/asd.jpg";
 
-
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
     initiateChat(token: $token) {
@@ -68,29 +67,28 @@ const CHAT_STARTED = gql`
 
 const MSG_BY_ID = gql`
   query Messages($chatByIdId: ID!) {
-  chatById(id: $chatByIdId) {
-    messages {
-      id
-      date
-      content
-      sender {
+    chatById(id: $chatByIdId) {
+      messages {
         id
-        username
-        email
-        password
-        description
-        avatar
-        lastLogin
-        role
-        likes
+        date
+        content
+        sender {
+          id
+          username
+          email
+          password
+          description
+          avatar
+          lastLogin
+          role
+          likes
+        }
       }
+      created_date
+      id
     }
-    created_date
-    id
   }
-}
 `;
-
 
 const CHAT_ENDED = gql`
   subscription ChatEnded {
@@ -155,7 +153,6 @@ const ChatApp = () => {
       console.log("chatStarted: subData=", subscriptionData.data.chatStarted);
       setChatId(subscriptionData.data.chatStarted.id);
       setChatStatus("Paired");
-
     },
     onError: (error) => {
       console.log("chatStarted: error=", error);
@@ -181,15 +178,20 @@ const ChatApp = () => {
   const handleNextUser = () => {
     initiateChat();
   };
-  
-  const x = useQuery(MSG_BY_ID, { variables: { chatByIdId: "651fe685a4cdf622986a9f14" }, 
-          onCompleted: (data) => { console.log(data); return data} });
+
+  const x = useQuery(MSG_BY_ID, {
+    variables: { chatByIdId: "651fe685a4cdf622986a9f14" },
+    onCompleted: (data) => {
+      console.log(data);
+      return data;
+    },
+  });
   useEffect(() => {
     if (!x.data) {
       return;
     }
-    setMessages(x.data.chatById.messages as Message[])
-  },[x]);
+    setMessages(x.data.chatById.messages as Message[]);
+  }, [x]);
 
   useEffect(() => {
     if (!messageCreated.data) {
@@ -211,14 +213,15 @@ const ChatApp = () => {
     }
   }, [chatEnded.data]);
 
-  return (
-    <>
-      <Head>
-        <title>Edugle</title>
-        <meta name="chat" content="Chatroom" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
+  if (session?.data?.user) {
+    return (
+      <>
+        <Head>
+          <title>Edugle</title>
+          <meta name="chat" content="Chatroom" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
           <Paper
             elevation={3} // Add elevation for shadow
             sx={{
@@ -241,15 +244,12 @@ const ChatApp = () => {
 
                 {/* Chat box */}
                 <ChatBox chatId={chatId} user={session.data?.token as string} />
-
-                {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
-                {/* Sidebar: with functions for liking and joining next chat */}
-                {/*  <ChatBar chatId={chatId} user={token} chatStatus={chatStatus} handleLikeUser={handleLikeUser} handleNextUser={handleNextUser} />*/}
               </div>
             </div>
           </Paper>
-      </main>
-    </>
-  );
+        </main>
+      </>
+    );
+  }
 };
 export default ChatApp;

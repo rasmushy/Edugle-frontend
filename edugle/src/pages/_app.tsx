@@ -5,7 +5,7 @@ import { ApolloProviderWrapper } from "../components/ApolloProviderWrapper";
 import Header from "../components/Header";
 
 import "~/styles/globals.css";
-import { NavBarProvider } from "./api/NavBarProvider";
+import { NavBarProvider } from "../components/navBar/NavBarProvider";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

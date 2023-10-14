@@ -9,12 +9,14 @@ import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
 import { useRouter } from "next/navigation";
 import Paper from "@mui/material/Paper";
-import RulesGif from "../../public/images/rules.gif";
 import OceanImage from "../../public/images/ocean.jpg";
 import styles from "../styles/styles.module.css";
 import CircularProgress from "@mui/material/CircularProgress";
 import tips from "../styles/tips";
 import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
+import QueuePanel from "~/components/chatRoulette/QueuePanel";
+import RulesPanel from "~/components/chatRoulette/RulesPanel";
+import { Alert } from "@mui/material";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -124,10 +126,13 @@ const ChatApp = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
-  const [isQueue, setIsQueue] = useState<boolean>(false);
+  const [isQueue, setIsQueue] = useState<boolean>(chatStatus === "Paired" ? false : true);
   const [firstTime, setFirstTime] = useState<boolean>(true);
-  const [currentTipIndex, setCurrentTipIndex] = useState(0);
-  const [showTip, setShowTip] = useState(true);
+
+  useEffect(() => {
+    if (session.status === "loading") return;
+    if (!session?.data?.user) router.replace("/");
+  }, [session.status, session, session.data]);
 
   const [dequeueUser] = useMutation(DE_QUEUE, {
     variables: {
@@ -172,25 +177,23 @@ const ChatApp = () => {
     },
     onCompleted: ({ queuePosition }) => {
       console.log("queuePosition COMPLETED=", queuePosition);
-      if (queuePosition.position === 0) {
+      if (queuePosition.position === 0 && chatStatus !== "Paired") {
         setIsQueue(true);
       }
-    }
+    },
   });
 
   // UseEffect for checking query status
 
-    useEffect(() => {
+  useEffect(() => {
     if (isQuery.loading) {
-      console.log('loading...')
+      console.log("loading...");
     } else if (isQuery.error) {
-      console.log('error', + isQuery.error.message)
-    }
-    else {
+      console.log("error", +isQuery.error.message);
+    } else {
       console.log("queuePosition COMPLETED=", isQuery.data.queuePosition);
     }
-  },[isQuery]);
-
+  }, [isQuery]);
 
   const chatStarted = useSubscription(CHAT_STARTED, {
     variables: { userId: session.data?.user?.id },
@@ -210,14 +213,14 @@ const ChatApp = () => {
       console.log("chatStarted.data=", chatStarted.data);
     }
   };
-  
+
   const handleStartQueue = async () => {
-    console.log('isQuery', isQuery)
+    console.log("isQuery", isQuery);
     if (isQuery.loading) {
       return;
     }
     const isQueuePosition = isQuery.data.queuePosition.position;
-    
+
     if (isQueuePosition > 0) {
       console.log(isQuery.data?.queuePosition);
     } else {
@@ -240,14 +243,9 @@ const ChatApp = () => {
     },
   });
 
-  const handleLikeUser = () => {
-    setIsLikeUser(true);
-  };
-
   const handleNextUser = () => {
     initiateChat();
   };
-
 
   const handleBack = () => {
     dequeueUser().then(() => {
@@ -279,37 +277,26 @@ const ChatApp = () => {
   useEffect(() => {
     if (chatStatus === "Paired") {
       setFirstTime(false);
-      setIsQueue(false);
+      setTimeout(function () {
+        setIsQueue(false);
+      }, 2000); // 5000 milliseconds (5 seconds)
     }
-  }, [chatStatus]);
+  }, [chatStatus, isQuery]);
 
-  useEffect(() => {
-    const tipInterval = setInterval(() => {
-      // Hide the current tip
-      setShowTip(false);
-
-      // Wait for a moment before showing the next tip
-      setTimeout(() => {
-        setCurrentTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
-        setShowTip(true);
-      }, 500); // Adjust the delay between tips (in milliseconds) as needed
-    }, 6000); // Adjust the interval for changing tips (in milliseconds) as needed
-
-    return () => {
-      clearInterval(tipInterval);
-    };
-  }, []);
-
-  return (
-    <>
-      <Head>
-        <title>Edugle</title>
-        <meta name="chat" content="Chatroom" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
-        {firstTime ? (
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+  if (session?.data?.user) {
+    return (
+      <>
+        <Head>
+          <title>Edugle</title>
+          <meta name="chat" content="Chatroom" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
+          {firstTime ? (
+            <RulesPanel handleStartQueue={handleStartQueue} handleBack={handleBack} />
+          ) : isQueue ? (
+            <QueuePanel handleBack={handleBack} chatStatus={chatStatus} />
+          ) : (
             <Paper
               elevation={3} // Add elevation for shadow
               sx={{
@@ -318,120 +305,30 @@ const ChatApp = () => {
                 marginLeft: "20px",
                 marginRight: "20px",
                 padding: 0,
-                width: "90vw",
-                height: "78vh !important",
                 boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
                 position: "relative",
                 overflow: "hidden",
                 backgroundColor: "white", // Background color
+                backgroundImage: `url(${OceanImage.src})`,
               }}
             >
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>
-                <img src={RulesGif.src} alt="Image" style={{ width: "650px", marginBottom: "20px", borderRadius: "50px", boxShadow: "5px 5px 3px gray" }} />
-                <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Read Before Entering</h1>
-                <p style={{ fontSize: "16px", textAlign: "center", marginBottom: "40px" }}>
-                  Do you know the rules about talking to{" "}
-                  <a
-                    style={{ fontWeight: "bolder", textDecoration: "underline" }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://faze.ca/dos-and-donts-chatting-strangers-online/"
-                  >
-                    strangers online
-                  </a>
-                  ?
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <button
-                    onClick={() => handleStartQueue()}
-                    style={{ fontSize: "16px", padding: "10px 20px", background: "#014F86", color: "white", border: "none", borderRadius: "5px" }}
-                  >
-                    I Know the Rules
-                  </button>
-                  <button
-                    onClick={() => handleBack()}
-                    style={{ fontSize: "16px", padding: "10px 20px", background: "#E53E3E", color: "white", border: "none", borderRadius: "5px" }}
-                  >
-                    Go Back
-                  </button>
+              <div className="flex-row">
+                <div className="flex-col" style={{ top: "3%", position: "relative" }}>
+                  {/* Chat messages */}
+                  {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} />}
+
+                  {/* Chat box */}
+                  <ChatBox chatId={chatId} user={session.data?.token as string} />
+
+                  {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
+                  {/* Sidebar: with functions for liking and joining next chat */}
                 </div>
               </div>
             </Paper>
-          </div>
-        ) : isQueue ? (
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Paper
-              elevation={3} // Add elevation for shadow
-              sx={{
-                borderRadius: 5, // Add rounded corners
-                margin: 0,
-                marginLeft: "20px",
-                marginRight: "20px",
-                padding: 0,
-                width: "90vw",
-                height: "78vh !important",
-                boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
-                position: "relative",
-                overflow: "hidden",
-                backgroundColor: "white", // Background color
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>
-                <p style={{ fontSize: "20px", marginBottom: "40px", color: "#2C7DA0" }}>
-                  <strong>Finding someone to talk to!</strong>
-                </p>
-                <CircularProgress style={{ width: "150px", height: "150px", marginBottom: "20px" }} />
-                <p style={{ fontSize: "20px", marginBottom: "20px" }}>
-                  <strong>Daily tips</strong>
-                </p>
-                <div style={{ display: "flex", alignItems: "center", flexDirection: "column", gap: "10px" }}>
-                  <div className={` ${showTip ? `${styles.fadeIn}` : `${styles.fadeOut}`}`} style={{ fontSize: "16px", textAlign: "center" }}>
-                    <TipsAndUpdatesIcon style={{ color: "orange", marginRight: "20px" }}></TipsAndUpdatesIcon> {tips[currentTipIndex]}
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", bottom: "20px", position: "absolute" }}>
-                  <button
-                    onClick={() => handleBack()}
-                    style={{ fontSize: "16px", padding: "10px 20px", background: "#E53E3E", color: "white", border: "none", borderRadius: "5px" }}
-                  >
-                    Go Back
-                  </button>
-                </div>
-              </div>
-            </Paper>
-          </div>
-        ) : (
-          <Paper
-            elevation={3} // Add elevation for shadow
-            sx={{
-              borderRadius: 5, // Add rounded corners
-              margin: 0,
-              marginLeft: "20px",
-              marginRight: "20px",
-              padding: 0,
-              boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
-              position: "relative",
-              overflow: "hidden",
-              backgroundColor: "white", // Background color
-              backgroundImage: `url(${OceanImage.src})`,
-            }}
-          >
-            <div className="flex-row">
-              <div className="flex-col" style={{ top: "3%", position: "relative" }}>
-                {/* Chat messages */}
-                {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} />}
-
-                {/* Chat box */}
-                <ChatBox chatId={chatId} user={session.data?.token as string} />
-
-                {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
-                {/* Sidebar: with functions for liking and joining next chat */}
-              </div>
-            </div>
-          </Paper>
-        )}
-      </main>
-    </>
-  );
+          )}
+        </main>
+      </>
+    );
+  }
 };
 export default ChatApp;

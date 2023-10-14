@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import MainPageBtn from "~/components/MainPageBtn";
 import styles from "../styles/styles.module.css";
 import { useEffect, useState, useRef, MutableRefObject, use } from "react";
-import { useNavBar } from "./api/NavBarProvider";
+import { useNavBar } from "../components/navBar/NavBarProvider";
 
 export default function Home({ session: initialSession }: { session: any }) {
   const [activePopup, setActivePopup] = useState(null);

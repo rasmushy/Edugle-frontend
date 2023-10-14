@@ -1,5 +1,5 @@
 import React, { use, useEffect, useRef, useState } from "react";
-import { Message, Chat } from "../__generated__/graphql";
+import { Message, Chat, User } from "../__generated__/graphql";
 import styles from "../styles/styles.module.css";
 import Asd from "./HoverUserInfo";
 import HoverUserInfo from "./HoverUserInfo";
@@ -36,28 +36,16 @@ function addBreaks(str: string) {
   return processedLines;
 }
 
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, yourUsername: yourUsername }) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [isUserSelf, setIsYou] = useState(false);
+  const [dsa, setUserInfo] = useState<User | null>(null);
   const [activeUserMessage, setActiveUserMessage] = useState<number | null>(null);
 
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const handleClose = () => {
-    setIsPopUpOpen(false);
-  };
   const handleOpen = () => {
     console.log(isPopUpOpen, " IsClose");
-    setIsPopUpOpen(true);
   };
 
   useEffect(() => {
@@ -73,6 +61,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
       className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch max-h-[390px] min-h-[70vh] space-y-4 space-y-4 "
     >
       <div className={styles.glassPanel}>
+        {isPopUpOpen && !isUserSelf && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} user={dsa} />}
         {messages &&
           messages.map((message: Message, index: number) => {
             const isYou = message.sender?.username === yourUsername;
@@ -90,15 +79,17 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
               <div key={message?.id} className={`${messageContainerClass}`}>
                 <strong
                   onClick={() => {
-                    handleOpen();
+                    setUserInfo(message.sender);
+                    setIsPopUpOpen(true);
+                    setIsYou(isYou);
                     setActiveUserMessage(isMessageActive ? null : index);
                   }}
-                  style={{ color: "#ccdbdc", cursor: "pointer" }}
+                  style={{ color: "#ccdbdc", cursor: "pointer", userSelect: "none", pointerEvents: isYou ? "none" : "auto" }}
                 >
                   {message?.sender?.username}:
                 </strong>
 
-                {isMessageActive && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} user={message.sender} />}
+                {isMessageActive}
 
                 <span className={`${messageTextClass}`}>
                   {addBreaks(message.content).map((line, lineIndex) => (

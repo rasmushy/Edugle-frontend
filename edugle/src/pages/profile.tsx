@@ -245,7 +245,19 @@ export default function Profile() {
                 fontSize: "1.3rem", // Increase font size
               }}
             >
-              {description}
+              Description: 
+            </Typography>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              sx={{
+                textAlign: "center", // Center text on all screen sizes
+                maxWidth: "80%", // Limit text width on smaller screens
+                mt: 2, // Add top margin to separate bio from username
+                fontSize: "1.3rem", // Increase font size
+              }}
+            >
+              {description ? description : "No description yet!"}
             </Typography>
           </Paper>
         </div>
