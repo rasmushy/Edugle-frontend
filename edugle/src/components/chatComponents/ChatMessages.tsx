@@ -16,6 +16,7 @@ import LikeUser from "./LikeUser";
 type ChatMessagesProps = {
   chatMessages: Message[];
   yourUsername: string | undefined | null;
+  style?: string;
 };
 
 //Adds breaks to long messages, so they don't overflow the chat box.
@@ -36,7 +37,7 @@ function addBreaks(str: string) {
   return processedLines;
 }
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, yourUsername: yourUsername }) => {
+const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, yourUsername: yourUsername, style }) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [isUserSelf, setIsYou] = useState(false);
   const [dsa, setUserInfo] = useState<User | null>(null);
@@ -58,7 +59,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
     <div
       style={{ overflow: "auto" }}
       ref={messagesContainerRef}
-      className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch max-h-[390px] min-h-[70vh] space-y-4 space-y-4 "
+      className={style === "roulette" ? styles.rouletteChatMessagesContainer : styles.chatMessagesContainer}
     >
       <div className={styles.glassPanel}>
         {isPopUpOpen && !isUserSelf && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} user={dsa} />}

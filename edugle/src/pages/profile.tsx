@@ -1,14 +1,11 @@
-import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
-import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
 import { useMutation, useQuery } from "@apollo/client";
-import React, { PropsWithRef, use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { gql } from "@apollo/client";
 import styles from "../styles/styles.module.css";
 import { useSession } from "next-auth/react";
@@ -18,7 +15,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
-import { get } from "http";
 
 const GET_USER = gql(`query GetUserByToken($token: String!) {
     getUserByToken(token: $token) {
@@ -161,11 +157,7 @@ export default function Profile() {
           >
             <div ref={bubblesContainerRef}></div>
           </div>
-          <Dialog
-            open={isPopupOpen}
-            onClose={() => setIsPopupOpen(false)}
-            sx={{ height: "100%" }}
-          >
+          <Dialog open={isPopupOpen} onClose={() => setIsPopupOpen(false)} sx={{ height: "100%" }}>
             <DialogTitle>Edit Description</DialogTitle>
             <DialogContent>
               <TextField
@@ -190,11 +182,12 @@ export default function Profile() {
           </Dialog>
           <Paper
             elevation={3}
+            className={styles.profile}
             style={{
               borderRadius: 25,
               height: "80vh",
               display: "flex",
-              width: "60%",
+              width: "80%",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
@@ -216,6 +209,7 @@ export default function Profile() {
             </IconButton>
 
             <Avatar
+              className={styles.avatar}
               alt={`${userName.toUpperCase()}.png`}
               src={`${userName}.png`}
               sx={{ width: 200, height: 200, marginBottom: 10 }}
@@ -245,7 +239,7 @@ export default function Profile() {
                 fontSize: "1.3rem", // Increase font size
               }}
             >
-              Description: 
+              Description:
             </Typography>
             <Typography
               variant="body2"

@@ -1,6 +1,7 @@
 import Paper from "@mui/material/Paper";
 import RulesGif from "../../../public/images/rules.gif";
 import Image from "next/image";
+import styles from "../../styles/styles.module.css";
 
 const RulesPanel = ({ handleStartQueue, handleBack }: any) => {
   return (
@@ -22,7 +23,7 @@ const RulesPanel = ({ handleStartQueue, handleBack }: any) => {
         }}
       >
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>
-          <Image width={650} height={0} src={RulesGif.src} alt="Image" style={{ marginBottom: "20px", borderRadius: "50px", boxShadow: "5px 5px 3px gray" }} />
+          <Image className={styles.gif} width={650} height={0} src={RulesGif.src} alt="Image" style={{ marginBottom: "20px", borderRadius: "50px", boxShadow: "5px 5px 3px gray" }} />
           <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Read Before Entering</h1>
           <p style={{ fontSize: "16px", textAlign: "center", marginBottom: "40px" }}>
             Do you know the rules about talking to{" "}

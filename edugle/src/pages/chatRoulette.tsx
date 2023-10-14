@@ -138,7 +138,7 @@ const ChatApp = () => {
     variables: {
       token: session.data?.token as string,
     },
-    
+
     onCompleted: ({ dequeueUser }) => {
       console.log("dequeueUser COMPLETED=", dequeueUser);
       setIsQueue(false);
@@ -153,7 +153,7 @@ const ChatApp = () => {
       token: session.data?.token as string,
     },
     onCompleted: ({ initiateChat }) => {
-        setChatStatus("Queue'd");
+      setChatStatus("Queue'd");
 
       console.log("initiateChat COMPLETED=", initiateChat);
       if (initiateChat.status === "Paired") {
@@ -198,10 +198,9 @@ const ChatApp = () => {
   }, [isQuery]);
 
   useEffect(() => {
-    if(chatId){
-      console.log("ligma")
+    if (chatId) {
+      console.log("ligma");
       setChatStatus("Paired");
-      setIsQueue(false)
     }
   }, [chatId]);
 
@@ -321,7 +320,7 @@ const ChatApp = () => {
           <meta name="chat" content="Chatroom" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
+        <main style={{}} className={styles.rouletteMainContainer}>
           {firstTime ? (
             <RulesPanel handleStartQueue={handleStartQueue} handleBack={handleBack} />
           ) : isQueue ? (
@@ -345,7 +344,7 @@ const ChatApp = () => {
               <div className="flex-row">
                 <div className="flex-col" style={{ top: "3%", position: "relative" }}>
                   {/* Chat messages */}
-                  {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} />}
+                  {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} style={"roulette"} />}
 
                   {/* Chat box */}
                   <ChatBox chatId={chatId} user={session.data?.token as string} />
@@ -355,6 +354,7 @@ const ChatApp = () => {
                       Talking to: <strong>{otherUser}</strong>
                     </h1>
                     <div
+                    className={styles.nextUserButton}
                       onClick={handleNextUser}
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}
@@ -372,7 +372,7 @@ const ChatApp = () => {
                         ...boxShadowStyle, // Apply boxShadow based on state
                       }}
                     >
-                      <h1 style={{ marginLeft: "20px", color: "black", marginRight: "20px", cursor: "pointer" }}>Next user! </h1>
+                      <h1 className={styles.nextUserText} style={{ width:"100%", marginLeft: "20px", color: "black", cursor: "pointer" }}>Next user! </h1>
                     </div>
                   </div>
                 </div>

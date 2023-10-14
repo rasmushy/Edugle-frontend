@@ -237,7 +237,6 @@ const ChatApp = () => {
               backgroundColor: "white",
               backgroundImage: `url(${OceanImage.src})`,
               backgroundSize: "auto 100%",
-              backgroundRepeat: "no-repeat",
               animation: "slideBackground 20s linear infinite",
             }}
           >
