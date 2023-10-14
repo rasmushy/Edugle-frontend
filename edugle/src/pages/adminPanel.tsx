@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import UsersGrid from "~/components/UsersGrid";
+import UsersGrid from "~/components/adminPanel/UsersGrid";
 
 export default function AdminPanel() {
   const { data: session, status } = useSession();

@@ -1,6 +1,6 @@
 import React, { use, useEffect, useRef, useState } from "react";
-import { Message, Chat, User } from "../__generated__/graphql";
-import styles from "../styles/styles.module.css";
+import { Message, Chat, User } from "../../__generated__/graphql";
+import styles from "../../styles/styles.module.css";
 import Asd from "./HoverUserInfo";
 import HoverUserInfo from "./HoverUserInfo";
 import Dialog from "@mui/material/Dialog";

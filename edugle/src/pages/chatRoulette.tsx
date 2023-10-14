@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import ChatMessages from "../components/ChatMessages";
-import ChatBox from "../components/ChatBox";
+import ChatMessages from "../components/chatComponents/ChatMessages";
+import ChatBox from "../components/chatComponents/ChatBox";
 import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
-import ChatBar from "../components/ChatBar";
-import LikeUser from "~/components/LikeUser";
+import ChatBar from "../components/chatComponents/ChatBar";
+import LikeUser from "~/components/chatComponents/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
 import { useRouter } from "next/navigation";

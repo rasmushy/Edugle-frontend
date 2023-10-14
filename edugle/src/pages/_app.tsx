@@ -2,7 +2,7 @@ import { SessionProvider } from "next-auth/react";
 import type { AppType } from "next/dist/shared/lib/utils";
 import type { Session } from "next-auth";
 import { ApolloProviderWrapper } from "../components/ApolloProviderWrapper";
-import Header from "../components/Header";
+import Header from "../components/navBar/Header";
 
 import "~/styles/globals.css";
 import { NavBarProvider } from "../components/navBar/NavBarProvider";

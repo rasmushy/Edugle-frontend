@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import NavBar from "./navBar/NavBar";
+import NavBar from "./NavBar";
 
 const Header = () => {
   return (

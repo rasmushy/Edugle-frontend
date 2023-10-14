@@ -11,7 +11,7 @@ import {
   GridEventListener,
   GridRowEditStopReasons,
 } from "@mui/x-data-grid";
-import styles from "../../src/styles/styles.module.css";
+import styles from "../../../src/styles/styles.module.css";
 import Paper from "@mui/material/Paper";
 import Alert, { AlertProps } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";

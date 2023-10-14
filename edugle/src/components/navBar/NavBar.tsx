@@ -7,7 +7,7 @@ import { signOut } from "next-auth/react";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { useSession } from "next-auth/react";
-import AdminNavBarBtn from "../AdminNavBarBtn";
+import AdminNavBarBtn from "./AdminNavBarBtn";
 import { useNavBar } from "~/components/navBar/NavBarProvider";
 
 const NavBar = () => {
