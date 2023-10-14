@@ -9,6 +9,7 @@ import type { Message } from "../__generated__/graphql";
 import { useRouter } from "next/navigation";
 import Paper from "@mui/material/Paper";
 import OceanImage from "../../public/images/asd.jpg";
+import styles from "../styles/styles.module.css";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -76,7 +77,6 @@ const MSG_BY_ID = gql`
           id
           username
           email
-          password
           description
           avatar
           lastLogin
@@ -224,8 +224,9 @@ const ChatApp = () => {
         <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
           <Paper
             elevation={3} // Add elevation for shadow
+            className={styles.slideBackground}
             sx={{
-              borderRadius: 5, // Add rounded corners
+              borderRadius: 5,
               margin: 0,
               marginLeft: "20px",
               marginRight: "20px",
@@ -233,8 +234,11 @@ const ChatApp = () => {
               boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
               position: "relative",
               overflow: "hidden",
-              backgroundColor: "white", // Background color
+              backgroundColor: "white",
               backgroundImage: `url(${OceanImage.src})`,
+              backgroundSize: "auto 100%",
+              backgroundRepeat: "no-repeat",
+              animation: "slideBackground 20s linear infinite",
             }}
           >
             <div className="flex-row">

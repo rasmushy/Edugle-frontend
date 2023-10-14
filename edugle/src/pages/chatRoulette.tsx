@@ -3,20 +3,17 @@ import Head from "next/head";
 import ChatMessages from "../components/chatComponents/ChatMessages";
 import ChatBox from "../components/chatComponents/ChatBox";
 import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
-import ChatBar from "../components/chatComponents/ChatBar";
-import LikeUser from "~/components/chatComponents/LikeUser";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
 import { useRouter } from "next/navigation";
 import Paper from "@mui/material/Paper";
 import OceanImage from "../../public/images/ocean.jpg";
 import styles from "../styles/styles.module.css";
-import CircularProgress from "@mui/material/CircularProgress";
-import tips from "../styles/tips";
-import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
 import QueuePanel from "~/components/chatRoulette/QueuePanel";
 import RulesPanel from "~/components/chatRoulette/RulesPanel";
-import { Alert } from "@mui/material";
+import CircleIcon from "@mui/icons-material/Circle";
+import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
+import { set } from "zod";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -55,6 +52,8 @@ const MESSAGE_CREATED = gql`
           avatar
           id
           username
+          likes
+          description
         }
       }
     }
@@ -123,6 +122,7 @@ const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
   const [chatId, setChatId] = useState("");
+  const [otherUser, setOtherUser] = useState(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
   const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
@@ -138,6 +138,7 @@ const ChatApp = () => {
     variables: {
       token: session.data?.token as string,
     },
+    
     onCompleted: ({ dequeueUser }) => {
       console.log("dequeueUser COMPLETED=", dequeueUser);
       setIsQueue(false);
@@ -152,8 +153,9 @@ const ChatApp = () => {
       token: session.data?.token as string,
     },
     onCompleted: ({ initiateChat }) => {
+        setChatStatus("Queue'd");
+
       console.log("initiateChat COMPLETED=", initiateChat);
-      setChatStatus(initiateChat.status);
       if (initiateChat.status === "Paired") {
         setChatId(initiateChat.chatId);
       }
@@ -194,6 +196,14 @@ const ChatApp = () => {
       console.log("queuePosition COMPLETED=", isQuery.data.queuePosition);
     }
   }, [isQuery]);
+
+  useEffect(() => {
+    if(chatId){
+      console.log("ligma")
+      setChatStatus("Paired");
+      setIsQueue(false)
+    }
+  }, [chatId]);
 
   const chatStarted = useSubscription(CHAT_STARTED, {
     variables: { userId: session.data?.user?.id },
@@ -244,12 +254,13 @@ const ChatApp = () => {
   });
 
   const handleNextUser = () => {
+    // FIXME: jättää toisel selaimella auki ton queue panelin, ja ku tabaa pois ja sisää nii tajuu et mähä oon paired.
     initiateChat();
+    setIsQueue(true);
   };
 
   const handleBack = () => {
     dequeueUser().then(() => {
-      console.log(isQuery.data?.queuePosition);
       setFirstTime(true);
     });
   };
@@ -264,7 +275,12 @@ const ChatApp = () => {
 
   useEffect(() => {
     if (chatStarted.data) {
-      console.log("chatStarted.data=", chatStarted.data);
+      console.log("chatStarted.data=!!!", chatStarted.data);
+      setOtherUser(
+        chatStarted.data?.chatStarted?.users[0].username === session?.data?.user.username
+          ? chatStarted.data?.chatStarted?.users[1].username
+          : chatStarted.data?.chatStarted?.users[0].username,
+      );
     }
   }, [chatStarted.data]);
 
@@ -283,6 +299,20 @@ const ChatApp = () => {
     }
   }, [chatStatus, isQuery]);
 
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+  const boxShadowStyle = isHovered
+    ? {}
+    : {
+        boxShadow: "0px 0px 10px 5px rgba(0, 0, 0, 0.4)",
+      };
   if (session?.data?.user) {
     return (
       <>
@@ -319,9 +349,32 @@ const ChatApp = () => {
 
                   {/* Chat box */}
                   <ChatBox chatId={chatId} user={session.data?.token as string} />
-
-                  {isLikeUser && <LikeUser isLikeUser={isLikeUser} setIsLikeUser={setIsLikeUser} />}
-                  {/* Sidebar: with functions for liking and joining next chat */}
+                  <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", height: "60px" }}>
+                    <CircleIcon style={{ color: "green", marginLeft: "20px", marginRight: "20px" }} />
+                    <h1>
+                      Talking to: <strong>{otherUser}</strong>
+                    </h1>
+                    <div
+                      onClick={handleNextUser}
+                      onMouseEnter={handleMouseEnter}
+                      onMouseLeave={handleMouseLeave}
+                      style={{
+                        borderRadius: "10px 10px 0px 10px",
+                        backgroundColor: "#A9D6E5",
+                        display: "flex",
+                        alignItems: "center",
+                        marginLeft: "auto",
+                        marginRight: "20px",
+                        width: "120px",
+                        cursor: "pointer",
+                        height: "40px",
+                        transition: "box-shadow 0.3s", // Add a transition for smooth effect
+                        ...boxShadowStyle, // Apply boxShadow based on state
+                      }}
+                    >
+                      <h1 style={{ marginLeft: "20px", color: "black", marginRight: "20px", cursor: "pointer" }}>Next user! </h1>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Paper>

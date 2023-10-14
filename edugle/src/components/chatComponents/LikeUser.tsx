@@ -2,17 +2,61 @@
 import React, { useState } from "react";
 import { Modal } from "@mui/material";
 import { set } from "zod";
+import { gql, useMutation } from "@apollo/client";
+import { useSession } from "next-auth/react";
+
+const LIKE_USER = gql`
+  mutation LikeUser($username: String!, $token: String) {
+    addLike(username: $username, token: $token)
+  }
+`;
+
+const DISLIKE_USER = gql`
+  mutation DislikeUser($username: String!, $token: String) {
+    removeLike(username: $username, token: $token)
+  }
+`;
 
 const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, user }: any) => {
+  const session = useSession();
+  const [likeUser] = useMutation(LIKE_USER, {
+    variables: {
+      username: user.username as string,
+      token: session.data?.token as string,
+    },
+    onCompleted: ({ likeUser }) => {
+      console.log("likeUser=", likeUser, user);
+    },
+    onError: (error) => {
+      console.log("likeUser: error=", error.message);
+    }
+  });
+
+  const [dislikeUser] = useMutation(DISLIKE_USER, {
+    variables: {
+      username: user.username as string,
+      token: session.data?.token as string,
+    },
+    onCompleted: ({ dislikeUser }) => {
+      console.log("dislikeUser=", dislikeUser, user);
+    },
+    onError: (error) => {
+      console.log("likeUser: error=", error.message);
+    },
+  });
 
   const [isOpen, setIsOpen] = useState(isPopUpOpen);
 
-  function handleLikeUser(id: any): void {
-    throw new Error("Function not implemented.");
+  async function handleLikeUser(id: any): Promise<void> {
+    likeUser();
+    setIsPopUpOpen(false);
+    setIsOpen(false);
   }
 
-  function handleDislikeUser(id: any): void {
-    throw new Error("Function not implemented.");
+  async function handleDislikeUser(id: any): Promise<void> {
+    dislikeUser();
+    setIsPopUpOpen(false);
+    setIsOpen(false);
   }
 
   const handleClose = () => {

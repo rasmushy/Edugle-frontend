@@ -31,6 +31,9 @@ const QueuePanel = ({ handleBack, chatStatus }: any) => {
     if (chatStatus === "Paired") {
       setStartChat(true);
     }
+    else {
+      setStartChat(false);
+    }
   }, [chatStatus]);
 
   return (

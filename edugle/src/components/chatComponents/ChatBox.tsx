@@ -83,7 +83,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
           rows={3}
-          className="flex w-full rounded pl-3 pr-16 text-black"
+          className="flex w-full rounded rounded-bl-none rounded-br-none pl-3 pr-16 text-black"
           onKeyDown={handleKeyPress}
         />
         <div className="absolute bottom-0 right-0 flex h-full items-center pr-2">
