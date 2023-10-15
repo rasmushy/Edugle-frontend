@@ -16,9 +16,9 @@ const QueuePanel = ({ handleBack, chatStatus }: any) => {
       setTimeout(() => {
         setCurrentTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
         setShowTip(true);
-      }, 500); 
-    }, 6000); 
-     return () => {
+      }, 500);
+    }, 6000);
+    return () => {
       clearInterval(tipInterval);
     };
   }, []);
@@ -26,8 +26,7 @@ const QueuePanel = ({ handleBack, chatStatus }: any) => {
   useEffect(() => {
     if (chatStatus === "Paired") {
       setStartChat(true);
-    }
-    else {
+    } else {
       setStartChat(false);
     }
   }, [chatStatus]);
@@ -35,9 +34,9 @@ const QueuePanel = ({ handleBack, chatStatus }: any) => {
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
       <Paper
-        elevation={3} 
+        elevation={3}
         sx={{
-          borderRadius: 5, 
+          borderRadius: 5,
           margin: 0,
           marginLeft: "20px",
           marginRight: "20px",
@@ -47,7 +46,7 @@ const QueuePanel = ({ handleBack, chatStatus }: any) => {
           boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
           position: "relative",
           overflow: "hidden",
-          backgroundColor: "white", 
+          backgroundColor: "white",
         }}
       >
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>
@@ -68,12 +67,14 @@ const QueuePanel = ({ handleBack, chatStatus }: any) => {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", bottom: "20px", position: "absolute" }}>
-            <button
-              onClick={() => handleBack()}
-              style={{ fontSize: "16px", padding: "10px 20px", background: "#E53E3E", color: "white", border: "none", borderRadius: "5px" }}
-            >
-              Go Back
-            </button>
+            {!startChat ? (
+              <button
+                onClick={() => handleBack()}
+                style={{ fontSize: "16px", padding: "10px 20px", background: "#E53E3E", color: "white", border: "none", borderRadius: "5px" }}
+              >
+                Go Back
+              </button>
+            ) : null}
           </div>
         </div>
       </Paper>
