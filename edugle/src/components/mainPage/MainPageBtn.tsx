@@ -37,14 +37,11 @@ const MainPageBtn = ({ handleGoChat, togglePopup, session: initialSession }: any
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
             <button className="flex max-w-xs flex-col gap-4 rounded-xl bg-[#2A6F97] p-4 text-white hover:bg-white/20" onClick={() => handleGoChatBtn()}>
               <h3 className="text-2xl font-bold">Start chatting!</h3>
-              <div className="text-lg">Start chatting in a big room full of cock heads</div>
+              <div className="text-lg">Start chatting in a big room full people!</div>
             </button>
-            <button
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-[#2A6F97] p-4 text-white hover:bg-white/20"
-              onClick={() => handleGoChatRouletteBtn()}
-            >
-              <h3 className="text-2xl font-bold">Feeling kakka in pylly?</h3>
-              <div className="text-lg">Pylly kakka</div>
+            <button className="flex max-w-xs flex-col gap-4 rounded-xl bg-[#2A6F97] p-4 text-white hover:bg-white/20" onClick={() => handleGoChatRouletteBtn()}>
+              <h3 className="text-2xl font-bold">Feeling lucky?</h3>
+              <div className="text-lg">Discover the thrill of chance with Chat Roulette!</div>
             </button>
           </div>
         </>
@@ -53,8 +50,8 @@ const MainPageBtn = ({ handleGoChat, togglePopup, session: initialSession }: any
           {" "}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
             <button className="flex max-w-xs flex-col gap-4 rounded-xl bg-[#2A6F97] p-4 text-white hover:bg-white/20" onClick={() => togglePopup("Login")}>
-              <h3 className="text-2xl font-bold">Be ready to chat→</h3>
-              <div className="text-lg">With Edugle, you can chat with random people from university.</div>
+              <h3 className="text-2xl font-bold">Login→</h3>
+              <div className="text-lg">Already signed? Login now and start chatting!</div>
             </button>
             <button className="flex max-w-xs flex-col gap-4 rounded-xl bg-[#2A6F97] p-4 text-white hover:bg-white/20" onClick={() => togglePopup("SignUp")}>
               <h3 className="text-2xl font-bold">Sign up→</h3>
