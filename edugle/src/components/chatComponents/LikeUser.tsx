@@ -1,10 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Modal } from "@mui/material";
-import { set } from "zod";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useSession } from "next-auth/react";
-import { get } from "http";
 
 const LIKE_USER = gql`
   mutation LikeUser($username: String!, $token: String) {
@@ -20,103 +18,68 @@ const DISLIKE_USER = gql`
 
 const GET_USER = gql`
   query Query($getUserByIdId: ID!) {
-  getUserById(id: $getUserByIdId) {
-    id
-    username
-    email
-    password
-    description
-    avatar
-    lastLogin
-    role
-    likes
+    getUserById(id: $getUserByIdId) {
+      id
+      username
+      email
+      description
+      avatar
+      likes
+    }
   }
-}
 `;
 
 const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, userId }: any) => {
-
-  const {data, refetch, updateQuery} = useQuery(GET_USER, {
+  const session = useSession();
+  const { data, refetch } = useQuery(GET_USER, {
     variables: {
       getUserByIdId: userId,
-    }
+    },
+    skip: !isPopUpOpen,
   });
-
-  const session = useSession();
-
-  const [user, setUser] = useState([] as any);
-
-  useEffect(() => {
-    if(isPopUpOpen) {
-      if(data) {
-        setUser(data.getUserById);
-      }
-    }
-  }, [isPopUpOpen]);
 
   const [likeUser] = useMutation(LIKE_USER, {
     variables: {
-      username: user.username as string,
+      username: data?.getUserById?.username,
       token: session.data?.token as string,
     },
-    onCompleted: ({ likeUser }) => {
-      console.log("likeUser=", likeUser, user);
+    onCompleted: () => {
+      refetch();
     },
     onError: (error) => {
       console.log("likeUser: error=", error.message);
-    }
+    },
   });
 
   const [dislikeUser] = useMutation(DISLIKE_USER, {
     variables: {
-      username: user.username as string,
+      username: data?.getUserById?.username,
       token: session.data?.token as string,
     },
-    onCompleted: ({ dislikeUser }) => {
-      console.log("dislikeUser=", dislikeUser, user);
+    onCompleted: () => {
+      refetch();
     },
     onError: (error) => {
       console.log("likeUser: error=", error.message);
     },
   });
 
-  const [isOpen, setIsOpen] = useState(isPopUpOpen);
-
   async function handleLikeUser(id: any): Promise<void> {
     likeUser();
-    updateQuery((prev: any) => {
-      return {
-        getUserById: {
-          ...prev.getUserById,
-          likes: prev.getUserById.likes + 1,
-        }
-      }
-    });
     handleClose();
-
   }
 
   async function handleDislikeUser(id: any): Promise<void> {
     dislikeUser();
-      updateQuery((prev: any) => {
-        return {
-          getUserById: {
-            ...prev.getUserById,
-            likes: prev.getUserById.likes - 1,
-          }
-        }
-      });
     handleClose();
   }
 
   const handleClose = () => {
     setIsPopUpOpen(false);
-    setIsOpen(false);
   };
-  console.log("isPopUpOpen:", isPopUpOpen);
 
   return (
-    <Modal key={isPopUpOpen ? "open" : "closed"} open={isOpen} onClose={handleClose}>
+    <Modal key={isPopUpOpen ? "open" : "closed"} open={isPopUpOpen} onClose={handleClose}>
       <div
         style={{
           position: "absolute",
@@ -134,10 +97,10 @@ const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, userId }: any) => {
         }}
       >
         <header style={{ color: "black" }}>
-          <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Käyttäjän {user.username} profiili!</h1>
+          <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Käyttäjän {data?.getUserById.username} profiili!</h1>
         </header>
-        <p style={{ color: "black", marginBottom: "20px" }}>{user.description ? user.description : "No description yet!"}</p>
-        <p style={{ color: "black", marginBottom: "20px" }}>Likes: {user.likes}</p>
+        <p style={{ color: "black", marginBottom: "20px" }}>{data?.getUserById.description ? data?.getUserById.description : "No description yet!"}</p>
+        <p style={{ color: "black", marginBottom: "20px" }}>Likes: {data?.getUserById.likes}</p>
 
         <div style={{ position: "absolute", bottom: "20px", left: "20%" }}>
           <button
@@ -150,7 +113,7 @@ const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, userId }: any) => {
               borderRadius: "5px",
               marginRight: "10px", // Add a gap
             }}
-            onClick={() => handleDislikeUser(user.id)}
+            onClick={() => handleDislikeUser(data?.getUserById.id)}
           >
             Dislike
           </button>
@@ -163,7 +126,7 @@ const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, userId }: any) => {
               border: "none",
               borderRadius: "5px",
             }}
-            onClick={() => handleLikeUser(user.id)}
+            onClick={() => handleLikeUser(data?.getUserById.id)}
           >
             Like
           </button>
