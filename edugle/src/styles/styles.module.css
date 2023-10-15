@@ -203,12 +203,29 @@
   background-color: #f1f5f9;
 }
 
+.rouletteGlassPanel {
+  background: rgba(255, 255, 255, 0.3);
+  /* Set the background to a semi-transparent white */
+  height: auto;
+  pointer-events: none;
+  min-height: 68vh;
+  /* Add some border radius for the glass effect */
+  padding: 10px;
+  margin-bottom: 0px;
+  /* Adjust padding as needed */
+  backdrop-filter: blur(10px);
+  z-index: -1;
+  /* Apply a backdrop filter to simulate glass blur */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  /* Add a slight shadow for depth */
+}
+
 .glassPanel {
   background: rgba(255, 255, 255, 0.3);
   /* Set the background to a semi-transparent white */
   height: auto;
   pointer-events: none;
-  min-height: 90vh;
+  min-height: 72vh;
   /* Add some border radius for the glass effect */
   padding: 10px;
   margin-bottom: 0px;
@@ -340,6 +357,14 @@
   .rouletteChatMessagesContainer {
     max-height: 33vh !important;
   }
+  .rouletteGlassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 31vh !important;
+  }
+  .glassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 38vh !important;
+  }
 }
 @media only screen and (max-Height: 601px) {
   /* Your styles for medium screens go here */
@@ -348,6 +373,14 @@
     }
   .rouletteChatMessagesContainer {
     max-height: 53vh !important;
+  }
+  .rouletteGlassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 50vh !important;
+  }
+  .glassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 54vh !important;
   }
   .gif {
     width: 300px;
@@ -363,6 +396,14 @@
   .rouletteChatMessagesContainer {
     max-height: 58vh !important;
   }
+  .rouletteGlassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 57vh !important;
+  }
+  .glassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 64vh !important;
+  }
   .gif {
     width: 200px;
   }
@@ -377,9 +418,16 @@
   .rouletteChatMessagesContainer {
     max-height: 63vh !important;
   }
-  .gif {
-    width: 200px;
-  }
+
+.rouletteGlassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 60vh !important;
+}
+.glassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 64vh !important;
+}
+
 }
 
 @media only screen and (min-Height: 800px)  {
@@ -390,6 +438,15 @@
   .rouletteChatMessagesContainer {
     max-height: 68vh !important;
   }
+
+.rouletteGlassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 65vh !important;
+}
+.glassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 74vh !important;
+}
 }
 
 @media only screen and (min-Height: 1025px) {
@@ -400,4 +457,13 @@
   .rouletteChatMessagesContainer {
     max-height: 76vh !important;
   }
+
+.rouletteGlassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 74vh !important;
+}
+.glassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 82vh !important;
+}
 }

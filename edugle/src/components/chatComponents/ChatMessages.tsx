@@ -40,14 +40,10 @@ function addBreaks(str: string) {
 const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, yourUsername: yourUsername, style }) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [isUserSelf, setIsYou] = useState(false);
-  const [dsa, setUserInfo] = useState<User | null>(null);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
   const [activeUserMessage, setActiveUserMessage] = useState<number | null>(null);
 
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
-
-  const handleOpen = () => {
-    console.log(isPopUpOpen, " IsClose");
-  };
 
     useEffect(() => {
     if (messagesContainerRef.current) {
@@ -62,8 +58,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
       ref={messagesContainerRef}
       className={style === "roulette" ? styles.rouletteChatMessagesContainer : styles.chatMessagesContainer}
     >
-      <div className={styles.glassPanel}>
-        {isPopUpOpen && !isUserSelf && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} user={dsa} />}
+      <div className={style === "roulette" ? styles.rouletteGlassPanel : styles.glassPanel}>
+        {isPopUpOpen && !isUserSelf && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} userId={userInfo?.id as String} />}
         {messages &&
           messages.map((message: Message, index: number) => {
             const isYou = message.sender?.username === yourUsername;

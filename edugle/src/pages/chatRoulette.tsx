@@ -16,7 +16,7 @@ import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { set } from "zod";
 import { init } from "@graphql-codegen/cli";
 import { StackedLineChartOutlined } from "@mui/icons-material";
-import {url} from "inspector";
+import { url } from "inspector";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -74,13 +74,6 @@ const DE_QUEUE = gql`
   }
 `;
 
-const IS_QUEUE = gql(`query QueuePosition($token: String!) {
-  queuePosition(token: $token) {
-    position
-    status
-  }
-}`);
-
 const JOIN_CHAT = gql`
   mutation JoinChat($chatId: ID!, $token: String!) {
     joinChat(chatId: $chatId, token: $token) {
@@ -108,8 +101,8 @@ const JOIN_CHAT = gql`
 `;
 
 const LEAVE_CHAT = gql`
-mutation LeaveChat($chatId: ID!, $userToken: String!) {
-  leaveChat(chatId: $chatId, userToken: $userToken) {
+  mutation LeaveChat($chatId: ID!, $userToken: String!) {
+    leaveChat(chatId: $chatId, userToken: $userToken) {
       created_date
       id
       messages {
@@ -133,6 +126,13 @@ mutation LeaveChat($chatId: ID!, $userToken: String!) {
   }
 `;
 
+const IS_QUEUE = gql(`query QueuePosition($token: String!) {
+  queuePosition(token: $token) {
+    position
+    status
+  }
+}`);
+
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
@@ -140,7 +140,6 @@ const ChatApp = () => {
   const [otherUser, setOtherUser] = useState(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
-  const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
   const [isQueue, setIsQueue] = useState<boolean>(chatStatus === "Paired" ? false : true);
   const [firstTime, setFirstTime] = useState<boolean>(true);
   const [isHovered, setIsHovered] = useState(false);
@@ -278,7 +277,7 @@ const ChatApp = () => {
   });
 
   // UseEffect for checking query status
-/*   useEffect(() => {
+  /*   useEffect(() => {
     if (isQuery.loading) {
       console.log("loading...");
     } else if (isQuery.error) {
@@ -340,7 +339,7 @@ const ChatApp = () => {
   const handleBack = () => {
     dequeueUser().then(() => {
       setFirstTime(true);
-      router.replace("/")
+      router.replace("/");
     });
   };
 
@@ -354,7 +353,7 @@ const ChatApp = () => {
   const boxShadowStyle = isHovered
     ? {}
     : {
-        boxShadow: "0px 0px 10px 5px rgba(0, 0, 0, 0.4)",
+        boxShadow: "0px 0px 10px 1px rgba(0, 0, 0, 0.4)",
       };
   if (session?.data?.user) {
     return (
@@ -398,12 +397,13 @@ const ChatApp = () => {
                       Talking to: <strong>{otherUser}</strong>
                     </h1>
                     <div
+                      className={styles.nextUserButton}
                       onClick={handleNextUser}
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}
                       style={{
                         borderRadius: "10px 10px 0px 10px",
-                        backgroundColor: "#A9D6E5",
+                        backgroundColor: "#ef476f",
                         display: "flex",
                         alignItems: "center",
                         marginLeft: "auto",
@@ -415,7 +415,9 @@ const ChatApp = () => {
                         ...boxShadowStyle, // Apply boxShadow based on state
                       }}
                     >
-                      <h1 style={{ marginLeft: "20px", color: "black", marginRight: "20px", cursor: "pointer" }}>Next user! </h1>
+                      <h1 className={styles.nextUserText} style={{ width: "100%", marginLeft: "20px", color: "black", cursor: "pointer" }}>
+                        Next user!{" "}
+                      </h1>
                     </div>
                   </div>
                 </div>
