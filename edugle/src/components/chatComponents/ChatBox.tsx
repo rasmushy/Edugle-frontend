@@ -6,7 +6,7 @@ import SendIcon from "@mui/icons-material/Send";
 type ChatBoxProps = {
   chatId: string;
   user: string;
-  userLeftChat: boolean;
+  userLeftChat?: boolean;
 };
 
 const CREATE_MESSAGE = gql`
