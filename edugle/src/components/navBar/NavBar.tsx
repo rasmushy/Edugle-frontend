@@ -22,8 +22,7 @@ const NavBar = () => {
   if (status === "loading") return <div>Loading...</div>;
 
   const handleShowNavbar = () => {
-    setShowNavbar(!showNavbar);
-    setCloseNavbar(!closeNavbar);
+    setCloseNavbar(true);
   };
 
   const handleMaintPage = () => {
