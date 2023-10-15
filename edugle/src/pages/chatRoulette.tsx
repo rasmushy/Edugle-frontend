@@ -354,10 +354,10 @@ const ChatApp = () => {
             >
               <div className="flex-row">
                 <div className="flex-col" style={{ top: "3%", position: "relative" }}>
-                  {/* Chat messages */}
+                  {/* Chat messages1 */}
                   {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} style={"roulette"} />}
 
-                  {/* Chat box */}
+                  {/* Chat box1 */}
                   <ChatBox chatId={chatId} user={session.data?.token as string} userLeftChat={userLeftChat} />
                   <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", height: "60px" }}>
                     <CircleIcon style={{ color: userLeftChat ? "red" : "green", marginLeft: "20px", marginRight: "20px" }} />
