@@ -97,7 +97,7 @@ const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, userId }: any) => {
         }}
       >
         <header style={{ color: "black" }}>
-          <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Käyttäjän {data?.getUserById.username} profiili!</h1>
+          <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>Profile of {data?.getUserById.username}</h1>
         </header>
         <p style={{ color: "black", marginBottom: "20px" }}>{data?.getUserById.description ? data?.getUserById.description : "No description yet!"}</p>
         <p style={{ color: "black", marginBottom: "20px" }}>Likes: {data?.getUserById.likes}</p>
