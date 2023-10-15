@@ -70,11 +70,11 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user, userLeftChat }) => {
 
   return (
     <div className="max-w-screen min-w-fit">
-      <div className="relative" style={{height : "70px"}}>
+      <div className="relative" style={{ height: "70px" }}>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message..."
+          placeholder={userLeftChat ? "You are alone..." : "Type your message..."}
           rows={3}
           className={styles.chatBox}
           onKeyDown={handleKeyPress}
