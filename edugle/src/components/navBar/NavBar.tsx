@@ -115,7 +115,7 @@ const NavBar = () => {
                   <li>
                     <Link href="/chatRoulette" onClick={() => handleRoulettePage()}>
                       <div className={`${styles.navbar_item} ${activeButton === "roulette" ? styles.active : styles.inactive}`}>
-                        <p>Chat</p>
+                        <p>Roulette</p>
                       </div>
                     </Link>
                   </li>
