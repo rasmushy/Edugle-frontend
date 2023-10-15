@@ -108,8 +108,8 @@ const JOIN_CHAT = gql`
 `;
 
 const LEAVE_CHAT = gql`
-  mutation LeaveChat($chatId: ID!, $token: String!) {
-    leaveChat(chatId: $chatId, token: $token) {
+mutation LeaveChat($chatId: ID!, $userToken: String!) {
+  leaveChat(chatId: $chatId, userToken: $userToken) {
       created_date
       id
       messages {
@@ -161,6 +161,7 @@ const ChatApp = () => {
         case "CHAT_STARTED":
           setChatId(updatedChat.chat.id);
           setChatStatus("Paired");
+          console.log("udpatearouentaoedu", updatedChat);
           setOtherUser(
             updatedChat.chat.users[0].username === session?.data?.user.username ? updatedChat.chat.users[1].username : updatedChat.chat.users[0].username,
           );

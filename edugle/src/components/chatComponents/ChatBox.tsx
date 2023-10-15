@@ -9,14 +9,14 @@ type ChatBoxProps = {
 };
 
 const CREATE_MESSAGE = gql`
-  mutation CreateMessage($chat: ID!, $message: MessageInput!) {
-    createMessage(chat: $chat, message: $message) {
+  mutation CreateMessage($chatId: ID!, $message: MessageInput!) {
+    createMessage(chatId: $chatId, message: $message) {
       content
       date
       id
       sender {
-        email
         username
+        email
       }
     }
   }
@@ -27,7 +27,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
     variables: {
-      chat: chatId,
+      chatId: chatId,
       message: {
         content: message,
         senderToken: user,
@@ -47,10 +47,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
       e.preventDefault();
       // Manually handle new lines for shift+enter
       const cursorPosition = e.currentTarget.selectionStart;
-      const content =
-        message.substring(0, cursorPosition) +
-        "\n" +
-        message.substring(cursorPosition);
+      const content = message.substring(0, cursorPosition) + "\n" + message.substring(cursorPosition);
       setMessage(content);
 
       // Set cursor position right after the inserted newline
