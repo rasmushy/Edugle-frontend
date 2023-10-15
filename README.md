@@ -52,6 +52,10 @@ Users have two options to choose from. They can either join a big chat room or r
 
 ### Chat room
 
+![Chat room](/media/bigChat.PNG "Chat room")
+
+When the user is in the chat room, they can see the chat history and send messages to the chat. Users can like other users by clicking their name in the chat. 
+
 ### Chat roulette
 
 ![Chat roulette](/media/chatRoulette.PNG "Chat roulette")
