@@ -75,8 +75,8 @@ const DE_QUEUE = gql`
 `;
 
 const JOIN_CHAT = gql`
-  mutation JoinChat($chatId: ID!, $token: String!) {
-    joinChat(chatId: $chatId, token: $token) {
+  mutation JoinChat($chatId: ID!, $userToken: String!) {
+    joinChat(chatId: $chatId, userToken: $userToken) {
       created_date
       id
       messages {
@@ -161,7 +161,6 @@ const ChatApp = () => {
         case "CHAT_STARTED":
           setChatId(updatedChat.chat.id);
           setChatStatus("Paired");
-          console.log("udpatearouentaoedu", updatedChat);
           setOtherUser(
             updatedChat.chat.users[0].username === session?.data?.user.username ? updatedChat.chat.users[1].username : updatedChat.chat.users[0].username,
           );
