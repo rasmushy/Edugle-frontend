@@ -48,7 +48,7 @@ const QUERY_MESSAGES_BY_ID = gql`
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
-  const [chatId, setChatId] = useState("651fe685a4cdf622986a9f14");
+  const [chatId, setChatId] = useState("652c2b6650a5d7b4a5bc52f9");
   const [messages, setMessages] = useState<Message[]>([]);
 
   if (!session || session.status === "unauthenticated") {
@@ -57,7 +57,7 @@ const ChatApp = () => {
   }
 
   useQuery(QUERY_MESSAGES_BY_ID, {
-    variables: { chatByIdId: "651fe685a4cdf622986a9f14" },
+    variables: { chatByIdId: "652c2b6650a5d7b4a5bc52f9" },
     onCompleted: (data) => {
       //console.log(data);
       if (data.chatById.messages) {
