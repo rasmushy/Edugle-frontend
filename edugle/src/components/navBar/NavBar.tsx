@@ -29,9 +29,9 @@ const NavBar = () => {
   const handleMaintPage = () => {
     setCloseNavbar(!closeNavbar);
     setShowNavbar(!showNavbar);
-    setActiveButton("main");
+    setActiveButton("");
   };
-
+ 
   const handleChatPage = () => {
     setCloseNavbar(!closeNavbar);
     setShowNavbar(!showNavbar);
