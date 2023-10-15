@@ -88,7 +88,7 @@ Users can see their profile page by clicking Profile button in the top right cor
 
 ### Admin page
 
-![Chat roulette chat](/media/adminPaneeli.PNG "Admin panel")
+![Chat roulette chat](/media/adminPanel.PNG "Admin panel")
 
 Admins can see the admin panel by clicking Admin panel button in the top right corner. They can see all the users and their like count. They can also delete users by clicking the Delete button.
 They can give other users admin rights by clicking the Give admin button. They can also remove admin rights by clicking the Remove admin button.
