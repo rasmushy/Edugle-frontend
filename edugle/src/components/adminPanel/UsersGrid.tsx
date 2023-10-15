@@ -11,7 +11,7 @@ import {
   GridEventListener,
   GridRowEditStopReasons,
 } from "@mui/x-data-grid";
-import styles from "../../src/styles/styles.module.css";
+import styles from "../../../src/styles/styles.module.css";
 import Paper from "@mui/material/Paper";
 import Alert, { AlertProps } from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
@@ -24,7 +24,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, useCallback } from "react";
-import { useNavBar } from "~/pages/api/NavBarProvider";
+import { useNavBar } from "~/components/navBar/NavBarProvider";
 
 interface User {
   id: GridRowId;

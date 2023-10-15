@@ -7,8 +7,8 @@ import { signOut } from "next-auth/react";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { useSession } from "next-auth/react";
-import AdminNavBarBtn from "../AdminNavBarBtn";
-import { useNavBar } from "~/pages/api/NavBarProvider";
+import AdminNavBarBtn from "./AdminNavBarBtn";
+import { useNavBar } from "~/components/navBar/NavBarProvider";
 
 const NavBar = () => {
   const [showNavbar, setShowNavbar] = useState(false);
@@ -36,12 +36,6 @@ const NavBar = () => {
     setCloseNavbar(!closeNavbar);
     setShowNavbar(!showNavbar);
     setActiveButton("profile");
-  };
-
-  const handleSettingsPage = () => {
-    setCloseNavbar(!closeNavbar);
-    setShowNavbar(!showNavbar);
-    setActiveButton("settings");
   };
 
   const handleAdminPanelPage = () => {
@@ -126,19 +120,6 @@ const NavBar = () => {
                         }`}
                       >
                         <p>Profile</p>
-                      </div>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/settings" onClick={() => handleSettingsPage()}>
-                      <div
-                        className={`${styles.navbar_item} ${
-                          activeButton === "settings"
-                            ? styles.active
-                            : styles.inactive
-                        }`}
-                      >
-                        <p>Settings</p>
                       </div>
                     </Link>
                   </li>

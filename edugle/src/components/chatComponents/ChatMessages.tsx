@@ -1,6 +1,6 @@
 import React, { use, useEffect, useRef, useState } from "react";
-import { Message, Chat } from "../__generated__/graphql";
-import styles from "../styles/styles.module.css";
+import { Message, Chat, User } from "../../__generated__/graphql";
+import styles from "../../styles/styles.module.css";
 import Asd from "./HoverUserInfo";
 import HoverUserInfo from "./HoverUserInfo";
 import Dialog from "@mui/material/Dialog";
@@ -16,6 +16,7 @@ import LikeUser from "./LikeUser";
 type ChatMessagesProps = {
   chatMessages: Message[];
   yourUsername: string | undefined | null;
+  style?: string;
 };
 
 //Adds breaks to long messages, so they don't overflow the chat box.
@@ -36,43 +37,29 @@ function addBreaks(str: string) {
   return processedLines;
 }
 
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, yourUsername: yourUsername }) => {
+const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, yourUsername: yourUsername, style }) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [isUserSelf, setIsYou] = useState(false);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
   const [activeUserMessage, setActiveUserMessage] = useState<number | null>(null);
 
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const handleClose = () => {
-    setIsPopUpOpen(false);
-  };
-  const handleOpen = () => {
-    console.log(isPopUpOpen, " IsClose");
-    setIsPopUpOpen(true);
-  };
-
-  useEffect(() => {
+    useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
+
   return (
     <div
       style={{ overflow: "auto" }}
       ref={messagesContainerRef}
-      className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch max-h-[390px] min-h-[70vh] space-y-4 space-y-4 "
+      className={style === "roulette" ? styles.rouletteChatMessagesContainer : styles.chatMessagesContainer}
     >
-      <div className={styles.glassPanel}>
+      <div className={style === "roulette" ? styles.rouletteGlassPanel : styles.glassPanel}>
+        {isPopUpOpen && !isUserSelf && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} userId={userInfo?.id as String} />}
         {messages &&
           messages.map((message: Message, index: number) => {
             const isYou = message.sender?.username === yourUsername;
@@ -90,15 +77,17 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
               <div key={message?.id} className={`${messageContainerClass}`}>
                 <strong
                   onClick={() => {
-                    handleOpen();
+                    setUserInfo(message.sender);
+                    setIsPopUpOpen(true);
+                    setIsYou(isYou);
                     setActiveUserMessage(isMessageActive ? null : index);
                   }}
-                  style={{ color: "#ccdbdc", cursor: "pointer" }}
+                  style={{ color: "#ccdbdc", cursor: "pointer", userSelect: "none", pointerEvents: isYou ? "none" : "auto" }}
                 >
                   {message?.sender?.username}:
                 </strong>
 
-                {isMessageActive && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} user={message.sender} />}
+                {isMessageActive}
 
                 <span className={`${messageTextClass}`}>
                   {addBreaks(message.content).map((line, lineIndex) => (

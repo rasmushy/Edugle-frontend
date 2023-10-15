@@ -1,5 +1,5 @@
 import React from "react";
-import type { User } from "../__generated__/graphql";
+import type { User } from "../../__generated__/graphql";
 import { gql, useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 

@@ -24,16 +24,101 @@
   }
 }
 
+
+.chatMessagesContainer {
+  overflow: auto;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #3490dc transparent; /* Blue thumb with transparent track */
+  border-radius: 10px; /* Rounded corners */
+  margin-right: 20px;
+  padding: 0;
+  position: relative;
+  overflow-x: hidden;
+  background-size: auto 100%;
+  width: 100%;
+  transition: box-shadow 0.3s; /* Add a transition for smooth effect */
+}
+
+/* Scrollbar thumb style */
+.chatMessagesContainer::-webkit-scrollbar-thumb {
+  background: #3490dc; /* Blue thumb */
+  border-radius: 4px; /* Rounded corners for the thumb */
+}
+
+/* Scrollbar track style */
+.chatMessagesContainer::-webkit-scrollbar-track {
+  background: #cce0eb; /* Lighter blue track */
+}
+
+/* Width of the scrollbar thumb */
+.chatMessagesContainer::-webkit-scrollbar {
+  width: 12px; /* Adjust the width as needed */
+}
+
+/* Space between child elements */
+.chatMessagesContainer > * {
+  margin-bottom: 1rem; /* Adjust as needed */
+}
+
+/* Set the maximum height */
+.chatMessagesContainer {
+  max-height: 70vh; /* Adjust as needed */
+}
+
+.rouletteChatMessagesContainer {
+  overflow: auto;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #3490dc transparent; /* Blue thumb with transparent track */
+  border-radius: 10px; /* Rounded corners */
+  margin-right: 20px;
+  padding: 0;
+  position: relative;
+  overflow-x: hidden;
+  background-size: auto 100%;
+  width: 100%;
+  transition: box-shadow 0.3s; /* Add a transition for smooth effect */
+}
+
+/* Scrollbar thumb style */
+.rouletteChatMessagesContainer::-webkit-scrollbar-thumb {
+  background: #3490dc; /* Blue thumb */
+  border-radius: 4px; /* Rounded corners for the thumb */
+}
+
+/* Scrollbar track style */
+.rouletteChatMessagesContainer::-webkit-scrollbar-track {
+  background: #cce0eb; /* Lighter blue track */
+}
+
+/* Width of the scrollbar thumb */
+.rouletteChatMessagesContainer::-webkit-scrollbar {
+  width: 12px; /* Adjust the width as needed */
+}
+
+/* Space between child elements */
+.rouletteChatMessagesContainer > * {
+  margin-bottom: 1rem; /* Adjust as needed */
+}
+
+/* Set the maximum height */
+.rouletteChatMessagesContainer {
+  max-height: 62vh; /* Adjust as needed */
+}
+
+/* Set the minimum height */
+.rouletteChatMessagesContainer {
+}
+
+
 .userContent {
   background-color: white;
   width: 60%;
-  margin: 40px auto;
+  margin: 20px auto;
   /* Center horizontally and add top margin */
   border-radius: 25px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* Ensure the element takes up the full viewport height */
 }
 
 .navbar {
@@ -118,20 +203,51 @@
   background-color: #f1f5f9;
 }
 
-.glassPanel {
+.rouletteGlassPanel {
   background: rgba(255, 255, 255, 0.3);
   /* Set the background to a semi-transparent white */
-  border-radius: 17px 17px 0 0;
   height: auto;
-  min-height: 70vh;
+  pointer-events: none;
+  min-height: 68vh;
   /* Add some border radius for the glass effect */
   padding: 10px;
+  margin-bottom: 0px;
   /* Adjust padding as needed */
   backdrop-filter: blur(10px);
+  z-index: -1;
   /* Apply a backdrop filter to simulate glass blur */
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   /* Add a slight shadow for depth */
 }
+
+.glassPanel {
+  background: rgba(255, 255, 255, 0.3);
+  /* Set the background to a semi-transparent white */
+  height: auto;
+  pointer-events: none;
+  min-height: 72vh;
+  /* Add some border radius for the glass effect */
+  padding: 10px;
+  margin-bottom: 0px;
+  /* Adjust padding as needed */
+  backdrop-filter: blur(10px);
+  z-index: -1;
+  /* Apply a backdrop filter to simulate glass blur */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  /* Add a slight shadow for depth */
+}
+
+.rouletteMainContainer {
+  min-width: 100vw;
+  /* Equivalent to min-w-screen */
+  z-index: 10;
+  margin-top: 26px;
+  /* Equivalent to mt-6 */
+  background: linear-gradient(to bottom, #2C7DA0, transparent);
+  color: white;
+  max-height: 70vh;
+}
+
 
 .fadeIn {
   opacity: 1;
@@ -171,12 +287,12 @@
   .navElements.active {
     border-radius: 0 0 25px 25px;
     z-index: 10;
-    height: 380px;
+    height: 270px;
   }
 
   .navElements.biggerActive {
     border-radius: 0 0 25px 25px;
-    height: 480px;
+    height: 370px;
   }
 
   .navElements ul {
@@ -212,25 +328,142 @@
 
 @media only screen and (max-width: 600px) {
   /* Your styles for small screens go here */
+  .gif{
+    width: 300px;
+  }
+  .profile{
+    margin-top: 0 !important;
+    height: 500px !important;
+  }
+  .avatar{
+    width: 100px !important;
+    height: 100px !important;
+  }
+  .nextUserButton{
+    width: 80px !important;
+  }
+  .nextUserText{
+    font-size: 13px !important;
+    margin-left: 9px !important;
+  }
+
 }
 
-@media only screen and (min-width: 601px) and (max-width: 1024px) {
+@media only screen and (max-Height: 500px) {
   /* Your styles for medium screens go here */
+  .chatMessagesContainer {
+    max-height: 40vh !important;
+    }
+  .rouletteChatMessagesContainer {
+    max-height: 33vh !important;
+  }
+  .rouletteGlassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 31vh !important;
+  }
+  .glassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 38vh !important;
+  }
+}
+@media only screen and (max-Height: 601px) {
+  /* Your styles for medium screens go here */
+  .chatMessagesContainer {
+    max-height: 55vh !important;
+    }
+  .rouletteChatMessagesContainer {
+    max-height: 53vh !important;
+  }
+  .rouletteGlassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 50vh !important;
+  }
+  .glassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 54vh !important;
+  }
+  .gif {
+    width: 300px;
+  }
 }
 
-@media only screen and (min-width: 1025px) {
+@media only screen and (max-Height: 700px) and (min-Height: 602px) {
+  /* Your styles for medium screens go here */
+  .chatMessagesContainer {
+    max-height: 65vh !important;
+    }
+    
+  .rouletteChatMessagesContainer {
+    max-height: 58vh !important;
+  }
+  .rouletteGlassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 57vh !important;
+  }
+  .glassPanel {
+    /* Set the background to a semi-transparent white */
+    min-height: 64vh !important;
+  }
+  .gif {
+    width: 200px;
+  }
+}
+
+@media only screen and (min-Height: 800px) {
+  /* Your styles for medium screens go here */
+  .chatMessagesContainer {
+    max-height: 65vh !important;
+    }
+    
+  .rouletteChatMessagesContainer {
+    max-height: 63vh !important;
+  }
+
+.rouletteGlassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 60vh !important;
+}
+.glassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 64vh !important;
+}
+
+}
+
+@media only screen and (min-Height: 800px)  {
+  /* Your styles for medium screens go here */
+.chatMessagesContainer {
+    max-height: 75vh !important;
+  }
+  .rouletteChatMessagesContainer {
+    max-height: 68vh !important;
+  }
+
+.rouletteGlassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 65vh !important;
+}
+.glassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 74vh !important;
+}
+}
+
+@media only screen and (min-Height: 1025px) {
   /* Your styles for large screens go here */
-}
+  .chatMessagesContainer {
+      max-height: 83vh !important;
+    }
+  .rouletteChatMessagesContainer {
+    max-height: 76vh !important;
+  }
 
-@media only screen and (-webkit-min-device-pixel-ratio: 2),
-(min-resolution: 192dpi) {
-  /* Your styles for high-resolution screens go here */
+.rouletteGlassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 74vh !important;
 }
-
-@media screen and (orientation: landscape) {
-  /* Your styles for landscape orientation go here */
+.glassPanel {
+  /* Set the background to a semi-transparent white */
+  min-height: 82vh !important;
 }
-
-@media screen and (orientation: portrait) {
-  /* Your styles for portrait orientation go here */
 }

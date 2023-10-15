@@ -1,11 +1,11 @@
 import Head from "next/head";
-import Login from "../components/Login";
-import SignUp from "../components/SignUp";
+import Login from "../components/mainPage/Login";
+import SignUp from "../components/mainPage/SignUp";
 import { useSession } from "next-auth/react";
-import MainPageBtn from "~/components/MainPageBtn";
+import MainPageBtn from "~/components/mainPage/MainPageBtn";
 import styles from "../styles/styles.module.css";
 import { useEffect, useState, useRef, MutableRefObject, use } from "react";
-import { useNavBar } from "./api/NavBarProvider";
+import { useNavBar } from "../components/navBar/NavBarProvider";
 
 export default function Home({ session: initialSession }: { session: any }) {
   const [activePopup, setActivePopup] = useState(null);
