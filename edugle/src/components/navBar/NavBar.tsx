@@ -28,6 +28,7 @@ const NavBar = () => {
 
   const handleMaintPage = () => {
     setCloseNavbar(true);
+    setShowNavbar(false);
     setActiveButton("");
   };
  
