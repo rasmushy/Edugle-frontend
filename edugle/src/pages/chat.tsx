@@ -52,7 +52,7 @@ const ChatApp = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   if (!session || session.status === "unauthenticated") {
-    console.log("ChatApp: session=", session);
+    //console.log("ChatApp: session=", session);
     router.push("/");
   }
 
@@ -66,7 +66,7 @@ const ChatApp = () => {
       }
     },
     onError: (error) => {
-      console.log("MSG_BY_ID: error=", error.message);
+      console.log("Querying messages error=", error.message);
     },
   });
 
@@ -77,7 +77,7 @@ const ChatApp = () => {
         data: { messageCreated, chatId, timestamp },
       },
     }) => {
-      console.log("messageCreated: sent at=", timestamp, ", chatId=", chatId, ", sender=", messageCreated.message.sender.username);
+      //console.log("messageCreated: sent at=", timestamp, ", chatId=", chatId, ", sender=", messageCreated.message.sender.username);
       setMessages((prevMessages) => [...prevMessages, messageCreated.message]);
     },
     onError: (error) => {
@@ -95,10 +95,10 @@ const ChatApp = () => {
         </Head>
         <main style={{}} className="min-w-screen z-10 mt-6 bg-gradient-to-b to-[#2C7DA0] text-white">
           <Paper
-            elevation={3} // Add elevation for shadow
+            elevation={3} 
             className={styles.slideBackground}
             sx={{
-              borderRadius: 5, // Add rounded corners
+              borderRadius: 5,
               margin: 0,
               marginLeft: "20px",
               marginRight: "20px",
@@ -106,7 +106,7 @@ const ChatApp = () => {
               boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
               position: "relative",
               overflow: "hidden",
-              backgroundColor: "white", // Background color
+              backgroundColor: "white",
               backgroundImage: `url(${OceanImage.src})`,
               backgroundSize: "auto 100%",
               animation: "slideBackground 20s linear infinite",
@@ -116,7 +116,6 @@ const ChatApp = () => {
               <div className="flex-col" style={{ top: "3%", position: "relative" }}>
                 {/* Chat messages */}
                 {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} />}
-
                 {/* Chat box */}
                 <ChatBox chatId={chatId} user={session.data?.token as string} />
               </div>

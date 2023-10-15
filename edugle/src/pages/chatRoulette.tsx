@@ -70,53 +70,53 @@ const DE_QUEUE = gql`
 `;
 
 const JOIN_CHAT = gql`
- mutation JoinChat($chatId: ID!, $userToken: String!) {
-  joinChat(chatId: $chatId, userToken: $userToken) {
-    created_date
-    id
-    messages {
-      content
-      date
+  mutation JoinChat($chatId: ID!, $userToken: String!) {
+    joinChat(chatId: $chatId, userToken: $userToken) {
+      created_date
       id
-      sender {
+      messages {
+        content
+        date
         id
-        email
-        username
+        sender {
+          id
+          email
+          username
+        }
+      }
+      users {
+        id
       }
     }
-    users {
-      id
-    }
   }
-}
 `;
 
 const LEAVE_CHAT = gql`
   mutation LeaveChat($chatId: ID!, $userToken: String!) {
-  leaveChat(chatId: $chatId, userToken: $userToken) {
-    created_date
-    id
-    users {
+    leaveChat(chatId: $chatId, userToken: $userToken) {
+      created_date
       id
-    }
-    messages {
-      content
-      id
-      date
-      sender {
+      users {
         id
+      }
+      messages {
+        content
+        id
+        date
+        sender {
+          id
+        }
       }
     }
   }
-}
 `;
 
-const IS_QUEUE = gql(`query QueuePosition($token: String!) {
+const IS_QUEUE = gql`query QueuePosition($token: String!) {
   queuePosition(token: $token) {
     position
     status
   }
-}`);
+}`;
 
 const ChatApp = () => {
   const session = useSession();
@@ -153,10 +153,9 @@ const ChatApp = () => {
           setTimeout(function () {
             setIsQueue(false);
           }, 1000);
-          console.log("CHAT_STARTED: chatId=", updatedChat.chat.id, ", timestamp=", updatedChat.timestamp);
+          setUserLeftChat(false);
           break;
         case "USER_JOINED_CHAT":
-          setUserLeftChat(false);
           break;
         case "USER_LEFT_CHAT":
           const userLeftMessage = {
@@ -176,7 +175,6 @@ const ChatApp = () => {
           setMessages((prevMessages) => [...prevMessages, updatedChat.chat.messages[updatedChat.chat.messages.length - 1]]);
           break;
         default:
-          console.log("eventType not found", updatedChat.eventType);
           break;
       }
     },
@@ -190,9 +188,10 @@ const ChatApp = () => {
       token: session.data?.token as string,
     },
     onCompleted: ({ queuePosition }) => {
-      console.log("queuePosition COMPLETED=", queuePosition);
       if (queuePosition.position === 0 && chatStatus !== "Paired") {
-        setIsQueue(true);
+        if (chatId != "") {
+          joinChat();
+        }
       }
     },
   });
@@ -202,7 +201,6 @@ const ChatApp = () => {
       token: session.data?.token as string,
     },
     onCompleted: ({ dequeueUser }) => {
-      console.log("dequeueUser COMPLETED=", dequeueUser);
       setIsQueue(false);
     },
     onError: (error) => {
@@ -216,7 +214,6 @@ const ChatApp = () => {
     },
     onCompleted: ({ initiateChat }) => {
       setChatStatus(initiateChat.status);
-      console.log("initiateChat COMPLETED=", initiateChat);
       if (initiateChat.status === "Paired") {
         setChatId(initiateChat.chatId);
       }
@@ -231,9 +228,6 @@ const ChatApp = () => {
       chatId: chatId,
       userToken: session.data?.token as string,
     },
-    onCompleted: ({ joinChat }) => {
-      console.log("joinChat COMPLETED=", joinChat);
-    },
     onError: (error) => {
       console.log("joinChat: error=", error);
     },
@@ -244,9 +238,6 @@ const ChatApp = () => {
       chatId: chatId,
       userToken: session.data?.token as string,
     },
-    onCompleted: ({ leaveChat }) => {
-      console.log("leaveChat COMPLETED=", leaveChat);
-    },
     onError: (error) => {
       console.log("leaveChat: error=", error);
     },
@@ -254,40 +245,41 @@ const ChatApp = () => {
 
   useEffect(() => {
     if (chatId) {
-      console.log("ligma");
       setChatStatus("Paired");
     }
   }, [chatId]);
 
   const handleStartQueue = () => {
-    console.log("isQuery", isQuery);
     if (isQuery.loading) {
       return;
     }
     const isQueuePosition = isQuery.data.queuePosition.position;
 
-    if (isQueuePosition > 0) {
-      console.log(isQuery.data?.queuePosition);
+    if (isQueuePosition != 0) {
+      //console.log(isQuery.data?.queuePosition);
     } else {
-      console.log(isQueuePosition);
       setIsQueue(true);
       initiateChat();
       setFirstTime(false);
-      if (chatId != "") {
-        joinChat();
-      }
     }
   };
 
   const handleNextUser = () => {
     if (chatStatus === "Paired") {
       setMessages([]);
-      setChatId("");
-      setChatStatus("Ended");
       setOtherUser(null);
-      leaveChat();
+      setChatId((prevChatId) => {
+        if (prevChatId !== "") {
+          return "";
+        }
+        return chatId;
+      });
+      leaveChat().then(() => {
+        handleStartQueue();
+      });
+    } else {
+      handleStartQueue();
     }
-    handleStartQueue();
   };
 
   const handleBack = () => {
@@ -324,9 +316,9 @@ const ChatApp = () => {
             <QueuePanel handleBack={handleBack} chatStatus={chatStatus} />
           ) : (
             <Paper
-              elevation={3} // Add elevation for shadow
+              elevation={3} 
               sx={{
-                borderRadius: 5, // Add rounded corners
+                borderRadius: 5, 
                 margin: 0,
                 marginLeft: "20px",
                 marginRight: "20px",
@@ -334,7 +326,7 @@ const ChatApp = () => {
                 boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
                 position: "relative",
                 overflow: "hidden",
-                backgroundColor: "white", // Background color
+                backgroundColor: "white", 
                 backgroundImage: `url(${OceanImage.src})`,
               }}
             >
@@ -365,8 +357,8 @@ const ChatApp = () => {
                         width: "120px",
                         cursor: "pointer",
                         height: "40px",
-                        transition: "box-shadow 0.3s", // Add a transition for smooth effect
-                        ...boxShadowStyle, // Apply boxShadow based on state
+                        transition: "box-shadow 0.3s", 
+                        ...boxShadowStyle, 
                       }}
                     >
                       <h1 className={styles.nextUserText} style={{ width: "100%", marginLeft: "20px", color: "black", cursor: "pointer" }}>

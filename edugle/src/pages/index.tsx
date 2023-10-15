@@ -1,7 +1,6 @@
 import Head from "next/head";
 import Login from "../components/mainPage/Login";
 import SignUp from "../components/mainPage/SignUp";
-import { useSession } from "next-auth/react";
 import MainPageBtn from "~/components/mainPage/MainPageBtn";
 import styles from "../styles/styles.module.css";
 import { useEffect, useState, useRef, MutableRefObject, use } from "react";
@@ -10,7 +9,7 @@ import { useNavBar } from "../components/navBar/NavBarProvider";
 export default function Home({ session: initialSession }: { session: any }) {
   const [activePopup, setActivePopup] = useState(null);
   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
-  const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
+  const { isNavBarOpen} = useNavBar();
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));
@@ -45,8 +44,6 @@ export default function Home({ session: initialSession }: { session: any }) {
     createBubbles();
   }, []);
 
-  useEffect(() => {}, [status]);
-
   return (
     <>
       <Head>
@@ -78,7 +75,6 @@ export default function Home({ session: initialSession }: { session: any }) {
         {initialSession?.user ? null : (
           <>
             {activePopup ? <div className="backdrop" onClick={() => togglePopup(null)}></div> : null}
-
             {activePopup === "Login" ? (
               <div className="modal">
                 <Login toggle={() => togglePopup("Login")} />

@@ -38,7 +38,7 @@ const HoverUser: React.FC<HoverUserProps> = ({ user, isPopUpOpen, handleClose })
   };
 
   const handleClose2 = () => {
-    console.log("asdasdas!");
+    //console.log("asdasdas!");
     setOpen(false);
   };
 

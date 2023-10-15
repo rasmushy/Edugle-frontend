@@ -12,17 +12,13 @@ const QueuePanel = ({ handleBack, chatStatus }: any) => {
   const [startChat, setStartChat] = useState(false);
   useEffect(() => {
     const tipInterval = setInterval(() => {
-      // Hide the current tip
       setShowTip(false);
-
-      // Wait for a moment before showing the next tip
       setTimeout(() => {
         setCurrentTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
         setShowTip(true);
-      }, 500); // Adjust the delay between tips (in milliseconds) as needed
-    }, 6000); // Adjust the interval for changing tips (in milliseconds) as needed
-
-    return () => {
+      }, 500); 
+    }, 6000); 
+     return () => {
       clearInterval(tipInterval);
     };
   }, []);
@@ -39,9 +35,9 @@ const QueuePanel = ({ handleBack, chatStatus }: any) => {
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
       <Paper
-        elevation={3} // Add elevation for shadow
+        elevation={3} 
         sx={{
-          borderRadius: 5, // Add rounded corners
+          borderRadius: 5, 
           margin: 0,
           marginLeft: "20px",
           marginRight: "20px",
@@ -51,7 +47,7 @@ const QueuePanel = ({ handleBack, chatStatus }: any) => {
           boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
           position: "relative",
           overflow: "hidden",
-          backgroundColor: "white", // Background color
+          backgroundColor: "white", 
         }}
       >
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>

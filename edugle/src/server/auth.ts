@@ -154,7 +154,7 @@ export const authOptions: NextAuthOptions = {
 };
 
 async function refreshAccessToken(tokenObject: JWT) {
-  console.log("refreshing access token");
+  //console.log("refreshing access token");
   //console.log(tokenObject);
   try {
     // Get a new set of tokens with a refreshToken

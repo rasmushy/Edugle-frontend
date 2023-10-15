@@ -7,9 +7,9 @@ const RulesPanel = ({ handleStartQueue, handleBack }: any) => {
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
       <Paper
-        elevation={3} // Add elevation for shadow
+        elevation={3}
         sx={{
-          borderRadius: 5, // Add rounded corners
+          borderRadius: 5, 
           margin: 0,
           marginLeft: "20px",
           marginRight: "20px",
@@ -19,7 +19,7 @@ const RulesPanel = ({ handleStartQueue, handleBack }: any) => {
           boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
           position: "relative",
           overflow: "hidden",
-          backgroundColor: "white", // Background color
+          backgroundColor: "white", 
         }}
       >
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", flexDirection: "column" }}>
