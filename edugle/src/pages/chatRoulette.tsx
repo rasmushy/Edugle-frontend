@@ -108,16 +108,6 @@ const IS_QUEUE = gql(`query QueuePosition($token: String!) {
   }
 }`);
 
-const ASD = gql(`query Queue {
-  queue {
-    joinedAt
-    position
-    userId {
-      id
-    }
-  }
-}`);
-
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
@@ -125,7 +115,6 @@ const ChatApp = () => {
   const [otherUser, setOtherUser] = useState(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatStatus, setChatStatus] = useState("");
-  const [isLikeUser, setIsLikeUser] = useState<boolean>(false);
   const [isQueue, setIsQueue] = useState<boolean>(chatStatus === "Paired" ? false : true);
   const [firstTime, setFirstTime] = useState<boolean>(true);
 
@@ -310,7 +299,7 @@ const ChatApp = () => {
   const boxShadowStyle = isHovered
     ? {}
     : {
-        boxShadow: "0px 0px 10px 5px rgba(0, 0, 0, 0.4)",
+        boxShadow: "0px 0px 10px 1px rgba(0, 0, 0, 0.4)",
       };
   if (session?.data?.user) {
     return (
@@ -354,13 +343,13 @@ const ChatApp = () => {
                       Talking to: <strong>{otherUser}</strong>
                     </h1>
                     <div
-                    className={styles.nextUserButton}
+                      className={styles.nextUserButton}
                       onClick={handleNextUser}
                       onMouseEnter={handleMouseEnter}
                       onMouseLeave={handleMouseLeave}
                       style={{
                         borderRadius: "10px 10px 0px 10px",
-                        backgroundColor: "#A9D6E5",
+                        backgroundColor: "#ef476f",
                         display: "flex",
                         alignItems: "center",
                         marginLeft: "auto",
@@ -372,7 +361,9 @@ const ChatApp = () => {
                         ...boxShadowStyle, // Apply boxShadow based on state
                       }}
                     >
-                      <h1 className={styles.nextUserText} style={{ width:"100%", marginLeft: "20px", color: "black", cursor: "pointer" }}>Next user! </h1>
+                      <h1 className={styles.nextUserText} style={{ width: "100%", marginLeft: "20px", color: "white", cursor: "pointer" }}>
+                        Next user!{" "}
+                      </h1>
                     </div>
                   </div>
                 </div>
