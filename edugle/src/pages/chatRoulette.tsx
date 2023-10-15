@@ -111,12 +111,14 @@ const LEAVE_CHAT = gql`
   }
 `;
 
-const IS_QUEUE = gql`query QueuePosition($token: String!) {
-  queuePosition(token: $token) {
-    position
-    status
+const IS_QUEUE = gql`
+  query QueuePosition($token: String!) {
+    queuePosition(token: $token) {
+      position
+      status
+    }
   }
-}`;
+`;
 
 const ChatApp = () => {
   const session = useSession();
@@ -156,6 +158,7 @@ const ChatApp = () => {
           setUserLeftChat(false);
           break;
         case "USER_JOINED_CHAT":
+          setMessages([]);
           break;
         case "USER_LEFT_CHAT":
           const userLeftMessage = {
@@ -187,13 +190,6 @@ const ChatApp = () => {
     variables: {
       token: session.data?.token as string,
     },
-    onCompleted: ({ queuePosition }) => {
-      if (queuePosition.position === 0 && chatStatus !== "Paired") {
-        if (chatId != "") {
-          joinChat();
-        }
-      }
-    },
   });
 
   const [dequeueUser] = useMutation(DE_QUEUE, {
@@ -215,12 +211,11 @@ const ChatApp = () => {
     onCompleted: ({ initiateChat }) => {
       setChatStatus(initiateChat.status);
       if (initiateChat.status === "Paired") {
-        setChatId(initiateChat.chatId);
+        joinChat();
       }
     },
     onError: (error) => {
       console.log("initiateChat: error=", error.message);
-      isQuery.refetch();
     },
   });
   const [joinChat] = useMutation(JOIN_CHAT, {
@@ -245,7 +240,7 @@ const ChatApp = () => {
 
   useEffect(() => {
     if (chatId) {
-      setChatStatus("Paired");
+      // lolo
     }
   }, [chatId]);
 
@@ -254,7 +249,6 @@ const ChatApp = () => {
       return;
     }
     const isQueuePosition = isQuery.data.queuePosition.position;
-
     if (isQueuePosition != 0) {
       //console.log(isQuery.data?.queuePosition);
     } else {
@@ -265,20 +259,25 @@ const ChatApp = () => {
   };
 
   const handleNextUser = () => {
-    if (chatStatus === "Paired") {
-      setMessages([]);
-      setOtherUser(null);
-      setChatId((prevChatId) => {
-        if (prevChatId !== "") {
-          return "";
-        }
-        return chatId;
-      });
-      leaveChat().then(() => {
-        handleStartQueue();
-      });
+    if (isQuery.loading) {
+      return;
+    }
+
+    const isQueuePosition = isQuery.data.queuePosition.position;
+
+    if (isQueuePosition != 0) {
+      isQuery.refetch();
     } else {
-      handleStartQueue();
+      if (chatStatus === "Paired") {
+        setOtherUser(null);
+        leaveChat().then(() => {
+          setIsQueue(true);
+          setFirstTime(false);
+          initiateChat();
+        });
+      } else if (chatStatus === "Queue") {
+        setChatId("");
+      }
     }
   };
 
@@ -316,9 +315,9 @@ const ChatApp = () => {
             <QueuePanel handleBack={handleBack} chatStatus={chatStatus} />
           ) : (
             <Paper
-              elevation={3} 
+              elevation={3}
               sx={{
-                borderRadius: 5, 
+                borderRadius: 5,
                 margin: 0,
                 marginLeft: "20px",
                 marginRight: "20px",
@@ -326,7 +325,7 @@ const ChatApp = () => {
                 boxShadow: "0px 0px 10px 10px rgba(0, 0, 0, 0.4)",
                 position: "relative",
                 overflow: "hidden",
-                backgroundColor: "white", 
+                backgroundColor: "white",
                 backgroundImage: `url(${OceanImage.src})`,
               }}
             >
@@ -357,8 +356,8 @@ const ChatApp = () => {
                         width: "120px",
                         cursor: "pointer",
                         height: "40px",
-                        transition: "box-shadow 0.3s", 
-                        ...boxShadowStyle, 
+                        transition: "box-shadow 0.3s",
+                        ...boxShadowStyle,
                       }}
                     >
                       <h1 className={styles.nextUserText} style={{ width: "100%", marginLeft: "20px", color: "black", cursor: "pointer" }}>
