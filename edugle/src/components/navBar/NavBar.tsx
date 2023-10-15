@@ -58,6 +58,7 @@ const NavBar = () => {
   };
 
   const handleLogOut = () => {
+    closeNavBar();
     setCloseNavbar(!closeNavbar);
     setShowNavbar(!showNavbar);
     setActiveButton("");
