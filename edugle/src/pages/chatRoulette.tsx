@@ -338,7 +338,7 @@ const ChatApp = () => {
                   {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} style={"roulette"} />}
 
                   {/* Chat box */}
-                  <ChatBox chatId={chatId} user={session.data?.token as string} />
+                  <ChatBox chatId={chatId} user={session.data?.token as string} userLeftChat={userLeftChat} />
                   <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", height: "60px" }}>
                     <CircleIcon style={{ color: userLeftChat ? "red" : "green", marginLeft: "20px", marginRight: "20px" }} />
                     <h1>

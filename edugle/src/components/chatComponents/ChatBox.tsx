@@ -6,6 +6,7 @@ import SendIcon from "@mui/icons-material/Send";
 type ChatBoxProps = {
   chatId: string;
   user: string;
+  userLeftChat: boolean;
 };
 
 const CREATE_MESSAGE = gql`
@@ -22,7 +23,7 @@ const CREATE_MESSAGE = gql`
   }
 `;
 
-const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
+const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user, userLeftChat }) => {
   const [message, setMessage] = useState("");
 
   const [createMessage] = useMutation(CREATE_MESSAGE, {
@@ -76,6 +77,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
           rows={3}
           className="flex w-full rounded rounded-bl-none rounded-br-none pl-3 pr-16 text-black"
           onKeyDown={handleKeyPress}
+          disabled={userLeftChat}
         />
         <div className="absolute bottom-0 right-0 flex h-full items-center pr-2">
           <SendIcon style={{ color: "#012A4A", marginRight: "20px" }} onClick={handleSendMessage} className="cursor-pointer" />
