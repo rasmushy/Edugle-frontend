@@ -143,6 +143,7 @@ const ChatApp = () => {
   const [isQueue, setIsQueue] = useState<boolean>(chatStatus === "Paired" ? false : true);
   const [firstTime, setFirstTime] = useState<boolean>(true);
   const [isHovered, setIsHovered] = useState(false);
+  const [userLeftChat, setUserLeftChat] = useState(false);
 
   useEffect(() => {
     if (session.status === "loading") return;
@@ -194,6 +195,7 @@ const ChatApp = () => {
               email: "edugle@render.com",
             },
           };
+          setUserLeftChat(true);
           setMessages((prevMessages) => [...prevMessages, userLeftMessage]);
           break;
         case "USER_SENT_MESSAGE":
@@ -392,7 +394,7 @@ const ChatApp = () => {
                   {/* Chat box */}
                   <ChatBox chatId={chatId} user={session.data?.token as string} />
                   <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", height: "60px" }}>
-                    <CircleIcon style={{ color: "green", marginLeft: "20px", marginRight: "20px" }} />
+                    <CircleIcon style={{ color: userLeftChat ? "red" : "green", marginLeft: "20px", marginRight: "20px" }} />
                     <h1>
                       Talking to: <strong>{otherUser}</strong>
                     </h1>
