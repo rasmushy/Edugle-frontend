@@ -62,7 +62,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
       className={style === "roulette" ? styles.rouletteChatMessagesContainer : styles.chatMessagesContainer}
     >
       <div className={styles.glassPanel}>
-        {isPopUpOpen && !isUserSelf && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} user={dsa} />}
+        {isPopUpOpen && !isUserSelf && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} userId={dsa?.id as String} />}
         {messages &&
           messages.map((message: Message, index: number) => {
             const isYou = message.sender?.username === yourUsername;

@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "@mui/material";
 import { set } from "zod";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useSession } from "next-auth/react";
+import { get } from "http";
 
 const LIKE_USER = gql`
   mutation LikeUser($username: String!, $token: String) {
@@ -17,8 +18,42 @@ const DISLIKE_USER = gql`
   }
 `;
 
-const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, user }: any) => {
+const GET_USER = gql`
+  query Query($getUserByIdId: ID!) {
+  getUserById(id: $getUserByIdId) {
+    id
+    username
+    email
+    password
+    description
+    avatar
+    lastLogin
+    role
+    likes
+  }
+}
+`;
+
+const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, userId }: any) => {
+
+  const {data, refetch, updateQuery} = useQuery(GET_USER, {
+    variables: {
+      getUserByIdId: userId,
+    }
+  });
+
   const session = useSession();
+
+  const [user, setUser] = useState([] as any);
+
+  useEffect(() => {
+    if(isPopUpOpen) {
+      if(data) {
+        setUser(data.getUserById);
+      }
+    }
+  }, [isPopUpOpen]);
+
   const [likeUser] = useMutation(LIKE_USER, {
     variables: {
       username: user.username as string,
@@ -49,14 +84,29 @@ const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, user }: any) => {
 
   async function handleLikeUser(id: any): Promise<void> {
     likeUser();
-    setIsPopUpOpen(false);
-    setIsOpen(false);
+    updateQuery((prev: any) => {
+      return {
+        getUserById: {
+          ...prev.getUserById,
+          likes: prev.getUserById.likes + 1,
+        }
+      }
+    });
+    handleClose();
+
   }
 
   async function handleDislikeUser(id: any): Promise<void> {
     dislikeUser();
-    setIsPopUpOpen(false);
-    setIsOpen(false);
+      updateQuery((prev: any) => {
+        return {
+          getUserById: {
+            ...prev.getUserById,
+            likes: prev.getUserById.likes - 1,
+          }
+        }
+      });
+    handleClose();
   }
 
   const handleClose = () => {
