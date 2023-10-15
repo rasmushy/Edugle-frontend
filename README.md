@@ -26,8 +26,13 @@ Our application primarily caters to the following focus groups:
 
 ### Front end features
 
--   Currently front end is quite barebones and only landing page buttons have some function behind them.
--   To view chat page navigate to /chat. With default .env provided url will be [localhost:3000/chat](localhost:3000/chat).
+**This application needs more than one user to "work".** 
+
+- It is a chat application where users can chat with each other. Users can also like or dislike other users. Users can also see their profile page and edit their description. Admins can see the admin panel where they can see all the users and their like count. They can also delete users and give other users admin rights.
+
+- It is a chat application where users can chat with each other. Users can also like or dislike other users. Users can also see their profile page and edit their description. Admins can see the admin panel where they can see all the users and their like count. They can also delete users and give other users admin rights.
+
+- It is a chat application where users can chat with each other. Users can also like or dislike other users. Users can also see their profile page and edit their description. Admins can see the admin panel where they can see all the users and their like count. They can also delete users and give other users admin rights.
 
 ### Landing page
 
@@ -77,6 +82,16 @@ Users can like or dislike other users by clicking their name in the chat.
 
 ### Profile page
 
-![Chat roulette chat](/media/profile.PNG "Chat roulette chat")
+![Chat roulette chat](/media/profile.png "Profile page")
 
 Users can see their profile page by clicking Profile button in the top right corner. They can see their username, like count and description. By default the Description is empty, but users can change that anytime by clicking the Edit button in the top right corner!
+
+### Admin page
+
+![Chat roulette chat](/media/adminPaneeli.png "Admin panel")
+
+Admins can see the admin panel by clicking Admin panel button in the top right corner. They can see all the users and their like count. They can also delete users by clicking the Delete button.
+They can give other users admin rights by clicking the Give admin button. They can also remove admin rights by clicking the Remove admin button.
+
+Admins can sort users by id, username, likecount and admin status.
+
