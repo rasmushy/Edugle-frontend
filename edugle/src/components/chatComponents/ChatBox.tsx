@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import SendIcon from "@mui/icons-material/Send";
+import styles from "../../styles/styles.module.css";
 
 type ChatBoxProps = {
   chatId: string;
@@ -75,7 +76,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user, userLeftChat }) => {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
           rows={3}
-          className="flex w-full rounded rounded-bl-none rounded-br-none pl-3 pr-16 text-black"
+          className={styles.chatBox}
           onKeyDown={handleKeyPress}
           disabled={userLeftChat}
         />
