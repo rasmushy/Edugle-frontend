@@ -255,7 +255,7 @@ const ChatApp = () => {
   const [joinChat] = useMutation(JOIN_CHAT, {
     variables: {
       chatId: chatId,
-      token: session.data?.token as string,
+      userToken: session.data?.token as string,
     },
     onCompleted: ({ joinChat }) => {
       console.log("joinChat COMPLETED=", joinChat);
@@ -268,7 +268,7 @@ const ChatApp = () => {
   const [leaveChat] = useMutation(LEAVE_CHAT, {
     variables: {
       chatId: chatId,
-      token: session.data?.token as string,
+      userToken: session.data?.token as string,
     },
     onCompleted: ({ leaveChat }) => {
       console.log("leaveChat COMPLETED=", leaveChat);
