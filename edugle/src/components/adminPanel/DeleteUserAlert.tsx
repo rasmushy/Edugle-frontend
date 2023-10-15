@@ -8,9 +8,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
 
-const DELETE_USER =
-  gql(`mutation DeleteUserAsAdmin($deleteUserId: ID!, $user: deleteUserAsAdminInput) {
-  deleteUserAsAdmin(deleteUserID: $deleteUserId, user: $user) {
+const DELETE_USER = gql(`mutation DeleteUserAsAdmin($adminToken: String!, $userToBeDeletedId: ID!) {
+  deleteUserAsAdmin(adminToken: $adminToken, userToBeDeletedId: $userToBeDeletedId) {
     message
   }
 }`);
@@ -28,13 +27,10 @@ const AlertDialogSlide = ({
 
   const [deleteUserAsAdmin] = useMutation(DELETE_USER, {
     variables: {
-      deleteUserId: userId,
-      user: {
-        token: token,
-      },
+      userToBeDeletedId: userId,
+      adminToken: token,
     },
-    onCompleted: ({ deleteUserAsAdmin }) => {
-    },
+    onCompleted: ({ deleteUserAsAdmin }) => {},
   });
 
   const deleteUserDatabase = async () => {
