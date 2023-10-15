@@ -36,11 +36,11 @@ Our application primarily caters to the following focus groups:
 
 ### Landing page
 
-![Our basic landing page](/media/landingPage.PNG "Index page")
+![Our basic landing page](/media/landingPage.png "Index page")
 
 ### Pop ups for sign up
 
-![Our basic sign up pop up](/media/signUp.PNG "Sign up pop up")
+![Our basic sign up pop up](/media/signUp.png "Sign up pop up")
 
 Login pop up is similar to sign up pop up.
 
@@ -54,29 +54,29 @@ Users have two options to choose from. They can either join a big chat room or r
 
 ### Chat roulette
 
-![Chat roulette](/media/chatRoulette.PNG "Chat roulette")
+![Chat roulette](/media/chatRoulette.png "Chat roulette")
 
 Upon entering the chat roulette, the users are asked if they know the rules of talking to strangers. If they click yes, they will be redirected to the chat roulette queue. If they click no, they will be redirected to the main page.
 
 There is a link for general rules of talking to strangers. The link will open in a new tab.
 
-![Chat roulette queue](/media/queueWait.PNG "Chat roulette queue")
+![Chat roulette queue](/media/queueWait.png "Chat roulette queue")
 
 When the user is in the queue, they will be shown a message that they are in the queue and a button to leave the queue. If they click the button, they will be redirected to the main page.
 
-![Chat roulette chat](/media/queueFind.PNG "Chat roulette chat find")
+![Chat roulette chat](/media/queueFind.png "Chat roulette chat find")
 
 When other user is found, the UI will show a message that a user has been found and users will be directed into a chat room.
 
-![Chat roulette chat](/media/talkingRoulette.PNG "Chat roulette chat")
+![Chat roulette chat](/media/talkingRoulette.png "Chat roulette chat")
 
 When the user is in the chat room, they can see the other user's username and the chat history. They can also send messages to the other user. They can see other users activity status on the bottom left corner. If user is active, the circle will be green. If user lefts the chat, the circle will be red.
 
-![Chat roulette chat](/media/userDisconnects.PNG "Chat roulette chat")
+![Chat roulette chat](/media/userDisconnects.png "Chat roulette chat")
 
 ### Liking and disliking users
 
-![Chat roulette chat](/media/likeUser.PNG "Chat roulette chat")
+![Chat roulette chat](/media/likeUser.png "Chat roulette chat")
 
 Users can like or dislike other users by clicking their name in the chat. 
 
