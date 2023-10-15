@@ -154,13 +154,18 @@ const ChatApp = () => {
             updatedChat.chat.users[0].username === session?.data?.user.username ? updatedChat.chat.users[1].username : updatedChat.chat.users[0].username,
           );
           setFirstTime(false);
+          setUserLeftChat(false);
+          setMessages([]);
           setTimeout(function () {
             setIsQueue(false);
           }, 1000);
-          setUserLeftChat(false);
           break;
         case "USER_JOINED_CHAT":
-          setMessages([]);
+          if (updatedChat.chat.users[0].username === session?.data?.user.username) {
+            setOtherUser(updatedChat.chat.users[1].username);
+          } else {
+            setOtherUser(updatedChat.chat.users[0].username);
+          }
           break;
         case "USER_LEFT_CHAT":
           const userLeftMessage = {
@@ -173,8 +178,10 @@ const ChatApp = () => {
               email: "edugle@render.com",
             },
           };
+          if (!userLeftChat) {
+            setMessages((prevMessages) => [...prevMessages, userLeftMessage]);
+          }
           setUserLeftChat(true);
-          setMessages((prevMessages) => [...prevMessages, userLeftMessage]);
           break;
         case "USER_SENT_MESSAGE":
           setMessages((prevMessages) => [...prevMessages, updatedChat.chat.messages[updatedChat.chat.messages.length - 1]]);
@@ -213,7 +220,15 @@ const ChatApp = () => {
     onCompleted: ({ initiateChat }) => {
       setChatStatus(initiateChat.status);
       if (initiateChat.status === "Paired") {
-        joinChat();
+        setChatId((prevChatId) => {
+          if (prevChatId !== "") {
+            return initiateChat.chatId;
+          }
+          return prevChatId;
+        });
+        if (chatId !== "") {
+          joinChat();
+        }
       }
     },
     onError: (error) => {
@@ -235,16 +250,13 @@ const ChatApp = () => {
       chatId: chatId,
       userToken: session.data?.token as string,
     },
+    onCompleted: ({ leaveChat }) => {
+      setChatId("");
+    },
     onError: (error) => {
       console.log("leaveChat: error=", error);
     },
   });
-
-  useEffect(() => {
-    if (chatId) {
-      // lolo
-    }
-  }, [chatId]);
 
   const handleStartQueue = () => {
     if (isQuery.loading) {
@@ -274,14 +286,22 @@ const ChatApp = () => {
         setOtherUser(null);
         leaveChat().then(() => {
           setIsQueue(true);
+          setTimeout(() => {
+            initiateChat();
+          }, 2000);
           setFirstTime(false);
-          initiateChat();
         });
       } else if (chatStatus === "Queue") {
         setChatId("");
       }
     }
   };
+
+  useEffect(() => {
+    if (chatId) {
+      setChatStatus("Paired");
+    }
+  }, [chatId]);
 
   const handleBack = () => {
     closeNavBar();
