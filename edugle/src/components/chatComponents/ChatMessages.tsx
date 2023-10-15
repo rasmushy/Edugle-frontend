@@ -17,7 +17,7 @@ function addBreaks(str: string) {
   return str.replace(regex, "$1\u200B").split("\n");
 }
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, yourUsername: yourUsername, style }) => {
+const  ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, yourUsername: yourUsername, style }) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [isUserSelf, setIsYou] = useState(false);
   const [userInfo, setUserInfo] = useState<User | null>(null);

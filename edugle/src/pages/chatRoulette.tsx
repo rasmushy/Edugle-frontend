@@ -341,7 +341,7 @@ const ChatApp = () => {
               <div className="flex-row">
                 <div className="flex-col" style={{ top: "3%", position: "relative" }}>
                   {/* Chat messages */}
-                  {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} />}
+                  {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} style={"roulette"} />}
 
                   {/* Chat box */}
                   <ChatBox chatId={chatId} user={session.data?.token as string} />
