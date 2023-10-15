@@ -12,6 +12,7 @@ import styles from "../styles/styles.module.css";
 import QueuePanel from "~/components/chatRoulette/QueuePanel";
 import RulesPanel from "~/components/chatRoulette/RulesPanel";
 import CircleIcon from "@mui/icons-material/Circle";
+import { useNavBar } from "~/components/navBar/NavBarProvider";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -123,6 +124,7 @@ const IS_QUEUE = gql`
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
+  const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
   const [chatId, setChatId] = useState("");
   const [otherUser, setOtherUser] = useState(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -282,6 +284,7 @@ const ChatApp = () => {
   };
 
   const handleBack = () => {
+    closeNavBar();
     dequeueUser().then(() => {
       setFirstTime(true);
       router.replace("/");
