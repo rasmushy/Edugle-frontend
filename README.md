@@ -1,8 +1,8 @@
 # [Edugle Website](https://edugle-fro.onrender.com/)
 
 ## Edugle: A Unique Text-Based Chat Platform
-
-Link to Website [Edugle](https://edugle-fro.onrender.com/)
+### Link to Website [Edugle](https://edugle-fro.onrender.com/) *
+<b>* Website might take a minute to spin back up after not being used, because it is hosted on a free server, and spins the instance down after a while of inactivity.</b>
 
 Edugle is an text-based chat platform that brings a fresh perspective to online conversations. This platform offers two key features:
 
