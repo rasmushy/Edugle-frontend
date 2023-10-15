@@ -12,11 +12,6 @@ import styles from "../styles/styles.module.css";
 import QueuePanel from "~/components/chatRoulette/QueuePanel";
 import RulesPanel from "~/components/chatRoulette/RulesPanel";
 import CircleIcon from "@mui/icons-material/Circle";
-import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
-import { set } from "zod";
-import { init } from "@graphql-codegen/cli";
-import { StackedLineChartOutlined } from "@mui/icons-material";
-import { url } from "inspector";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -75,55 +70,45 @@ const DE_QUEUE = gql`
 `;
 
 const JOIN_CHAT = gql`
-  mutation JoinChat($chatId: ID!, $token: String!) {
-    joinChat(chatId: $chatId, token: $token) {
-      created_date
+ mutation JoinChat($chatId: ID!, $userToken: String!) {
+  joinChat(chatId: $chatId, userToken: $userToken) {
+    created_date
+    id
+    messages {
+      content
+      date
       id
-      messages {
-        content
-        date
+      sender {
         id
-        sender {
-          id
-          username
-          description
-          likes
-        }
-      }
-      users {
-        username
         email
-        description
-        id
+        username
       }
     }
+    users {
+      id
+    }
   }
+}
 `;
 
 const LEAVE_CHAT = gql`
   mutation LeaveChat($chatId: ID!, $userToken: String!) {
-    leaveChat(chatId: $chatId, userToken: $userToken) {
-      created_date
+  leaveChat(chatId: $chatId, userToken: $userToken) {
+    created_date
+    id
+    users {
       id
-      messages {
-        content
-        date
-        id
-        sender {
-          id
-          username
-          description
-          likes
-        }
-      }
-      users {
-        username
-        email
-        description
+    }
+    messages {
+      content
+      id
+      date
+      sender {
         id
       }
     }
   }
+}
 `;
 
 const IS_QUEUE = gql(`query QueuePosition($token: String!) {
@@ -161,7 +146,6 @@ const ChatApp = () => {
         case "CHAT_STARTED":
           setChatId(updatedChat.chat.id);
           setChatStatus("Paired");
-          console.log("udpatearouentaoedu", updatedChat);
           setOtherUser(
             updatedChat.chat.users[0].username === session?.data?.user.username ? updatedChat.chat.users[1].username : updatedChat.chat.users[0].username,
           );
@@ -172,17 +156,7 @@ const ChatApp = () => {
           console.log("CHAT_STARTED: chatId=", updatedChat.chat.id, ", timestamp=", updatedChat.timestamp);
           break;
         case "USER_JOINED_CHAT":
-          /*             const userJoinedMessage = {
-            id: ("11111" + session.data?.user.id) as string,
-            content: `${updatedChat.message}`,
-            date: updatedChat.timestamp,
-            sender: {
-              id: ("11112" + session.data?.user.id) as string,
-              username: "Edugle",
-              email: "edugle@render.com",
-            },
-          };
-          setMessages((prevMessages) => [...prevMessages, userJoinedMessage]);  */
+          setUserLeftChat(false);
           break;
         case "USER_LEFT_CHAT":
           const userLeftMessage = {
@@ -278,31 +252,10 @@ const ChatApp = () => {
     },
   });
 
-  // UseEffect for checking query status
-  /*   useEffect(() => {
-    if (isQuery.loading) {
-      console.log("loading...");
-    } else if (isQuery.error) {
-      console.log("error", +isQuery.error.message);
-    } else {
-      console.log("queuePosition COMPLETED=", isQuery.data.queuePosition);
-    }
-  }, [isQuery]); */
-
-  /*   useEffect(() => {
-    if (chatStatus === "Paired") {
-      setFirstTime(false);
-      setTimeout(function () {
-        setIsQueue(false);
-      }, 2000); // 5000 milliseconds (5 seconds) <-- 2000 on 2 sec noob
-    }
-  }, [chatStatus, isQuery]);
- */
   useEffect(() => {
     if (chatId) {
       console.log("ligma");
       setChatStatus("Paired");
-      //setIsQueue(false);
     }
   }, [chatId]);
 
@@ -327,7 +280,6 @@ const ChatApp = () => {
   };
 
   const handleNextUser = () => {
-    // FIXME: jättää toisel selaimella auki ton queue panelin, ja ku tabaa pois ja sisää nii tajuu et mähä oon paired.
     if (chatStatus === "Paired") {
       setMessages([]);
       setChatId("");

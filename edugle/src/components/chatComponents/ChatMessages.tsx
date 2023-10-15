@@ -1,16 +1,6 @@
-import React, { use, useEffect, useRef, useState } from "react";
-import { Message, Chat, User } from "../../__generated__/graphql";
+import React, { useEffect, useRef, useState } from "react";
+import { Message, User } from "../../__generated__/graphql";
 import styles from "../../styles/styles.module.css";
-import Asd from "./HoverUserInfo";
-import HoverUserInfo from "./HoverUserInfo";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions";
 import LikeUser from "./LikeUser";
 
 type ChatMessagesProps = {
@@ -19,22 +9,12 @@ type ChatMessagesProps = {
   style?: string;
 };
 
-//Adds breaks to long messages, so they don't overflow the chat box.
-//Adds newlines when user presses shift+enter.
 function addBreaks(str: string) {
+  //Adds breaks to long messages, so they don't overflow the chat box.
   const interval = 52;
-  const lines = str.split("\n");
-  const processedLines = lines.map((line) => {
-    let newStr = "";
-    for (let i = 0; i < line.length; i++) {
-      if (i > 0 && i % interval === 0) {
-        newStr += "\u200B";
-      }
-      newStr += line[i];
-    }
-    return newStr;
-  });
-  return processedLines;
+  // This regular expression will match every 'interval' characters that are not line breaks.
+  const regex = new RegExp(`(.{1,${interval}})(?!$)`, "g");
+  return str.replace(regex, "$1\u200B").split("\n");
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, yourUsername: yourUsername, style }) => {
@@ -45,12 +25,11 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
 
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
-    useEffect(() => {
+  useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
-
 
   return (
     <div
@@ -62,7 +41,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ chatMessages: messages, you
         {isPopUpOpen && !isUserSelf && <LikeUser isPopUpOpen={isPopUpOpen} setIsPopUpOpen={setIsPopUpOpen} userId={userInfo?.id as String} />}
         {messages &&
           messages.map((message: Message, index: number) => {
-            const isYou = message.sender?.username === yourUsername;
+            const isYou = message.sender?.username === yourUsername || message.sender?.username === "Edugle";
             const isMessageActive = index === activeUserMessage;
 
             const messageContainerClass = isYou

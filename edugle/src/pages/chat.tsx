@@ -17,7 +17,6 @@ const SUBSCRIPTION_MESSAGE = gql`
       chatId
       message {
         content
-        date
         id
         sender {
           email
@@ -29,7 +28,7 @@ const SUBSCRIPTION_MESSAGE = gql`
   }
 `;
 
-const MSG_BY_ID = gql`
+const QUERY_MESSAGES_BY_ID = gql`
   query Messages($chatByIdId: ID!) {
     chatById(id: $chatByIdId) {
       messages {
@@ -39,15 +38,8 @@ const MSG_BY_ID = gql`
         sender {
           id
           username
-          email
-          description
-          avatar
-          lastLogin
-          role
-          likes
         }
       }
-      created_date
       id
     }
   }
@@ -64,10 +56,10 @@ const ChatApp = () => {
     router.push("/");
   }
 
-  const idQuery = useQuery(MSG_BY_ID, {
+  useQuery(QUERY_MESSAGES_BY_ID, {
     variables: { chatByIdId: "651fe685a4cdf622986a9f14" },
     onCompleted: (data) => {
-      console.log(data);
+      //console.log(data);
       if (data.chatById.messages) {
         setMessages(data.chatById.messages as Message[]);
         setChatId(data.chatById.id);
