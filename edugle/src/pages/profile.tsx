@@ -16,7 +16,7 @@ import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 
-const GET_USER = gql(`query GetUserByToken($token: String!) {
+const GET_USER = gql`query GetUserByToken($token: String!) {
     getUserByToken(token: $token) {
         description
         username
@@ -24,16 +24,16 @@ const GET_USER = gql(`query GetUserByToken($token: String!) {
         id
         likes
   }
-}`);
+}`;
 
-const UPDATE_USER = gql(`mutation ModifyUser($user: modifyUserInput) {
+const UPDATE_USER = gql`mutation ModifyUser($user: modifyUserInput) {
   modifyUser(modifyUser: $user) {
     message
     user {
       description
     }
   }
-}`);
+}`
 
 export default function Profile() {
   const session = useSession();
@@ -76,7 +76,7 @@ export default function Profile() {
       },
     },
     onCompleted: ({ modifyUser }) => {
-      console.log("modifyUser", modifyUser);
+      //console.log("modifyUser", modifyUser);
     },
     onError: (error) => {
       console.log("error", error);
@@ -140,8 +140,8 @@ export default function Profile() {
         <div
           style={{
             height: "92.5vh", // Change from "95vh" to "100vh"
-            margin: 0, // Add this to remove any margin
-            padding: 0, // Add this to remove any padding
+            margin: 0, 
+            padding: 0, 
             position: "relative",
           }}
           className="flex max-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#89C2D9] to-[#012A4A]"
@@ -163,7 +163,6 @@ export default function Profile() {
               <TextField
                 fullWidth
                 value={description}
-                // Add an onChange handler to update the description
                 onChange={(e) => setDescription(e.target.value)}
               />
             </DialogContent>
@@ -222,8 +221,8 @@ export default function Profile() {
               color="textSecondary"
               sx={{
                 textAlign: "center",
-                fontSize: "1.5rem", // Increase font size
-                fontWeight: "bold", // Add bold styling
+                fontSize: "1.5rem", 
+                fontWeight: "bold", 
               }}
             >
               Liked by {likeCount} others
@@ -232,11 +231,11 @@ export default function Profile() {
               variant="body2"
               color="textSecondary"
               sx={{
-                textAlign: "center", // Center text on all screen sizes
-                maxWidth: "80%", // Limit text width on smaller screens
-                mt: 2, // Add top margin to separate bio from username
+                textAlign: "center",
+                maxWidth: "80%", 
+                mt: 2, 
                 marginTop: 6,
-                fontSize: "1.3rem", // Increase font size
+                fontSize: "1.3rem",
               }}
             >
               Description:
@@ -245,10 +244,10 @@ export default function Profile() {
               variant="body2"
               color="textSecondary"
               sx={{
-                textAlign: "center", // Center text on all screen sizes
-                maxWidth: "80%", // Limit text width on smaller screens
-                mt: 2, // Add top margin to separate bio from username
-                fontSize: "1.3rem", // Increase font size
+                textAlign: "center", 
+                maxWidth: "80%", 
+                mt: 2, 
+                fontSize: "1.3rem", 
               }}
             >
               {description ? description : "No description yet!"}

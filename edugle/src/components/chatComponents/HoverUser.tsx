@@ -37,7 +37,7 @@ export default function HoverUser(user: User) {
     setOpen(false);
   };
 
-  console.log(user);
+  //console.log(user);
 
   return (
     <div>

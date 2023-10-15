@@ -33,12 +33,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
         senderToken: user,
       },
     },
-    onCompleted: ({ createMessage }) => {
-      console.log("createMessage=", createMessage);
-      console.log("Sending message to chatId:", chatId);
-    },
     onError: (error) => {
-      console.log("message that failed=", message);
+      //console.log("message that failed=", message);
       console.log("error", error);
     },
   });
@@ -67,8 +63,6 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user }) => {
     if (message !== "" && chatId !== "") {
       createMessage();
       setMessage("");
-    } else {
-      console.log("Could not send message to chat:", chatId);
     }
   };
 

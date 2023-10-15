@@ -14,9 +14,9 @@ export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     if (status === "loading") return;
 
-    console.log("session=", session);
+   // console.log("session=", session);
     if (status === "unauthenticated") {
-      console.log("not authorized");
+      //console.log("not authorized");
       router.push("/");
     }
 
