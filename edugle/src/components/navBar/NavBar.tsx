@@ -22,12 +22,12 @@ const NavBar = () => {
   if (status === "loading") return <div>Loading...</div>;
 
   const handleShowNavbar = () => {
-    setCloseNavbar(true);
+    setShowNavbar(!showNavbar);
+    setCloseNavbar(!closeNavbar);
   };
 
   const handleMaintPage = () => {
-    setCloseNavbar(!closeNavbar);
-    setShowNavbar(!showNavbar);
+    setCloseNavbar(true);
     setActiveButton("");
   };
  
