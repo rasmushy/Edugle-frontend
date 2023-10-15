@@ -30,10 +30,6 @@ Our application primarily caters to the following focus groups:
 
 - It is a chat application where users can chat with each other. Users can also like or dislike other users. Users can also see their profile page and edit their description. Admins can see the admin panel where they can see all the users and their like count. They can also delete users and give other users admin rights.
 
-- It is a chat application where users can chat with each other. Users can also like or dislike other users. Users can also see their profile page and edit their description. Admins can see the admin panel where they can see all the users and their like count. They can also delete users and give other users admin rights.
-
-- It is a chat application where users can chat with each other. Users can also like or dislike other users. Users can also see their profile page and edit their description. Admins can see the admin panel where they can see all the users and their like count. They can also delete users and give other users admin rights.
-
 ### Landing page
 
 ![Our basic landing page](/media/landingPage.PNG "Index page")
