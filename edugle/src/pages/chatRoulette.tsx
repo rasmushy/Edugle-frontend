@@ -277,7 +277,7 @@ const ChatApp = () => {
   });
 
   // UseEffect for checking query status
-  useEffect(() => {
+/*   useEffect(() => {
     if (isQuery.loading) {
       console.log("loading...");
     } else if (isQuery.error) {
@@ -285,7 +285,7 @@ const ChatApp = () => {
     } else {
       console.log("queuePosition COMPLETED=", isQuery.data.queuePosition);
     }
-  }, [isQuery]);
+  }, [isQuery]); */
 
   /*   useEffect(() => {
     if (chatStatus === "Paired") {
@@ -300,7 +300,7 @@ const ChatApp = () => {
     if (chatId) {
       console.log("ligma");
       setChatStatus("Paired");
-      setIsQueue(false);
+      //setIsQueue(false);
     }
   }, [chatId]);
 
