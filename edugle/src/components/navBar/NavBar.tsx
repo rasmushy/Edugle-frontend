@@ -26,10 +26,22 @@ const NavBar = () => {
     setCloseNavbar(!closeNavbar);
   };
 
+  const handleMaintPage = () => {
+    setCloseNavbar(!closeNavbar);
+    setShowNavbar(!showNavbar);
+    setActiveButton("");
+  };
+ 
   const handleChatPage = () => {
     setCloseNavbar(!closeNavbar);
     setShowNavbar(!showNavbar);
     setActiveButton("chat");
+  };
+
+  const handleRoulettePage = () => {
+    setCloseNavbar(!closeNavbar);
+    setShowNavbar(!showNavbar);
+    setActiveButton("roulette");
   };
 
   const handleProfilePage = () => {
@@ -60,7 +72,7 @@ const NavBar = () => {
   return (
     <>
       <nav className={styles.navbar} rel="preload">
-        <div className={styles.navbar_title}>
+        <div className={styles.navbar_title} onClick={handleMaintPage}>
           <Link href="/">
             <h1 className="text-2xl font-bold text-[#012A4A]">Edugle</h1>
           </Link>
@@ -88,54 +100,36 @@ const NavBar = () => {
             </div>
             <div
               className={`${styles.navElements}  ${
-                !closeNavbar
-                  ? session.data?.user?.role?.toLowerCase() !== "admin"
-                    ? styles.active
-                    : styles.biggerActive
-                  : styles.none
+                !closeNavbar ? (session.data?.user?.role?.toLowerCase() !== "admin" ? styles.active : styles.biggerActive) : styles.none
               }`}
             >
               <>
                 <ul>
                   <li>
                     <Link href="/chat" onClick={() => handleChatPage()}>
-                      <div
-                        className={`${styles.navbar_item} ${
-                          activeButton === "chat"
-                            ? styles.active
-                            : styles.inactive
-                        }`}
-                      >
+                      <div className={`${styles.navbar_item} ${activeButton === "chat" ? styles.active : styles.inactive}`}>
                         <p>Chat</p>
                       </div>
                     </Link>
                   </li>
                   <li>
+                    <Link href="/chatRoulette" onClick={() => handleRoulettePage()}>
+                      <div className={`${styles.navbar_item} ${activeButton === "roulette" ? styles.active : styles.inactive}`}>
+                        <p>Roulette</p>
+                      </div>
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/profile" onClick={() => handleProfilePage()}>
-                      <div
-                        className={`${styles.navbar_item} ${
-                          activeButton === "profile"
-                            ? styles.active
-                            : styles.inactive
-                        }`}
-                      >
+                      <div className={`${styles.navbar_item} ${activeButton === "profile" ? styles.active : styles.inactive}`}>
                         <p>Profile</p>
                       </div>
                     </Link>
                   </li>
                   {session.data?.user?.role?.toLocaleLowerCase() === "admin" ? (
                     <li>
-                      <div
-                        className={`${styles.navbar_item} ${
-                          activeButton === "adminpanel"
-                            ? styles.active
-                            : styles.inactive
-                        }`}
-                       
-                      >
-                        <AdminNavBarBtn
-                          handleAdminPanelPage={handleAdminPanelPage}
-                        />
+                      <div className={`${styles.navbar_item} ${activeButton === "adminpanel" ? styles.active : styles.inactive}`}>
+                        <AdminNavBarBtn handleAdminPanelPage={handleAdminPanelPage} />
                       </div>
                     </li>
                   ) : null}
