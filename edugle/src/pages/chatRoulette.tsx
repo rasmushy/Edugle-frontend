@@ -16,6 +16,7 @@ import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { set } from "zod";
 import { init } from "@graphql-codegen/cli";
 import { StackedLineChartOutlined } from "@mui/icons-material";
+import {url} from "inspector";
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -338,6 +339,7 @@ const ChatApp = () => {
   const handleBack = () => {
     dequeueUser().then(() => {
       setFirstTime(true);
+      router.replace("/")
     });
   };
 
