@@ -3,15 +3,15 @@ import Login from "../components/mainPage/Login";
 import SignUp from "../components/mainPage/SignUp";
 import MainPageBtn from "~/components/mainPage/MainPageBtn";
 import styles from "../styles/styles.module.css";
-import { useEffect, useState, useRef} from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavBar } from "../components/ApolloProviderWrapper";
 
 export default function Home({ session: initialSession }: { session: any }) {
   const [activePopup, setActivePopup] = useState(null);
   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
-  const { isNavBarOpen} = useNavBar();
+  const { isNavBarOpen } = useNavBar();
 
-/*   if(initialSession?.status === "loading") return <div>Loading...</div>  */
+  /*   if(initialSession?.status === "loading") return <div>Loading...</div>  */
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));
@@ -59,7 +59,7 @@ export default function Home({ session: initialSession }: { session: any }) {
           overflowX: "hidden",
           zIndex: isNavBarOpen == true ? -1 : 1,
         }}
-        className="flex min-h-[88vh] flex-col items-center justify-center bg-gradient-to-b from-[#012A4A] to-[#2C7DA0]"
+        className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#012A4A] to-[#2C7DA0]"
       >
         <div
           style={{
@@ -106,7 +106,7 @@ export default function Home({ session: initialSession }: { session: any }) {
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.9);
+          background-color: rgba(0, 0, 0, 0.5);
           z-index: 9998;
         }
       `}</style>
