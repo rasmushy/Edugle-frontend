@@ -14,7 +14,7 @@ const wsLink =
     ? new GraphQLWsLink(
         createClient({
           url: `${process.env.NEXT_PUBLIC_WS_URL}`,
-          shouldRetry(errOrCloseEvent) {
+          shouldRetry() {
             return true;
           },
         }),
@@ -26,17 +26,14 @@ const splitLink =
     ? split(
         ({ query }) => {
           const definition = getMainDefinition(query);
-          return (
-            definition.kind === "OperationDefinition" &&
-            definition.operation === "subscription"
-          );
+          return definition.kind === "OperationDefinition" && definition.operation === "subscription";
         },
         wsLink,
         httpLink,
       )
     : httpLink;
 
-const client = (token: string) => {
+const Client = (token: string) => {
   const authMiddleware = setContext(async (_, { headers }) => {
     return {
       headers: {
@@ -53,4 +50,4 @@ const client = (token: string) => {
   });
 };
 
-export default client;
+export default Client;

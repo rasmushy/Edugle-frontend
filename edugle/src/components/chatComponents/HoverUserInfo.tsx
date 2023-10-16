@@ -6,8 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions";
-import { AirlineSeatIndividualSuiteRounded } from "@mui/icons-material";
+import type { TransitionProps } from "@mui/material/transitions";
 
 interface User {
   username: string;
@@ -30,15 +29,11 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const HoverUser: React.FC<HoverUserProps> = ({ user, isPopUpOpen, handleClose }) => {
+const HoverUser: React.FC<HoverUserProps> = ({ user, isPopUpOpen }) => {
   const [open, setOpen] = React.useState(isPopUpOpen);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
 
   const handleClose2 = () => {
-    //console.log("asdasdas!");
     setOpen(false);
   };
 

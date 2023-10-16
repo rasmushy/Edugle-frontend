@@ -1,5 +1,5 @@
 import AuthForm from "./AuthForm";
-import { FormEvent } from "react";
+import type { FormEvent } from "react";
 import { signIn } from "next-auth/react";
 
 export default function Login(props: any) {

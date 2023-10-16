@@ -1,5 +1,4 @@
 import Link from "next/link";
-import styles from "../styles/styles.module.css";
 
 const NabarBtn = ({ handleAdminPanelPage }: any) => {
   return (

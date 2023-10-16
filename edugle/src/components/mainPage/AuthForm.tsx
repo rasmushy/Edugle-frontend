@@ -1,10 +1,9 @@
-import React, { FormEvent, useState } from "react";
+import React, { type FormEvent, useState } from "react";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { AccountCircle } from "@mui/icons-material";
-import { Box, Button } from "@mui/material";
 
 export default function AuthForm({
   title,
@@ -35,7 +34,7 @@ export default function AuthForm({
   const [checkUserName, setCheckUserName] = useState(true);
   const [checkPassword, setCheckPassword] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [, setErrorMessage] = useState<string>("");
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 

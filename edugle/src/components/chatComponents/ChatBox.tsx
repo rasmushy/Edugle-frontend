@@ -36,7 +36,6 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, user, userLeftChat }) => {
       },
     },
     onError: (error) => {
-      //console.log("message that failed=", message);
       console.log("error", error);
     },
   });
