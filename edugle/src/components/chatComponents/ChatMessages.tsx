@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Message, User } from "../../__generated__/graphql";
+import type { Message, User } from "../../__generated__/graphql";
 import styles from "../../styles/styles.module.css";
 import LikeUser from "./LikeUser";
 

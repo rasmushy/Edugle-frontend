@@ -1,28 +1,21 @@
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import UsersGrid from "~/components/adminPanel/UsersGrid";
+import  Error  from "./_error";
+import dynamic from "next/dynamic";
+
+const UsersGrid = dynamic(() => import("~/components/adminPanel/UsersGrid"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
 
 export default function AdminPanel() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { data: session } = useSession();
 
-  useEffect(() => {
-    if (status === "loading") return;
-    if (session?.user?.role.toLowerCase() !== "admin") router.replace("/");
-  }, [status, session, router]);
-
-  if (status === "loading") {
-    return <div>loading...</div>;
+  if (session?.user.role.toLowerCase() !== "admin") {
+   return (<Error statusCode={401} />)
   }
-
-  if (session?.user?.role.toLowerCase() !== "admin") {
-    return null;
-  }
-
-  return (
-    <div style={{ position: "relative" }}>
-      <UsersGrid />
-    </div>
-  );
+    return (
+      <div style={{ position: "relative" }}>
+        <UsersGrid />
+      </div>
+    );
 }

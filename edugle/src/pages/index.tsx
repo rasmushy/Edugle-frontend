@@ -3,13 +3,15 @@ import Login from "../components/mainPage/Login";
 import SignUp from "../components/mainPage/SignUp";
 import MainPageBtn from "~/components/mainPage/MainPageBtn";
 import styles from "../styles/styles.module.css";
-import { useEffect, useState, useRef, MutableRefObject, use } from "react";
-import { useNavBar } from "../components/navBar/NavBarProvider";
+import { useEffect, useState, useRef} from "react";
+import { useNavBar } from "../components/ApolloProviderWrapper";
 
 export default function Home({ session: initialSession }: { session: any }) {
   const [activePopup, setActivePopup] = useState(null);
   const bubblesContainerRef = useRef<HTMLDivElement | null>(null);
   const { isNavBarOpen} = useNavBar();
+
+/*   if(initialSession?.status === "loading") return <div>Loading...</div>  */
 
   function togglePopup(popupName: any) {
     setActivePopup((prevPopup) => (prevPopup === popupName ? null : popupName));

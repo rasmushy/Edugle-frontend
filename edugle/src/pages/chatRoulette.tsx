@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import ChatMessages from "../components/chatComponents/ChatMessages";
-import ChatBox from "../components/chatComponents/ChatBox";
 import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import type { Message } from "../__generated__/graphql";
@@ -12,7 +10,17 @@ import styles from "../styles/styles.module.css";
 import QueuePanel from "~/components/chatRoulette/QueuePanel";
 import RulesPanel from "~/components/chatRoulette/RulesPanel";
 import CircleIcon from "@mui/icons-material/Circle";
-import { useNavBar } from "~/components/navBar/NavBarProvider";
+import dynamic from "next/dynamic";
+
+const ChatMessages = dynamic(() => import("~/components/chatComponents/ChatMessages"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+}); 
+
+const ChatBox = dynamic(() => import("~/components/chatComponents/ChatBox"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
 
 const INITIATE_CHAT = gql`
   mutation InitiateChat($token: String!) {
@@ -124,7 +132,6 @@ const IS_QUEUE = gql`
 const ChatApp = () => {
   const session = useSession();
   const router = useRouter();
-  const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
   const [chatId, setChatId] = useState("");
   const [otherUser, setOtherUser] = useState(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -133,11 +140,6 @@ const ChatApp = () => {
   const [firstTime, setFirstTime] = useState<boolean>(true);
   const [isHovered, setIsHovered] = useState(false);
   const [userLeftChat, setUserLeftChat] = useState(false);
-
-  useEffect(() => {
-    if (session.status === "loading") return;
-    if (!session?.data?.user) router.replace("/");
-  }, [session.status, session, session.data]);
 
   useSubscription(SUBSCRIPTION_CHAT, {
     variables: { userId: session.data?.user.id },
@@ -205,7 +207,7 @@ const ChatApp = () => {
     variables: {
       token: session.data?.token as string,
     },
-    onCompleted: ({ dequeueUser }) => {
+    onCompleted: ({ }) => {
       setIsQueue(false);
     },
     onError: (error) => {
@@ -250,7 +252,7 @@ const ChatApp = () => {
       chatId: chatId,
       userToken: session.data?.token as string,
     },
-    onCompleted: ({ leaveChat }) => {
+    onCompleted: ({ }) => {
       setChatId("");
     },
     onError: (error) => {
@@ -285,7 +287,8 @@ const ChatApp = () => {
       if (chatStatus === "Paired") {
         setOtherUser(null);
         leaveChat().then(() => {
-          setIsQueue(true);
+        setIsQueue(true);
+        setChatStatus("Queue");
           setTimeout(() => {
             initiateChat();
           }, 2000);
@@ -304,7 +307,6 @@ const ChatApp = () => {
   }, [chatId]);
 
   const handleBack = () => {
-    closeNavBar();
     dequeueUser().then(() => {
       setFirstTime(true);
       router.replace("/");
@@ -354,10 +356,7 @@ const ChatApp = () => {
             >
               <div className="flex-row">
                 <div className="flex-col" style={{ top: "3%", position: "relative" }}>
-                  {/* Chat messages1 */}
                   {chatId != "" && <ChatMessages chatMessages={messages} yourUsername={session?.data?.user.username} style={"roulette"} />}
-
-                  {/* Chat box1 */}
                   <ChatBox chatId={chatId} user={session.data?.token as string} userLeftChat={userLeftChat} />
                   <div style={{ display: "flex", alignItems: "center", backgroundColor: "white", height: "60px" }}>
                     <CircleIcon style={{ color: userLeftChat ? "red" : "green", marginLeft: "20px", marginRight: "20px" }} />

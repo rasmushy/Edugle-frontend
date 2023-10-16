@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import { Modal } from "@mui/material";
 import { gql, useMutation, useQuery } from "@apollo/client";
@@ -64,12 +63,12 @@ const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, userId }: any) => {
     },
   });
 
-  async function handleLikeUser(id: any): Promise<void> {
+  async function handleLikeUser(): Promise<void> {
     likeUser();
     handleClose();
   }
 
-  async function handleDislikeUser(id: any): Promise<void> {
+  async function handleDislikeUser(): Promise<void> {
     dislikeUser();
     handleClose();
   }
@@ -113,7 +112,7 @@ const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, userId }: any) => {
               borderRadius: "5px",
               marginRight: "10px", // Add a gap
             }}
-            onClick={() => handleDislikeUser(data?.getUserById.id)}
+            onClick={() => handleDislikeUser()}
           >
             Dislike
           </button>
@@ -126,7 +125,7 @@ const LikeUser = ({ isPopUpOpen, setIsPopUpOpen, userId }: any) => {
               border: "none",
               borderRadius: "5px",
             }}
-            onClick={() => handleLikeUser(data?.getUserById.id)}
+            onClick={() => handleLikeUser()}
           >
             Like
           </button>

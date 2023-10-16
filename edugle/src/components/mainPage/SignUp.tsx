@@ -1,5 +1,5 @@
 import AuthForm from "./AuthForm";
-import { FormEvent, useState } from "react";
+import {type  FormEvent} from "react";
 import { useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { signIn } from "next-auth/react";
@@ -18,7 +18,7 @@ const REGISTER_USER = gql`mutation RegisterUser($user: RegisterInput!) {
 
 export default function SignUp(props: any) {
   const [registerUser, { error, data }] = useMutation(REGISTER_USER, {
-    onCompleted: ({ registerUser }) => {
+    onCompleted: ({ }) => {
       //console.log("registered Successfully");
     },
     onError: (error) => {

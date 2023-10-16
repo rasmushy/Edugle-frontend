@@ -1,25 +1,20 @@
-"use client";
-import React, { useState, useEffect, use } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import styles from "../../styles/styles.module.css";
-import Image from "next/image";
 import { signOut } from "next-auth/react";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { useSession } from "next-auth/react";
 import AdminNavBarBtn from "./AdminNavBarBtn";
-import { useNavBar } from "~/components/navBar/NavBarProvider";
+import { useNavBar } from "~/components/ApolloProviderWrapper";
 
 const NavBar = () => {
   const [showNavbar, setShowNavbar] = useState(false);
   const [closeNavbar, setCloseNavbar] = useState(true);
-  const { isNavBarOpen, openNavBar, closeNavBar } = useNavBar();
+  const { openNavBar, closeNavBar } = useNavBar();
   const [activeButton, setActiveButton] = useState("main");
 
   const session = useSession();
-  const status = session.status;
-
-  if (status === "loading") return <div>Loading...</div>;
 
   const handleShowNavbar = () => {
     setShowNavbar(!showNavbar);
@@ -64,12 +59,6 @@ const NavBar = () => {
     setActiveButton("");
   };
 
-  const handleLogIn = () => {
-    setCloseNavbar(!closeNavbar);
-    setShowNavbar(!showNavbar);
-    setActiveButton("");
-    window.location.href = "/login";
-  };
 
   return (
     <>
@@ -143,7 +132,7 @@ const NavBar = () => {
                         onClick={() => {
                           handleLogOut();
                           signOut({
-                            redirect: false,
+                            redirect: true,
                             callbackUrl: "/",
                           });
                         }}

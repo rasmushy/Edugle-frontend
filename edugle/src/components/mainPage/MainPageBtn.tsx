@@ -1,9 +1,8 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
-const MainPageBtn = ({ handleGoChat, togglePopup, session: initialSession }: any) => {
-  const { data: session = initialSession, status } = useSession();
+const MainPageBtn = ({ togglePopup, session: initialSession }: any) => {
+  const { data: session = initialSession } = useSession();
   const router = useRouter();
 
   const handleGoChatBtn = () => {

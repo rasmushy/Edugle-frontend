@@ -5,13 +5,12 @@ const config = {
   parserOptions: {
     project: true,
   },
-  plugins: ["@typescript-eslint", "react", "react-hooks", "eslint-apollo-plugin"],
+  plugins: ["@typescript-eslint", "react", "react-hooks"],
   extends: [
   ],
   rules: {
     // These opinionated rules are enabled in stylistic-type-checked above.
     // Feel free to reconfigure them to your own preference.
-    //disable whole eslint
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/consistent-type-imports": [

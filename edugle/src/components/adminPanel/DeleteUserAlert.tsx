@@ -23,14 +23,14 @@ const AlertDialogSlide = ({
   token,
 }: any) => {
   const [open, setOpen] = React.useState(isOpen);
-  const [deleteId, setDeleteUserId] = React.useState("");
+  const [, setDeleteUserId] = React.useState("");
 
   const [deleteUserAsAdmin] = useMutation(DELETE_USER, {
     variables: {
       userToBeDeletedId: userId,
       adminToken: token,
     },
-    onCompleted: ({ deleteUserAsAdmin }) => {},
+    onCompleted: ({ }) => {},
   });
 
   const deleteUserDatabase = async () => {
